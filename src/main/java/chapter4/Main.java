@@ -1,6 +1,7 @@
 package chapter4;
 
 
+import static org.joml.Math.*;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -82,25 +83,33 @@ public class Main {
 
 
 
-            // 建構視圖矩陣、模型矩陣和MV矩陣
-            Matrix4f vMat = new Matrix4f().translate(new Vector3f(-cameraX, -cameraY, -cameraZ));
-            Matrix4f mMat = new Matrix4f().translate(new Vector3f(cubeLocX, cubeLocY, cubeLocZ))
-                    .rotateX((float) glfwGetTime());
-            Matrix4f mvMat = vMat.mul(mMat);
 
-            // 將透視矩陣和mv矩陣複製給相應的統一變量
-            glUniformMatrix4fv(mvLoc, false, mvMat.get(vals));
-            glUniformMatrix4fv(projLoc, false, pMat.get(vals));
+            for (int i = 0; i < 24; i++) {
+                // 建構視圖矩陣、模型矩陣和MV矩陣
+                float tf = (float) (glfwGetTime() + i); // tf == "time factor"時間因子
+                Matrix4f vMat = new Matrix4f().translate(-cameraX, -cameraY, -cameraZ);
+                Matrix4f mMat = new Matrix4f().rotateY(1.75f*tf).rotateX(1.75f*tf).rotateZ(1.75f*tf)
+                        .translate(new Vector3f(sin(.35f*tf) * 8f, cos(.52f*tf) * 8f, sin(.7f*tf)*8f));
 
-            // 將vbo關聯給頂點著色器中相應的頂點屬性
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-            glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-            glEnableVertexAttribArray(0);
+                Matrix4f mvMat = vMat.mul(mMat);
+                // 將透視矩陣和mv矩陣複製給相應的統一變量
+                glUniformMatrix4fv(mvLoc, false, mvMat.get(vals));
+                glUniformMatrix4fv(projLoc, false, pMat.get(vals));
 
-            // 調整OpenGL設置，繪製模型
-            glEnable(GL_DEPTH_TEST); // 第二章: 深度測試
-            glDepthFunc(GL_LEQUAL);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+                // 將vbo關聯給頂點著色器中相應的頂點屬性
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+                glEnableVertexAttribArray(0);
+
+                // 調整OpenGL設置，繪製模型
+                glEnable(GL_DEPTH_TEST); // 第二章: 深度測試
+                glDepthFunc(GL_LEQUAL);
+                glDrawArrays(GL_TRIANGLES, 0, 36);
+            }
+
+
+
+
 
             glfwSwapBuffers(windowHandle);
             glfwPollEvents();
