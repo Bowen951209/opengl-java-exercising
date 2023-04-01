@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import static org.lwjgl.opengl.GL43.*;
 import static org.lwjgl.glfw.GLFW.*;
 
-public class Main {
+public class Program4_3 {
     private static long windowHandle;
     private static int program;
 
@@ -23,12 +23,18 @@ public class Main {
 
     private static Matrix4f pMat;
     private static final float[] vals = new float[16];// utility buffer for transferring matrices
-    private static int vbo;
+    private static final int[] vbo = new int[2];
     private static final GLFWFramebufferSizeCallbackI resizeGlViewportAndResetAspect = (long window, int w, int h) -> {
         System.out.println("GLFW Window Resized to: " + w + "*" + h);
         glViewport(0, 0, w, h);
         createProjMat(w, h);
     };
+    private static float cubeX;
+    private static float cubeY;
+    private static float cubeZ;
+    private static float pyrX;
+    private static float pyrY;
+    private static float pyrZ;
 
 
     public static void main(String[] args) {
@@ -57,10 +63,9 @@ public class Main {
                 , Path.of("D:\\Desktop\\Bowen\\code\\JAVA\\Computer Graphics Programming In OpenGL With C++ Book Practice\\ComputerGraphicsProgrammingInOpenGLWithCpp\\src\\main\\java\\chapter4\\Shaders\\FragmentShader.glsl"))
                 .getProgram();
 
-        cameraX = 0f;
-        cameraY = 0f;
-        cameraZ = 32f;
-
+        cameraX = 0f; cameraY = 0f; cameraZ = 8f;
+        cubeX = 0.0f; cubeY = -2.0f; cubeZ = 0.0f;
+        pyrX = 2.0f; pyrY = 4.0f; pyrZ = 0.0f;
         setupVertices();
         glUseProgram(program);
         System.out.println("Using ProgramID: " + program);
@@ -71,29 +76,44 @@ public class Main {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             // 獲取mv矩陣和投影矩陣的統一變量
-            int vLoc = glGetUniformLocation(program, "v_matrix");
+            int mvLoc = glGetUniformLocation(program, "mv_matrix");
             int projLoc = glGetUniformLocation(program, "proj_matrix");
-            int tfLoc = glGetUniformLocation(program, "tf");
 
 
-            // 建構視圖矩陣、模型矩陣和MV矩陣
-            float tf = (float) (glfwGetTime()); // tf == "time factor"時間因子
+            // 只計算一次視圖，用於2個對象
             Matrix4f vMat = new Matrix4f().translate(-cameraX, -cameraY, -cameraZ);
 
 
-            glUniformMatrix4fv(vLoc, false, vMat.get(vals));
-            glUniform1f(tfLoc, tf);
+
+            //繪製立方體，使用0號緩衝區
+            Matrix4f mMat = new Matrix4f().translate(cubeX, cubeY, cubeZ);
+            Matrix4f mvMat = vMat.mul(mMat);
+            glUniformMatrix4fv(mvLoc, false, mvMat.get(vals));
             glUniformMatrix4fv(projLoc, false, pMat.get(vals));
 
-            // 將vbo關聯給頂點著色器中相應的頂點屬性
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
             glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
             glEnableVertexAttribArray(0);
 
-            // 調整OpenGL設置，繪製模型
-            glEnable(GL_DEPTH_TEST); // 第二章: 深度測試
+            glEnable(GL_DEPTH_TEST);
             glDepthFunc(GL_LEQUAL);
-            glDrawArraysInstanced(GL_TRIANGLES, 0, 36, 500);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            // 繪製四角錐，使用1號緩衝區
+            mMat = new Matrix4f().translate(pyrX, pyrY, pyrZ);
+            mvMat = vMat.mul(mMat);
+            glUniformMatrix4fv(mvLoc, false, mvMat.get(vals));
+            glUniformMatrix4fv(projLoc, false, pMat.get(vals));
+
+            glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+            glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+            glEnableVertexAttribArray(0);
+
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LEQUAL);
+            glDrawArrays(GL_TRIANGLES, 0, 18);
+
 
 
             glfwSwapBuffers(windowHandle);
@@ -103,7 +123,7 @@ public class Main {
 
 
     private static void setupVertices() {
-        float[] vertexPositions = { // 36個頂點，12個三角形; 2*2*2 正方體
+        float[] cubePositions = { // 36個頂點，12個三角形; 2*2*2 正方體
                 -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f,
                 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f,
                 1.0f, -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f, -1.0f,
@@ -118,11 +138,26 @@ public class Main {
                 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f,
         };
 
+        float[] pyramidPositions = { // 四角椎
+            -1.0f, -1.0f,  1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+                    1.0f, -1.0f,  1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+                    1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+                    -1.0f, -1.0f, -1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+                    -1.0f, -1.0f, -1.0f,  1.0f, -1.0f,  1.0f, -1.0f, -1.0f,  1.0f,
+                    1.0f, -1.0f,  1.0f, -1.0f, -1.0f, -1.0f,  1.0f, -1.0f, -1.0f
+        };
+
         int vao = glGenVertexArrays(); // vao: Vertex Array Object
         glBindVertexArray(vao);
-        vbo = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, vertexPositions, GL_STATIC_DRAW);
+
+
+        vbo[0] = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+        glBufferData(GL_ARRAY_BUFFER, cubePositions, GL_STATIC_DRAW);
+
+        vbo[1] = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+        glBufferData(GL_ARRAY_BUFFER, pyramidPositions, GL_STATIC_DRAW);
     }
 
     private static void createProjMat(int w, int h) {
