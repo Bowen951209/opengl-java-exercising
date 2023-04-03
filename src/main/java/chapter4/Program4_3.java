@@ -97,6 +97,7 @@ public class Program4_3 {
 
             glEnable(GL_DEPTH_TEST);
             glDepthFunc(GL_LEQUAL);
+            glFrontFace(GL_CW); // 立方體頂點的纏繞順序為順時針方向
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
@@ -112,6 +113,7 @@ public class Program4_3 {
 
             glEnable(GL_DEPTH_TEST);
             glDepthFunc(GL_LEQUAL);
+            glFrontFace(GL_CCW); // 四角錐頂點的纏繞順序為順時針方向
             glDrawArrays(GL_TRIANGLES, 0, 18);
 
 

@@ -18,7 +18,6 @@ import static org.lwjgl.opengl.GL43.*;
 
 public class Program4_4 {
     private static long windowHandle;
-    private static int program;
 
     private static float cameraX;
     private static float cameraY;
@@ -32,6 +31,8 @@ public class Program4_4 {
         glViewport(0, 0, w, h);
         createProjMat(w, h);
     };
+    private static int projLoc;
+    private static int mvLoc;
 
 
     public static void main(String[] args) {
@@ -56,7 +57,7 @@ public class Program4_4 {
         // 設定frameBuffer大小改變callback
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
-        program = new ShaderProgramSetter(Path.of("D:\\Desktop\\Bowen\\code\\JAVA\\Computer Graphics Programming In OpenGL With C++ Book Practice\\ComputerGraphicsProgrammingInOpenGLWithCpp\\src\\main\\java\\chapter4\\Shaders\\VertexShader.glsl")
+        int program = new ShaderProgramSetter(Path.of("D:\\Desktop\\Bowen\\code\\JAVA\\Computer Graphics Programming In OpenGL With C++ Book Practice\\ComputerGraphicsProgrammingInOpenGLWithCpp\\src\\main\\java\\chapter4\\Shaders\\VertexShader.glsl")
                 , Path.of("D:\\Desktop\\Bowen\\code\\JAVA\\Computer Graphics Programming In OpenGL With C++ Book Practice\\ComputerGraphicsProgrammingInOpenGLWithCpp\\src\\main\\java\\chapter4\\Shaders\\FragmentShader.glsl"))
                 .getProgram();
 
@@ -66,16 +67,19 @@ public class Program4_4 {
         setupVertices();
         glUseProgram(program);
         System.out.println("Using ProgramID: " + program);
+
+        // 獲取mv矩陣和投影矩陣的統一變量
+        mvLoc = glGetUniformLocation(program, "mv_matrix");
+        projLoc = glGetUniformLocation(program, "proj_matrix");
     }
 
     private static void loop() {
         while (!GLFW.glfwWindowShouldClose(windowHandle)) {
             float currentTime = (float) glfwGetTime();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glEnable(GL_CULL_FACE);
 
-            // 獲取mv矩陣和投影矩陣的統一變量
-            int mvLoc = glGetUniformLocation(program, "mv_matrix");
-            int projLoc = glGetUniformLocation(program, "proj_matrix");
+
             glUniformMatrix4fv(projLoc, false, pMat.get(vals));
 
             // 將視圖矩陣壓入栈
@@ -98,6 +102,7 @@ public class Program4_4 {
             glEnable(GL_DEPTH_TEST);
             glDepthFunc(GL_LEQUAL);
             glDrawArrays(GL_TRIANGLES, 0, 18); // 繪製太陽
+
             mvStack.popMatrix(); // 從栈中移除太陽自轉
 
 
