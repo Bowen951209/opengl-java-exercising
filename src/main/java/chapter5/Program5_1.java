@@ -1,4 +1,4 @@
-package chapter4;
+package chapter5;
 
 
 import org.joml.Matrix4f;
@@ -8,15 +8,14 @@ import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
 import utilities.Color;
 import utilities.GLFWWindow;
 import utilities.ShaderProgramSetter;
+import utilities.TextureReader;
 
 import java.nio.file.Path;
 
-import static org.joml.Math.cos;
-import static org.joml.Math.sin;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL43.*;
 
-public class Program4_4 {
+public class Program5_1 {
     private static long windowHandle;
 
     private static float cameraX;
@@ -33,6 +32,7 @@ public class Program4_4 {
     };
     private static int projLoc;
     private static int mvLoc;
+    private static int brickTexture;
 
 
     public static void main(String[] args) {
@@ -48,7 +48,7 @@ public class Program4_4 {
 
     private static void init() {
         final int windowCreatedW = 800, windowCreatedH = 600;
-        GLFWWindow glfwWindow = new GLFWWindow(windowCreatedW, windowCreatedH, "第4章");
+        GLFWWindow glfwWindow = new GLFWWindow(windowCreatedW, windowCreatedH, "第5章");
         windowHandle = glfwWindow.getWindowHandle();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
         // 一開始要先呼叫，才能以長、寬構建透視矩陣
@@ -57,14 +57,14 @@ public class Program4_4 {
         // 設定frameBuffer大小改變callback
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
-        int program = new ShaderProgramSetter(Path.of("src/main/java/chapter4/Shaders/for4_3and_4_4/VertexShader.glsl")
-                , Path.of("src/main/java/chapter4/Shaders/for4_3and_4_4/FragmentShader.glsl"))
+        int program = new ShaderProgramSetter(Path.of("src/main/java/chapter5/Shaders/for5_1/VertexShader.glsl")
+                , Path.of("src/main/java/chapter5/Shaders/for5_1/FragmentShader.glsl"))
                 .getProgram();
 
-        cameraX = 0f;
-        cameraY = 0f;
-        cameraZ = 8f;
+        cameraX = 0f; cameraY = 0f; cameraZ = 8f;
         setupVertices();
+        brickTexture = new TextureReader("src/main/java/chapter5/textures/brick.jpg").getTexID();
+        
         glUseProgram(program);
         System.out.println("Using ProgramID: " + program);
 
@@ -83,58 +83,34 @@ public class Program4_4 {
             glUniformMatrix4fv(projLoc, false, pMat.get(vals));
 
             // 將視圖矩陣壓入栈
-            Matrix4fStack mvStack = new Matrix4fStack(5);
+            Matrix4fStack mvStack = new Matrix4fStack(4);
             mvStack.pushMatrix();
             mvStack.translate(-cameraX, -cameraY, -cameraZ);
 
-            // ------------------四角錐 : 太陽-------------------------------------------
+            // ------------------四角錐-------------------------------------------
             mvStack.pushMatrix();
-            mvStack.translate(0f, 0f, 0f); // 太陽位置
+            mvStack.translate(0f, 0f, 0f); // 位置
             mvStack.pushMatrix();
-            mvStack.rotateX(currentTime); // 太陽旋轉
+            mvStack.rotateX(currentTime); // 旋轉
 
             glUniformMatrix4fv(mvLoc, false, mvStack.get(vals));
 
-            glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
             glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
             glEnableVertexAttribArray(0);
+
+            glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+            glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
+            glEnableVertexAttribArray(1);
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, brickTexture);
+
 
             glEnable(GL_DEPTH_TEST);
             glDepthFunc(GL_LEQUAL);
-            glDrawArrays(GL_TRIANGLES, 0, 18); // 繪製太陽
+            glDrawArrays(GL_TRIANGLES, 0, 18); // 繪製
 
-            mvStack.popMatrix(); // 從栈中移除太陽自轉
-
-
-            // ------------------大立方體 : 地球-------------------------------------------
-            mvStack.pushMatrix();
-            mvStack.translate(sin(currentTime) * 4f, 0f, cos(currentTime) * 4f); // 地球繞太陽移動
-            mvStack.pushMatrix();
-            mvStack.rotateY(currentTime); // 地球旋轉
-
-            glUniformMatrix4fv(mvLoc, false, mvStack.get(vals));
-
-            glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-            glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-            glEnableVertexAttribArray(0);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36); // 繪製地球
-            mvStack.popMatrix(); // 移除栈中的地球自旋轉
-
-
-            // ------------------小立方體 : 月球-------------------------------------------
-            mvStack.pushMatrix();
-            mvStack.translate(0f, sin(currentTime) * 2f, cos(currentTime) * 2f); // 月球繞地球移動
-            mvStack.rotateZ(currentTime); // 月球旋轉
-            mvStack.scale(.5f); // 讓月球小一點
-
-            glUniformMatrix4fv(mvLoc, false, mvStack.get(vals));
-
-            glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-            glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-            glEnableVertexAttribArray(0);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36); // 繪製月球
 
             glfwSwapBuffers(windowHandle);
             glfwPollEvents();
@@ -143,20 +119,6 @@ public class Program4_4 {
 
 
     private static void setupVertices() {
-        float[] cubePositions = { // 36個頂點，12個三角形; 2*2*2 正方體
-                -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f,
-                1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f,
-                1.0f, -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f, -1.0f,
-                1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f,
-                1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-                -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-                -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, 1.0f,
-                -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f,
-                -1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f,
-                1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,
-                -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f,
-                1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f,
-        };
 
         float[] pyramidPositions = { // 四角椎
                 -1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
@@ -167,17 +129,22 @@ public class Program4_4 {
                 1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f
         };
 
+        float[ ] pyrTextureCoordinates = {
+                0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f,
+                0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f,
+                0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f
+        };
+
         int vao = glGenVertexArrays(); // vao: Vertex Array Object
         glBindVertexArray(vao);
 
-
         vbo[0] = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-        glBufferData(GL_ARRAY_BUFFER, cubePositions, GL_STATIC_DRAW);
-
         vbo[1] = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
         glBufferData(GL_ARRAY_BUFFER, pyramidPositions, GL_STATIC_DRAW);
+        
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+        glBufferData(GL_ARRAY_BUFFER, pyrTextureCoordinates, GL_STATIC_DRAW);
     }
 
     private static void createProjMat(int w, int h) {

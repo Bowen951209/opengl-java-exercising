@@ -53,8 +53,8 @@ public class Program4_2 {
         // 設定frameBuffer大小改變callback
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
-        program = new ShaderProgramSetter(Path.of("D:\\Desktop\\Bowen\\code\\JAVA\\Computer Graphics Programming In OpenGL With C++ Book Practice\\ComputerGraphicsProgrammingInOpenGLWithCpp\\src\\main\\java\\chapter4\\Shaders\\VertexShader.glsl")
-                , Path.of("D:\\Desktop\\Bowen\\code\\JAVA\\Computer Graphics Programming In OpenGL With C++ Book Practice\\ComputerGraphicsProgrammingInOpenGLWithCpp\\src\\main\\java\\chapter4\\Shaders\\FragmentShader.glsl"))
+        program = new ShaderProgramSetter(Path.of("src/main/java/chapter4/Shaders/for4_2/VertexShader.glsl")
+                , Path.of("src/main/java/chapter4/Shaders/for4_2/FragmentShader.glsl"))
                 .getProgram();
 
         cameraX = 0f;

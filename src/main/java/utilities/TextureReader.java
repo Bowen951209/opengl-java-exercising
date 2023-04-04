@@ -8,6 +8,15 @@ import java.nio.ByteBuffer;
 public class TextureReader {
     private int texID;
     public TextureReader(String filepath) {
+        // Set texture parameters
+        // Repeat image in both directions
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        // When stretching the image, pixelate
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        // When shrinking an image, pixelate
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
         int[] width = new int[1];
         int[] height = new int[1];
         int[] channels = new int[1];// grey or rgb or rgba
