@@ -27,8 +27,8 @@ public class ShaderProgramSetter {
     public ShaderProgramSetter(Path vertexShaderPath, Path fragmentShaderPath) {
         // 讀取Shader(glsl檔案)
 
-        String vertexShaderCode = new FileReader(vertexShaderPath).getString();
-        String fragmentShaderCode = new FileReader(fragmentShaderPath).getString();
+        String vertexShaderCode = new GLSLReader(vertexShaderPath).getString();
+        String fragmentShaderCode = new GLSLReader(fragmentShaderPath).getString();
 
         // 設定vertex shader來源、編譯
         vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
