@@ -6,16 +6,15 @@ import static org.lwjgl.opengl.GL43.*;
 import java.nio.ByteBuffer;
 
 public class TextureReader {
-    private int texID;
+    private final int texID;
     public TextureReader(String filepath) {
+        texID = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, texID);
+
         // Set texture parameters
         // Repeat image in both directions
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        // When stretching the image, pixelate
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        // When shrinking an image, pixelate
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
         int[] width = new int[1];
         int[] height = new int[1];
@@ -33,11 +32,11 @@ public class TextureReader {
             } else {
                 System.err.println("Error: (Texture) Unknown number of channels '" + channels[0] + "'");
             }
+        STBImage.stbi_image_free(image);
         } else {
             System.out.println("Error: (Texture) Could not load image '" + filepath + "'");
         }
 
-        STBImage.stbi_image_free(image);
 
     }
 
