@@ -31,7 +31,7 @@ public class Program6_3 {
     };
     private static int projLoc;
     private static int mvLoc;
-    private static int brickTexture;
+    private static int texture;
     private static ModelReader myModel;
 
 
@@ -65,7 +65,7 @@ public class Program6_3 {
         cameraY = 0f;
         cameraZ = 4f;
         setupVertices();
-        brickTexture = new TextureReader("src/main/java/chapter6/resourcesFor6_3/capsule0.jpg").getTexID();
+        texture = new TextureReader("src/main/java/chapter6/resourcesFor6_3/capsule0.jpg").getTexID();
 
         glUseProgram(program);
         System.out.println("Using ProgramID: " + program);
@@ -104,7 +104,7 @@ public class Program6_3 {
             glEnableVertexAttribArray(1);
 
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, brickTexture);
+            glBindTexture(GL_TEXTURE_2D, texture);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
             glGenerateMipmap(GL_TEXTURE_2D);
 
