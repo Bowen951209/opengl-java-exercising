@@ -69,7 +69,7 @@ public class Program6_2 {
         cameraX = 0f; cameraY = 0f; cameraZ = 4f;
         setupVertices();
         brickTexture = new TextureReader("src/main/java/chapter5/textures/brick.jpg").getTexID();
-        
+
         glUseProgram(program);
         System.out.println("Using ProgramID: " + program);
 
@@ -116,7 +116,7 @@ public class Program6_2 {
             glDepthFunc(GL_LEQUAL);
 
 
-            glDrawElements(GL_TRIANGLES, myTorus.getIndices()); // 繪製
+            glDrawElements(GL_TRIANGLES, myTorus.getNumIndices(), GL_UNSIGNED_INT, 0);
 
 
             glfwSwapBuffers(windowHandle);

@@ -51,7 +51,7 @@ dependencies {
 }
 
 
-task copyRuntimeLibs(type: Copy) {
+tasks.register('copyRuntimeLibs', Copy) {
     from configurations.runtimeClasspath
     into "build/dependencies/"
 }
