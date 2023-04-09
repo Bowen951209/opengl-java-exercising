@@ -48,7 +48,7 @@ public class Program6_3 {
 
     private static void init() {
         final int windowCreatedW = 800, windowCreatedH = 600;
-        GLFWWindow glfwWindow = new GLFWWindow(windowCreatedW, windowCreatedH, "第5章");
+        GLFWWindow glfwWindow = new GLFWWindow(windowCreatedW, windowCreatedH, "第6章");
         windowHandle = glfwWindow.getWindowHandle();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
         // 一開始要先呼叫，才能以長、寬構建透視矩陣

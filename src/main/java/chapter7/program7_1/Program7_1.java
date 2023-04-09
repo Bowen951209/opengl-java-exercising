@@ -1,29 +1,23 @@
-package chapter6;
+package chapter7.program7_1;
 
 
-import org.joml.Matrix4f;
-import org.joml.Matrix4fStack;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
+import chapter6.Torus;
+import org.joml.*;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
-import utilities.Color;
-import utilities.GLFWWindow;
-import utilities.ShaderProgramSetter;
-import utilities.TextureReader;
+import utilities.*;
 
 import java.nio.file.Path;
 
+import static org.joml.Math.toRadians;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL43.*;
 
 
-public class Program6_2 {
+public class Program7_1 {
     private static long windowHandle;
 
-    private static float cameraX;
-    private static float cameraY;
-    private static float cameraZ;
+    private static float cameraX, cameraY, cameraZ;
 
     private static Matrix4f pMat;
     private static final float[] vals = new float[16];// utility buffer for transferring matrices
@@ -33,10 +27,28 @@ public class Program6_2 {
         glViewport(0, 0, w, h);
         createProjMat(w, h);
     };
-    private static int projLoc;
-    private static int mvLoc;
-    private static int brickTexture;
+    private static int projLoc, mvLoc,nLoc, brickTexture;
+
+    private static final Vector3f currentLightPos = new Vector3f(); // 在模型和視覺空間中的光照位置
+
+    // 初始化光照位置
+    private static final Vector3f initialLightLoc = new Vector3f(5.0f, 2.0f, 2.0f);
+
+    // 白光特性
+    private static final float[] globalAmbient = { 0.7f, 0.7f, 0.7f, 1.0f };
+    private static final float[] lightAmbient = { 0.0f, 0.0f, 0.0f, 1.0f };
+    private static final float[] lightDiffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
+    private static final float[] lightSpecular = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+    // 黃金材質特性
+    private static final float[] matAmb = Materials.goldAmbient();
+    private static final float[] matDif = Materials.goldDiffuse();
+    private static final float[] matSpe = Materials.goldSpecular();
+    private static final float matShi = Materials.goldShininess();
+
+    private static final float[] lightPos = new float[3];
     private static Torus myTorus;
+    private static int program;
 
 
     public static void main(String[] args) {
@@ -46,23 +58,18 @@ public class Program6_2 {
         // 釋出
         GLFW.glfwTerminate();
         System.out.println("Program exit and freed glfw.");
-
-
     }
 
     private static void init() {
         final int windowCreatedW = 800, windowCreatedH = 600;
-        GLFWWindow glfwWindow = new GLFWWindow(windowCreatedW, windowCreatedH, "第6章");
+        GLFWWindow glfwWindow = new GLFWWindow(windowCreatedW, windowCreatedH, "第7章");
         windowHandle = glfwWindow.getWindowHandle();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
-        // 一開始要先呼叫，才能以長、寬構建透視矩陣
         createProjMat(windowCreatedW, windowCreatedH);
-
-        // 設定frameBuffer大小改變callback
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
-        int program = new ShaderProgramSetter(Path.of("src/main/java/chapter5/Shaders/for5_1/VertexShader.glsl")
-                , Path.of("src/main/java/chapter5/Shaders/for5_1/FragmentShader.glsl"))
+        program = new ShaderProgramSetter(Path.of("src/main/java/chapter7/program7_1/shaders/vertShader.glsl")
+                , Path.of("src/main/java/chapter7/program7_1/shaders/fragShader.glsl"))
                 .getProgram();
 
         cameraX = 0f; cameraY = 0f; cameraZ = 4f;
@@ -72,37 +79,41 @@ public class Program6_2 {
         glUseProgram(program);
         System.out.println("Using ProgramID: " + program);
 
-        // 獲取mv矩陣和投影矩陣的統一變量
         mvLoc = glGetUniformLocation(program, "mv_matrix");
         projLoc = glGetUniformLocation(program, "proj_matrix");
+        nLoc = glGetUniformLocation(program, "norm_matrix");
     }
 
     private static void loop() {
         while (!GLFW.glfwWindowShouldClose(windowHandle)) {
-            float currentTime = (float) glfwGetTime();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glEnable(GL_CULL_FACE);
+
+
+            Matrix4f vMat = new Matrix4f().translate(-cameraX, -cameraY, -cameraZ);
+            float torLocZ = 0f;
+            float torLocY = 0f;
+            float torLocX = 0f;
+            Matrix4f mMat = new Matrix4f().translate(torLocX, torLocY, torLocZ).rotateX(toRadians(35f));
+            Matrix4f mvMat = vMat.mul(mMat);
+
+            // 構建m矩陣的逆轉置矩陣，以變換法向量
+            Matrix4f invTrMat = mMat.invert().transpose();
 
 
             glUniformMatrix4fv(projLoc, false, pMat.get(vals));
+            glUniformMatrix4fv(mvLoc, false, mvMat.get(vals));
+            glUniformMatrix4fv(nLoc, false, invTrMat.get(vals));
 
-            // 將視圖矩陣壓入栈
-            Matrix4fStack mvStack = new Matrix4fStack(4);
-            mvStack.pushMatrix();
-            mvStack.translate(-cameraX, -cameraY, -cameraZ);
-
-            mvStack.pushMatrix();
-            mvStack.translate(0f, 0f, 0f); // 位置
-            mvStack.pushMatrix();
-            mvStack.rotateX(currentTime).scale(2f);
-            glUniformMatrix4fv(mvLoc, false, mvStack.get(vals));
+            // 基於當前光源位置，初始化光照
+            currentLightPos.set(initialLightLoc);
+            installLight();
 
             glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
             glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
             glEnableVertexAttribArray(0);
 
-            glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-            glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
+            glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
             glEnableVertexAttribArray(1);
 
             glActiveTexture(GL_TEXTURE0);
@@ -110,18 +121,45 @@ public class Program6_2 {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
             glGenerateMipmap(GL_TEXTURE_2D);
 
-
+            glEnable(GL_CULL_FACE);
+            glFrontFace(GL_CCW);
             glEnable(GL_DEPTH_TEST);
             glDepthFunc(GL_LEQUAL);
 
-
             glDrawElements(GL_TRIANGLES, myTorus.getNumIndices(), GL_UNSIGNED_INT, 0);
-//            glDrawElements(GL_TRIANGLES, IntBuffer.wrap(myTorus.getIndicesInArray()));
-
 
             glfwSwapBuffers(windowHandle);
             glfwPollEvents();
         }
+    }
+
+    private static void installLight() {
+        // save the light position in a float array
+        lightPos[0] = currentLightPos.x();
+        lightPos[1] = currentLightPos.y();
+        lightPos[2] = currentLightPos.z();
+
+        // 在著色器中獲取光源位置和材質屬性
+        int globalAmbLoc = glGetUniformLocation(program, "globalAmbient");
+        int ambLoc = glGetUniformLocation(program, "light.ambient");
+        int diffLoc = glGetUniformLocation(program, "light.diffuse");
+        int specLoc = glGetUniformLocation(program, "light.specular");
+        int posLoc = glGetUniformLocation(program, "light.position");
+        int mAmbLoc = glGetUniformLocation(program, "material.ambient");
+        int mDiffLoc = glGetUniformLocation(program, "material.diffuse");
+        int mSpecLoc = glGetUniformLocation(program, "material.specular");
+        int mShiLoc = glGetUniformLocation(program, "material.shininess");
+
+        // 在著色器中為光源材質統一變量賦值
+        glProgramUniform4fv(program, globalAmbLoc, globalAmbient);
+        glProgramUniform4fv(program, ambLoc, lightAmbient);
+        glProgramUniform4fv(program, diffLoc, lightDiffuse);
+        glProgramUniform4fv(program, specLoc, lightSpecular);
+        glProgramUniform3fv(program, posLoc, lightPos);
+        glProgramUniform4fv(program, mAmbLoc, matAmb);
+        glProgramUniform4fv(program, mDiffLoc, matDif);
+        glProgramUniform4fv(program, mSpecLoc, matSpe);
+        glProgramUniform1f(program, mShiLoc, matShi);
     }
 
 
