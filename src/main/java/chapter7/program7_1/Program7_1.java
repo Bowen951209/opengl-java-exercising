@@ -27,7 +27,7 @@ public class Program7_1 {
         glViewport(0, 0, w, h);
         createProjMat(w, h);
     };
-    private static int projLoc, mvLoc,nLoc, brickTexture;
+    private static int projLoc, mvLoc, nLoc, brickTexture;
 
     private static final Vector3f currentLightPos = new Vector3f(); // 在模型和視覺空間中的光照位置
 
@@ -35,10 +35,10 @@ public class Program7_1 {
     private static final Vector3f initialLightLoc = new Vector3f(5.0f, 2.0f, 2.0f);
 
     // 白光特性
-    private static final float[] globalAmbient = { 0.7f, 0.7f, 0.7f, 1.0f };
-    private static final float[] lightAmbient = { 0.0f, 0.0f, 0.0f, 1.0f };
-    private static final float[] lightDiffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
-    private static final float[] lightSpecular = { 1.0f, 1.0f, 1.0f, 1.0f };
+    private static final float[] globalAmbient = {0.7f, 0.7f, 0.7f, 1.0f};
+    private static final float[] lightAmbient = {0.0f, 0.0f, 0.0f, 1.0f};
+    private static final float[] lightDiffuse = {1.0f, 1.0f, 1.0f, 1.0f};
+    private static final float[] lightSpecular = {1.0f, 1.0f, 1.0f, 1.0f};
 
     // 黃金材質特性
     private static final float[] matAmb = Materials.goldAmbient();
@@ -72,7 +72,9 @@ public class Program7_1 {
                 , Path.of("src/main/java/chapter7/program7_1/shaders/fragShader.glsl"))
                 .getProgram();
 
-        cameraX = 0f; cameraY = 0f; cameraZ = 4f;
+        cameraX = 0f;
+        cameraY = 0f;
+        cameraZ = 4f;
         setupVertices();
         brickTexture = new TextureReader("src/main/java/chapter5/textures/brick.jpg").getTexID();
 
@@ -88,17 +90,13 @@ public class Program7_1 {
         while (!GLFW.glfwWindowShouldClose(windowHandle)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
             Matrix4f vMat = new Matrix4f().translate(-cameraX, -cameraY, -cameraZ);
-            float torLocZ = 0f;
-            float torLocY = 0f;
-            float torLocX = 0f;
+            float torLocZ = 0f; float torLocY = 0f; float torLocX = 0f;
             Matrix4f mMat = new Matrix4f().translate(torLocX, torLocY, torLocZ).rotateX(toRadians(35f));
             Matrix4f mvMat = vMat.mul(mMat);
 
             // 構建m矩陣的逆轉置矩陣，以變換法向量
             Matrix4f invTrMat = mMat.invert().transpose();
-
 
             glUniformMatrix4fv(projLoc, false, pMat.get(vals));
             glUniformMatrix4fv(mvLoc, false, mvMat.get(vals));
@@ -106,13 +104,14 @@ public class Program7_1 {
 
             // 基於當前光源位置，初始化光照
             currentLightPos.set(initialLightLoc);
+            currentLightPos.rotateZ(toRadians((float) (glfwGetTime() * 25f)));
             installLight();
 
-            glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo[0]); // vbo[0]: 頂點
             glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
             glEnableVertexAttribArray(0);
 
-            glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);// vbo[2]: 法向量
             glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
             glEnableVertexAttribArray(1);
 
@@ -167,26 +166,25 @@ public class Program7_1 {
         myTorus = new Torus(.5f, .2f, 48);
 
         int numTorusVertices = myTorus.getNumVertices();
-        Vector3f[ ] vertices = myTorus.getVertices();
-        Vector2f[ ] texCoords = myTorus.getTexCoords();
-        Vector3f[ ] normals = myTorus.getNormals();
+        Vector3f[] vertices = myTorus.getVertices();
+        Vector2f[] texCoords = myTorus.getTexCoords();
+        Vector3f[] normals = myTorus.getNormals();
         int[] indices = myTorus.getIndicesInArray();
-        float[ ] pvalues = new float[vertices.length*3];
-        float[ ] tvalues = new float[texCoords.length*2];
-        float[ ] nvalues = new float[normals.length*3];
-        for (int i=0; i<numTorusVertices; i++)
-        {	 pvalues[i*3] = vertices[i].x;	 	 // vertex position
-            pvalues[i*3+1] = vertices[i].y;
-            pvalues[i*3+2] =  vertices[i].z;
+        float[] pvalues = new float[vertices.length * 3];
+        float[] tvalues = new float[texCoords.length * 2];
+        float[] nvalues = new float[normals.length * 3];
+        for (int i = 0; i < numTorusVertices; i++) {
+            pvalues[i * 3] = vertices[i].x;         // vertex position
+            pvalues[i * 3 + 1] = vertices[i].y;
+            pvalues[i * 3 + 2] = vertices[i].z;
 
-            tvalues[i*2] =  texCoords[i].x;	 	 // texture coordinates
-            tvalues[i*2+1] =  texCoords[i].y;
+            tvalues[i * 2] = texCoords[i].x;         // texture coordinates
+            tvalues[i * 2 + 1] = texCoords[i].y;
 
-            nvalues[i*3] =  normals[i].x;	 	 // normal vector
-            nvalues[i*3+1] =  normals[i].y;
-            nvalues[i*3+2] =  normals[i].z;
+            nvalues[i * 3] = normals[i].x;         // normal vector
+            nvalues[i * 3 + 1] = normals[i].y;
+            nvalues[i * 3 + 2] = normals[i].z;
         }
-
 
 
         int[] vao = new int[1];
@@ -197,7 +195,7 @@ public class Program7_1 {
         glGenBuffers(vbo);
         // put the vertices into buffer #0
         glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-        glBufferData(GL_ARRAY_BUFFER,  pvalues, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, pvalues, GL_STATIC_DRAW);
         // put the texture coordinates into buffer #1
         glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
         glBufferData(GL_ARRAY_BUFFER, tvalues, GL_STATIC_DRAW);
