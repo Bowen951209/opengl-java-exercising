@@ -5,6 +5,7 @@ import chapter6.Torus;
 import org.joml.*;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
+import org.lwjgl.glfw.GLFWKeyCallbackI;
 import utilities.*;
 
 import java.nio.file.Path;
@@ -27,7 +28,7 @@ public class Program7_1 {
         glViewport(0, 0, w, h);
         createProjMat(w, h);
     };
-    private static int projLoc, mvLoc, nLoc, brickTexture;
+    private static int projLoc, mvLoc, nLoc;
 
     private static final Vector3f currentLightPos = new Vector3f(); // 在模型和視覺空間中的光照位置
 
@@ -48,8 +49,25 @@ public class Program7_1 {
 
     private static final float[] lightPos = new float[3];
     private static Torus myTorus;
-    private static int program;
+    private static int gouraudProgram, phongProgram, blinnPhongProgram;
+    private static int currentProgram;
 
+    private static final GLFWKeyCallbackI changeProgram = (long window, int key, int scancode, int action, int mods) -> {
+        if (action == GLFW_PRESS) {
+            if (key == GLFW_KEY_1) {
+                currentProgram = gouraudProgram;
+                System.out.println("Using ProgramID: " + currentProgram + "(Gouraud)");
+            }
+            if (key == GLFW_KEY_2) {
+                currentProgram = phongProgram;
+                System.out.println("Using ProgramID: " + currentProgram + "(Phong)");
+            }
+            if (key == GLFW_KEY_3) {
+                currentProgram = blinnPhongProgram;
+                System.out.println("Using ProgramID: " + currentProgram + "(Blinn-Phong)");
+            }
+        }
+    };
 
     public static void main(String[] args) {
         init();
@@ -67,31 +85,39 @@ public class Program7_1 {
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
         createProjMat(windowCreatedW, windowCreatedH);
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
+        glfwSetKeyCallback(windowHandle, changeProgram);
 
-        program = new ShaderProgramSetter(Path.of("src/main/java/chapter7/program7_1/shaders/vertShader.glsl")
-                , Path.of("src/main/java/chapter7/program7_1/shaders/fragShader.glsl"))
+        gouraudProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter7/program7_1/shaders/gouraud/vertShader.glsl")
+                , Path.of("src/main/java/chapter7/program7_1/shaders/gouraud/fragShader.glsl"))
+                .getProgram();
+        phongProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter7/program7_1/shaders/phong/vertShader.glsl")
+                , Path.of("src/main/java/chapter7/program7_1/shaders/phong/fragShader.glsl"))
+                .getProgram();
+        blinnPhongProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter7/program7_1/shaders/blinnPhong/vertShader.glsl")
+                , Path.of("src/main/java/chapter7/program7_1/shaders/blinnPhong/fragShader.glsl"))
                 .getProgram();
 
         cameraX = 0f;
         cameraY = 0f;
-        cameraZ = 4f;
+        cameraZ = 2f;
         setupVertices();
-        brickTexture = new TextureReader("src/main/java/chapter5/textures/brick.jpg").getTexID();
 
-        glUseProgram(program);
-        System.out.println("Using ProgramID: " + program);
+        currentProgram = gouraudProgram;
+        System.out.println("Using ProgramID: " + currentProgram);
+        System.out.println("Press 1, 2 or 3 to change program!");
 
-        mvLoc = glGetUniformLocation(program, "mv_matrix");
-        projLoc = glGetUniformLocation(program, "proj_matrix");
-        nLoc = glGetUniformLocation(program, "norm_matrix");
+        getAllUniformsLoc(currentProgram);
     }
 
     private static void loop() {
         while (!GLFW.glfwWindowShouldClose(windowHandle)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glUseProgram(currentProgram);
 
             Matrix4f vMat = new Matrix4f().translate(-cameraX, -cameraY, -cameraZ);
-            float torLocZ = 0f; float torLocY = 0f; float torLocX = 0f;
+            float torLocZ = 0f;
+            float torLocY = 0f;
+            float torLocX = 0f;
             Matrix4f mMat = new Matrix4f().translate(torLocX, torLocY, torLocZ).rotateX(toRadians(35f));
             Matrix4f mvMat = vMat.mul(mMat);
 
@@ -115,11 +141,6 @@ public class Program7_1 {
             glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
             glEnableVertexAttribArray(1);
 
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, brickTexture);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-            glGenerateMipmap(GL_TEXTURE_2D);
-
             glEnable(GL_CULL_FACE);
             glFrontFace(GL_CCW);
             glEnable(GL_DEPTH_TEST);
@@ -139,26 +160,26 @@ public class Program7_1 {
         lightPos[2] = currentLightPos.z();
 
         // 在著色器中獲取光源位置和材質屬性
-        int globalAmbLoc = glGetUniformLocation(program, "globalAmbient");
-        int ambLoc = glGetUniformLocation(program, "light.ambient");
-        int diffLoc = glGetUniformLocation(program, "light.diffuse");
-        int specLoc = glGetUniformLocation(program, "light.specular");
-        int posLoc = glGetUniformLocation(program, "light.position");
-        int mAmbLoc = glGetUniformLocation(program, "material.ambient");
-        int mDiffLoc = glGetUniformLocation(program, "material.diffuse");
-        int mSpecLoc = glGetUniformLocation(program, "material.specular");
-        int mShiLoc = glGetUniformLocation(program, "material.shininess");
+        int globalAmbLoc = glGetUniformLocation(currentProgram, "globalAmbient");
+        int ambLoc = glGetUniformLocation(currentProgram, "light.ambient");
+        int diffLoc = glGetUniformLocation(currentProgram, "light.diffuse");
+        int specLoc = glGetUniformLocation(currentProgram, "light.specular");
+        int posLoc = glGetUniformLocation(currentProgram, "light.position");
+        int mAmbLoc = glGetUniformLocation(currentProgram, "material.ambient");
+        int mDiffLoc = glGetUniformLocation(currentProgram, "material.diffuse");
+        int mSpecLoc = glGetUniformLocation(currentProgram, "material.specular");
+        int mShiLoc = glGetUniformLocation(currentProgram, "material.shininess");
 
         // 在著色器中為光源材質統一變量賦值
-        glProgramUniform4fv(program, globalAmbLoc, globalAmbient);
-        glProgramUniform4fv(program, ambLoc, lightAmbient);
-        glProgramUniform4fv(program, diffLoc, lightDiffuse);
-        glProgramUniform4fv(program, specLoc, lightSpecular);
-        glProgramUniform3fv(program, posLoc, lightPos);
-        glProgramUniform4fv(program, mAmbLoc, matAmb);
-        glProgramUniform4fv(program, mDiffLoc, matDif);
-        glProgramUniform4fv(program, mSpecLoc, matSpe);
-        glProgramUniform1f(program, mShiLoc, matShi);
+        glProgramUniform4fv(currentProgram, globalAmbLoc, globalAmbient);
+        glProgramUniform4fv(currentProgram, ambLoc, lightAmbient);
+        glProgramUniform4fv(currentProgram, diffLoc, lightDiffuse);
+        glProgramUniform4fv(currentProgram, specLoc, lightSpecular);
+        glProgramUniform3fv(currentProgram, posLoc, lightPos);
+        glProgramUniform4fv(currentProgram, mAmbLoc, matAmb);
+        glProgramUniform4fv(currentProgram, mDiffLoc, matDif);
+        glProgramUniform4fv(currentProgram, mSpecLoc, matSpe);
+        glProgramUniform1f(currentProgram, mShiLoc, matShi);
     }
 
 
@@ -167,19 +188,14 @@ public class Program7_1 {
 
         int numTorusVertices = myTorus.getNumVertices();
         Vector3f[] vertices = myTorus.getVertices();
-        Vector2f[] texCoords = myTorus.getTexCoords();
         Vector3f[] normals = myTorus.getNormals();
         int[] indices = myTorus.getIndicesInArray();
         float[] pvalues = new float[vertices.length * 3];
-        float[] tvalues = new float[texCoords.length * 2];
         float[] nvalues = new float[normals.length * 3];
         for (int i = 0; i < numTorusVertices; i++) {
             pvalues[i * 3] = vertices[i].x;         // vertex position
             pvalues[i * 3 + 1] = vertices[i].y;
             pvalues[i * 3 + 2] = vertices[i].z;
-
-            tvalues[i * 2] = texCoords[i].x;         // texture coordinates
-            tvalues[i * 2 + 1] = texCoords[i].y;
 
             nvalues[i * 3] = normals[i].x;         // normal vector
             nvalues[i * 3 + 1] = normals[i].y;
@@ -196,9 +212,6 @@ public class Program7_1 {
         // put the vertices into buffer #0
         glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
         glBufferData(GL_ARRAY_BUFFER, pvalues, GL_STATIC_DRAW);
-        // put the texture coordinates into buffer #1
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-        glBufferData(GL_ARRAY_BUFFER, tvalues, GL_STATIC_DRAW);
         // put the normals into buffer #2
         glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
         glBufferData(GL_ARRAY_BUFFER, nvalues, GL_STATIC_DRAW);
@@ -213,5 +226,9 @@ public class Program7_1 {
         pMat = new Matrix4f().perspective(1.0472f, aspect, .1f, 1000f); // 1.0472 = 60度
     }
 
-
+    private static void getAllUniformsLoc(int program) {
+        mvLoc = glGetUniformLocation(program, "mv_matrix");
+        projLoc = glGetUniformLocation(program, "proj_matrix");
+        nLoc = glGetUniformLocation(program, "norm_matrix");
+    }
 }
