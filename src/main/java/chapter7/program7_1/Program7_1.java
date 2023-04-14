@@ -3,11 +3,13 @@ package chapter7.program7_1;
 
 import chapter6.Torus;
 import org.joml.*;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
 import org.lwjgl.glfw.GLFWKeyCallbackI;
 import utilities.*;
 
+import java.nio.FloatBuffer;
 import java.nio.file.Path;
 
 import static org.joml.Math.toRadians;
@@ -190,17 +192,19 @@ public class Program7_1 {
         Vector3f[] vertices = myTorus.getVertices();
         Vector3f[] normals = myTorus.getNormals();
         int[] indices = myTorus.getIndicesInArray();
-        float[] pvalues = new float[vertices.length * 3];
-        float[] nvalues = new float[normals.length * 3];
+        FloatBuffer pvalues = BufferUtils.createFloatBuffer(vertices.length * 3);
+        FloatBuffer nvalues = BufferUtils.createFloatBuffer(normals.length * 3);
         for (int i = 0; i < numTorusVertices; i++) {
-            pvalues[i * 3] = vertices[i].x;         // vertex position
-            pvalues[i * 3 + 1] = vertices[i].y;
-            pvalues[i * 3 + 2] = vertices[i].z;
+            pvalues.put(vertices[i].x());         // vertex position
+            pvalues.put(vertices[i].y());
+            pvalues.put(vertices[i].z());
 
-            nvalues[i * 3] = normals[i].x;         // normal vector
-            nvalues[i * 3 + 1] = normals[i].y;
-            nvalues[i * 3 + 2] = normals[i].z;
+            nvalues.put(normals[i].x());         // normal vector
+            nvalues.put(normals[i].y());
+            nvalues.put(normals[i].z());
         }
+        pvalues.flip(); // 此行非常必要!
+        nvalues.flip();
 
 
         int[] vao = new int[1];

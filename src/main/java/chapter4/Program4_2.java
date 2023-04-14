@@ -10,8 +10,8 @@ import utilities.ShaderProgramSetter;
 
 import java.nio.file.Path;
 
-import static org.lwjgl.opengl.GL43.*;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL43.*;
 
 public class Program4_2 {
     private static long windowHandle;

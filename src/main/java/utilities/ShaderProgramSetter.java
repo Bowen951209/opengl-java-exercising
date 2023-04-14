@@ -7,16 +7,6 @@ import static org.lwjgl.opengl.GL43.*;
 
 
 public class ShaderProgramSetter {
-    public int getVertexShaderID() {
-        return vertexShaderID;
-    }
-
-    public int getFragmentShaderID() {
-        return fragmentShaderID;
-    }
-
-    private final int vertexShaderID;
-    private final int fragmentShaderID;
 
     public int getProgram() {
         return programID;
@@ -31,10 +21,10 @@ public class ShaderProgramSetter {
         String fragmentShaderCode = new GLSLReader(fragmentShaderPath).getString();
 
         // 設定vertex shader來源、編譯
-        vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+        int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
         compileAndCatchShaderErr(vertexShaderID, vertexShaderCode);
         // 設定fragment shader來源、編譯
-        fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+        int fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
         compileAndCatchShaderErr(fragmentShaderID, fragmentShaderCode);
 
         // 設定program
@@ -45,7 +35,7 @@ public class ShaderProgramSetter {
         if (glGetProgrami(programID, GL_LINK_STATUS) == 0) {
             System.err.println("Program Linked Failed. Error Output: " + glGetProgramInfoLog(programID));
         } else {
-            System.out.println("Program linked succeeded.");
+            System.out.println("ProgramID:"+ programID +" linked succeeded.");
         }
         // 記得在程式裡使用glUseProgram();
     }
