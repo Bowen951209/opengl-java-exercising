@@ -10,6 +10,7 @@ import org.lwjgl.glfw.GLFWKeyCallbackI;
 import utilities.*;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.nio.file.Path;
 
 import static org.joml.Math.toRadians;
@@ -186,12 +187,12 @@ public class Program7_1 {
 
 
     private static void setupVertices() {
-        myTorus = new Torus(.5f, .2f, 48);
+        myTorus = new Torus(.5f, .2f, 48, true);
 
         int numTorusVertices = myTorus.getNumVertices();
         Vector3f[] vertices = myTorus.getVertices();
         Vector3f[] normals = myTorus.getNormals();
-        int[] indices = myTorus.getIndicesInArray();
+        IntBuffer indices = myTorus.getIndicesInBuffer();
         FloatBuffer pvalues = BufferUtils.createFloatBuffer(vertices.length * 3);
         FloatBuffer nvalues = BufferUtils.createFloatBuffer(normals.length * 3);
         for (int i = 0; i < numTorusVertices; i++) {
@@ -205,7 +206,7 @@ public class Program7_1 {
         }
         pvalues.flip(); // 此行非常必要!
         nvalues.flip();
-
+        indices.flip();
 
         int[] vao = new int[1];
         glGenVertexArrays(vao);

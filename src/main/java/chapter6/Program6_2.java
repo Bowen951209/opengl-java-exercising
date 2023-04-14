@@ -126,7 +126,7 @@ public class Program6_2 {
 
 
     private static void setupVertices() {
-        myTorus = new Torus(.5f, .2f, 48);
+        myTorus = new Torus(.5f, .2f, 48, false);
 
         int numTorusVertices = myTorus.getNumVertices();
         Vector3f[ ] vertices = myTorus.getVertices();

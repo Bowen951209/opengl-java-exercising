@@ -2,6 +2,9 @@ package chapter6;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.lwjgl.BufferUtils;
+
+import java.nio.IntBuffer;
 
 import static org.joml.Math.toRadians;
 
@@ -17,18 +20,19 @@ public class Torus {
 
 
     private int numIndices;
+    private IntBuffer indicesBuffer;
 
-    public Torus(float innerRadius, float outerRadius, int precision) {
+    public Torus(float innerRadius, float outerRadius, int precision, boolean usingBuffer) {
         inner = innerRadius;
         outer = outerRadius;
         prec = precision;
-        initTorus();
+        initTorus(usingBuffer);
     }
 
-    private void initTorus() {
+    private void initTorus(boolean usingBuffer) {
         numVertices = (prec + 1) * (prec + 1);
         numIndices = prec * prec * 6;
-        indices = new int[numIndices];
+
         vertices = new Vector3f[numVertices];
         texCoords = new Vector2f[numVertices];
         normals = new Vector3f[numVertices];
@@ -85,17 +89,32 @@ public class Torus {
             }
         }
         // calculate triangle indices corresponding to the two triangles built per vertex
-        for (int ring = 0; ring < prec; ring++) {
-            for (int vert = 0; vert < prec; vert++) {
-                indices[((ring * prec + vert) * 2) * 3] = ring * (prec + 1) + vert;
-                indices[((ring * prec + vert) * 2) * 3 + 1] = (ring + 1) * (prec + 1) + vert;
-                indices[((ring * prec + vert) * 2) * 3 + 2] = ring * (prec + 1) + vert + 1;
-                indices[((ring * prec + vert) * 2 + 1) * 3] = ring * (prec + 1) + vert + 1;
-                indices[((ring * prec + vert) * 2 + 1) * 3 + 1] = (ring + 1) * (prec + 1) + vert;
-                indices[((ring * prec + vert) * 2 + 1) * 3 + 2] = (ring + 1) * (prec + 1) + vert + 1;
+        if (!usingBuffer) {
+            indices = new int[numIndices];
+
+            for (int ring = 0; ring < prec; ring++) {
+                for (int vert = 0; vert < prec; vert++) {
+                    indices[((ring * prec + vert) * 2) * 3] = ring * (prec + 1) + vert;
+                    indices[((ring * prec + vert) * 2) * 3 + 1] = (ring + 1) * (prec + 1) + vert;
+                    indices[((ring * prec + vert) * 2) * 3 + 2] = ring * (prec + 1) + vert + 1;
+                    indices[((ring * prec + vert) * 2 + 1) * 3] = ring * (prec + 1) + vert + 1;
+                    indices[((ring * prec + vert) * 2 + 1) * 3 + 1] = (ring + 1) * (prec + 1) + vert;
+                    indices[((ring * prec + vert) * 2 + 1) * 3 + 2] = (ring + 1) * (prec + 1) + vert + 1;
+                }
+            }
+        } else {
+            indicesBuffer = BufferUtils.createIntBuffer(numIndices);
+            for (int ring = 0; ring < prec; ring++) {
+                for (int vert = 0; vert < prec; vert++) {
+                    indicesBuffer.put(ring * (prec + 1) + vert);
+                    indicesBuffer.put((ring + 1) * (prec + 1) + vert);
+                    indicesBuffer.put(ring * (prec + 1) + vert + 1);
+                    indicesBuffer.put(ring * (prec + 1) + vert + 1);
+                    indicesBuffer.put((ring + 1) * (prec + 1) + vert);
+                    indicesBuffer.put((ring + 1) * (prec + 1) + vert + 1);
+                }
             }
         }
-
     }
 
     // ===============================Numbers===============================
@@ -122,5 +141,8 @@ public class Torus {
 
     public int[] getIndicesInArray() {
         return indices;
+    }
+    public IntBuffer getIndicesInBuffer() {
+        return indicesBuffer;
     }
 }
