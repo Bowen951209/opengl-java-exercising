@@ -28,7 +28,8 @@ public class KeyPressCallBack implements GLFWKeyCallbackI {
                 switch (Program7_1.usingModel) {
                     case "stanford-dragon" -> Program7_1.usingModel = "dolphin";
                     case "dolphin" -> Program7_1.usingModel = "stanford-bunny";
-                    case "stanford-bunny" -> Program7_1.usingModel = "stanford-dragon";
+                    case "stanford-bunny" -> Program7_1.usingModel = "torus";
+                    case "torus" -> Program7_1.usingModel = "stanford-dragon";
                 }
                 Program7_1.storeInBuffer(Program7_1.vbo);
             }

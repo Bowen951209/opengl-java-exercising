@@ -60,6 +60,8 @@ public class Program7_1 {
 
     private static ModelReader dolphin, stanfordBunny, stanfordDragon;
     static String usingModel = "stanford-dragon";
+    private static IntBuffer indices;
+    private static FloatBuffer pvalues, nvalues;
 
     public static void main(String[] args) {
         init();
@@ -143,12 +145,15 @@ public class Program7_1 {
             glEnable(GL_DEPTH_TEST);
             glDepthFunc(GL_LEQUAL);
 
+
             switch (usingModel) {
                 case "torus" -> glDrawElements(GL_TRIANGLES, myTorus.getNumIndices(), GL_UNSIGNED_INT, 0);
                 case "dolphin" -> glDrawArrays(GL_TRIANGLES, 0, dolphin.getNumOfVectors());
                 case "stanford-bunny" -> glDrawArrays(GL_TRIANGLES, 0, stanfordBunny.getNumOfVectors());
                 case "stanford-dragon" -> glDrawArrays(GL_TRIANGLES, 0, stanfordDragon.getNumOfVectors());
             }
+
+
             glfwSwapBuffers(windowHandle);
             glfwPollEvents();
         }
@@ -198,6 +203,24 @@ public class Program7_1 {
         vbo = new int[4];
         glGenBuffers(vbo);
         glfwSetKeyCallback(windowHandle, new KeyPressCallBack());
+        int numTorusVertices = myTorus.getNumVertices();
+        Vector3f[] vertices = myTorus.getVertices();
+        Vector3f[] normals = myTorus.getNormals();
+        indices = myTorus.getIndicesInBuffer();
+        pvalues = BufferUtils.createFloatBuffer(vertices.length * 3);
+        nvalues = BufferUtils.createFloatBuffer(normals.length * 3);
+        for (int i = 0; i < numTorusVertices; i++) {
+            pvalues.put(vertices[i].x());         // vertex position
+            pvalues.put(vertices[i].y());
+            pvalues.put(vertices[i].z());
+
+            nvalues.put(normals[i].x());         // normal vector
+            nvalues.put(normals[i].y());
+            nvalues.put(normals[i].z());
+        }
+        pvalues.flip(); // 此行非常必要!
+        nvalues.flip();
+        indices.flip();
         storeInBuffer(vbo);
 
         System.out.println("Done");
@@ -217,25 +240,6 @@ public class Program7_1 {
 
         switch (usingModel) {
             case "torus" -> {
-                int numTorusVertices = myTorus.getNumVertices();
-                Vector3f[] vertices = myTorus.getVertices();
-                Vector3f[] normals = myTorus.getNormals();
-                IntBuffer indices = myTorus.getIndicesInBuffer();
-                FloatBuffer pvalues = BufferUtils.createFloatBuffer(vertices.length * 3);
-                FloatBuffer nvalues = BufferUtils.createFloatBuffer(normals.length * 3);
-                for (int i = 0; i < numTorusVertices; i++) {
-                    pvalues.put(vertices[i].x());         // vertex position
-                    pvalues.put(vertices[i].y());
-                    pvalues.put(vertices[i].z());
-
-                    nvalues.put(normals[i].x());         // normal vector
-                    nvalues.put(normals[i].y());
-                    nvalues.put(normals[i].z());
-                }
-                pvalues.flip(); // 此行非常必要!
-                nvalues.flip();
-                indices.flip();
-
                 // put the vertices into buffer #0
                 glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
                 glBufferData(GL_ARRAY_BUFFER, pvalues, GL_STATIC_DRAW);
