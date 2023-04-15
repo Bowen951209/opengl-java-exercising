@@ -33,7 +33,7 @@ public class ModelReader {
         AIScene scene = Assimp.aiImportFile(filepath, Assimp.aiProcess_Triangulate);
 
         assert scene != null;
-        System.out.println("Number of Meshes: " + scene.mNumMeshes());
+        System.out.println("    Number of Meshes: " + scene.mNumMeshes());
         PointerBuffer buffer = scene.mMeshes();
 
         if (buffer != null) {
@@ -42,7 +42,7 @@ public class ModelReader {
                 processMesh(mesh);
             }
         }else {
-            System.err.println("scene.mMeshes is null");
+            throw new RuntimeException("scene.mMeshes is null");
         }
 
 
@@ -72,7 +72,7 @@ public class ModelReader {
                 tvalue[i * 2 + 1] = tc.y();
             }
         } else {
-            System.err.println("texCoords is null");
+            System.err.println("The model has no texture coordinates.");
         }
 
 
@@ -87,8 +87,8 @@ public class ModelReader {
                 nvalue[i * 3 + 1] = norm.y();
                 nvalue[i * 3 + 2] = norm.z();
             }
-        }else {
-            System.err.println("norms is null");
+        } else {
+            throw new RuntimeException("No normal values");
         }
 
 

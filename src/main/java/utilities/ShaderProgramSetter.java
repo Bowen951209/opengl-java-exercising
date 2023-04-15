@@ -47,7 +47,7 @@ public class ShaderProgramSetter {
         if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == 0) {
             System.err.println("Shader Compiled Failed. Error Output: " + glGetShaderInfoLog(shaderID));
         } else {
-            System.out.println("Shader ID:" +shaderID + " compiled succeeded.");
+            System.out.println("    Shader ID:" +shaderID + " compiled succeeded.");
         }
     }
 }

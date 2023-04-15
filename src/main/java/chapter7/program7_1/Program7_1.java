@@ -2,11 +2,11 @@ package chapter7.program7_1;
 
 
 import chapter6.Torus;
-import org.joml.*;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
-import org.lwjgl.glfw.GLFWKeyCallbackI;
 import utilities.*;
 
 import java.nio.FloatBuffer;
@@ -25,7 +25,7 @@ public class Program7_1 {
 
     private static Matrix4f pMat;
     private static final float[] vals = new float[16];// utility buffer for transferring matrices
-    private static int[] vbo;
+    static int[] vbo;
     private static final GLFWFramebufferSizeCallbackI resizeGlViewportAndResetAspect = (long window, int w, int h) -> {
         System.out.println("GLFW Window Resized to: " + w + "*" + h);
         glViewport(0, 0, w, h);
@@ -52,25 +52,14 @@ public class Program7_1 {
 
     private static final float[] lightPos = new float[3];
     private static Torus myTorus;
-    private static int gouraudProgram, phongProgram, blinnPhongProgram;
-    private static int currentProgram;
+    static int gouraudProgram;
+    static int phongProgram;
+    static int blinnPhongProgram;
+    static int currentProgram;
 
-    private static final GLFWKeyCallbackI changeProgram = (long window, int key, int scancode, int action, int mods) -> {
-        if (action == GLFW_PRESS) {
-            if (key == GLFW_KEY_1) {
-                currentProgram = gouraudProgram;
-                System.out.println("Using ProgramID: " + currentProgram + "(Gouraud)");
-            }
-            if (key == GLFW_KEY_2) {
-                currentProgram = phongProgram;
-                System.out.println("Using ProgramID: " + currentProgram + "(Phong)");
-            }
-            if (key == GLFW_KEY_3) {
-                currentProgram = blinnPhongProgram;
-                System.out.println("Using ProgramID: " + currentProgram + "(Blinn-Phong)");
-            }
-        }
-    };
+
+    private static ModelReader dolphin, stanfordBunny, stanfordDragon;
+    static String usingModel = "stanford-dragon";
 
     public static void main(String[] args) {
         init();
@@ -88,7 +77,7 @@ public class Program7_1 {
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
         createProjMat(windowCreatedW, windowCreatedH);
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
-        glfwSetKeyCallback(windowHandle, changeProgram);
+
 
         gouraudProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter7/program7_1/shaders/gouraud/vertShader.glsl")
                 , Path.of("src/main/java/chapter7/program7_1/shaders/gouraud/fragShader.glsl"))
@@ -121,9 +110,14 @@ public class Program7_1 {
             float torLocZ = 0f;
             float torLocY = 0f;
             float torLocX = 0f;
-            Matrix4f mMat = new Matrix4f().translate(torLocX, torLocY, torLocZ).rotateX(toRadians(35f));
+            Matrix4f mMat = new Matrix4f().translate(torLocX, torLocY, torLocZ);
+            switch (usingModel) {
+                case "torus" -> mMat.rotateX(toRadians(35f));
+                case "dolphin" -> mMat.rotateZ(toRadians(20f)).rotateY(toRadians(-80f));
+                case "stanford-bunny" -> mMat.scale(10f).translate(0f, -.1f, 0f);
+                case "stanford-dragon" -> mMat.scale(10f).rotateY(toRadians(-90f)).rotateZ(toRadians(90f));
+            }
             Matrix4f mvMat = vMat.mul(mMat);
-
             // 構建m矩陣的逆轉置矩陣，以變換法向量
             Matrix4f invTrMat = mMat.invert().transpose();
 
@@ -149,8 +143,12 @@ public class Program7_1 {
             glEnable(GL_DEPTH_TEST);
             glDepthFunc(GL_LEQUAL);
 
-            glDrawElements(GL_TRIANGLES, myTorus.getNumIndices(), GL_UNSIGNED_INT, 0);
-
+            switch (usingModel) {
+                case "torus" -> glDrawElements(GL_TRIANGLES, myTorus.getNumIndices(), GL_UNSIGNED_INT, 0);
+                case "dolphin" -> glDrawArrays(GL_TRIANGLES, 0, dolphin.getNumOfVectors());
+                case "stanford-bunny" -> glDrawArrays(GL_TRIANGLES, 0, stanfordBunny.getNumOfVectors());
+                case "stanford-dragon" -> glDrawArrays(GL_TRIANGLES, 0, stanfordDragon.getNumOfVectors());
+            }
             glfwSwapBuffers(windowHandle);
             glfwPollEvents();
         }
@@ -187,26 +185,11 @@ public class Program7_1 {
 
 
     private static void setupVertices() {
+        System.out.println("Loading models...");
         myTorus = new Torus(.5f, .2f, 48, true);
-
-        int numTorusVertices = myTorus.getNumVertices();
-        Vector3f[] vertices = myTorus.getVertices();
-        Vector3f[] normals = myTorus.getNormals();
-        IntBuffer indices = myTorus.getIndicesInBuffer();
-        FloatBuffer pvalues = BufferUtils.createFloatBuffer(vertices.length * 3);
-        FloatBuffer nvalues = BufferUtils.createFloatBuffer(normals.length * 3);
-        for (int i = 0; i < numTorusVertices; i++) {
-            pvalues.put(vertices[i].x());         // vertex position
-            pvalues.put(vertices[i].y());
-            pvalues.put(vertices[i].z());
-
-            nvalues.put(normals[i].x());         // normal vector
-            nvalues.put(normals[i].y());
-            nvalues.put(normals[i].z());
-        }
-        pvalues.flip(); // 此行非常必要!
-        nvalues.flip();
-        indices.flip();
+        dolphin = new ModelReader("src/main/java/chapter7/program7_1/models/dolphinHighPoly.obj");
+        stanfordBunny = new ModelReader("src/main/java/chapter7/program7_1/models/stanford-bunny.obj");
+        stanfordDragon = new ModelReader("src/main/java/chapter7/program7_1/models/stanford-dragon.obj");
 
         int[] vao = new int[1];
         glGenVertexArrays(vao);
@@ -214,16 +197,10 @@ public class Program7_1 {
 
         vbo = new int[4];
         glGenBuffers(vbo);
-        // put the vertices into buffer #0
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-        glBufferData(GL_ARRAY_BUFFER, pvalues, GL_STATIC_DRAW);
-        // put the normals into buffer #2
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
-        glBufferData(GL_ARRAY_BUFFER, nvalues, GL_STATIC_DRAW);
-        // indices into buffer #3
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
+        glfwSetKeyCallback(windowHandle, new KeyPressCallBack());
+        storeInBuffer(vbo);
 
+        System.out.println("Done");
     }
 
     private static void createProjMat(int w, int h) {
@@ -235,5 +212,64 @@ public class Program7_1 {
         mvLoc = glGetUniformLocation(program, "mv_matrix");
         projLoc = glGetUniformLocation(program, "proj_matrix");
         nLoc = glGetUniformLocation(program, "norm_matrix");
+    }
+    public static void storeInBuffer(int[] vbo) {
+
+        switch (usingModel) {
+            case "torus" -> {
+                int numTorusVertices = myTorus.getNumVertices();
+                Vector3f[] vertices = myTorus.getVertices();
+                Vector3f[] normals = myTorus.getNormals();
+                IntBuffer indices = myTorus.getIndicesInBuffer();
+                FloatBuffer pvalues = BufferUtils.createFloatBuffer(vertices.length * 3);
+                FloatBuffer nvalues = BufferUtils.createFloatBuffer(normals.length * 3);
+                for (int i = 0; i < numTorusVertices; i++) {
+                    pvalues.put(vertices[i].x());         // vertex position
+                    pvalues.put(vertices[i].y());
+                    pvalues.put(vertices[i].z());
+
+                    nvalues.put(normals[i].x());         // normal vector
+                    nvalues.put(normals[i].y());
+                    nvalues.put(normals[i].z());
+                }
+                pvalues.flip(); // 此行非常必要!
+                nvalues.flip();
+                indices.flip();
+
+                // put the vertices into buffer #0
+                glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+                glBufferData(GL_ARRAY_BUFFER, pvalues, GL_STATIC_DRAW);
+                // put the normals into buffer #2
+                glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
+                glBufferData(GL_ARRAY_BUFFER, nvalues, GL_STATIC_DRAW);
+                // indices into buffer #3
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
+            }
+            case "dolphin" -> {
+                // put the vertices into buffer #0
+                glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+                glBufferData(GL_ARRAY_BUFFER, dolphin.getPvalue(), GL_STATIC_DRAW);
+                // put the normals into buffer #2
+                glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
+                glBufferData(GL_ARRAY_BUFFER, dolphin.getNvalue(), GL_STATIC_DRAW);
+            }
+            case "stanford-bunny" -> {
+                // put the vertices into buffer #0
+                glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+                glBufferData(GL_ARRAY_BUFFER, stanfordBunny.getPvalue(), GL_STATIC_DRAW);
+                // put the normals into buffer #2
+                glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
+                glBufferData(GL_ARRAY_BUFFER, stanfordBunny.getNvalue(), GL_STATIC_DRAW);
+            }
+            case "stanford-dragon" -> {
+                // put the vertices into buffer #0
+                glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+                glBufferData(GL_ARRAY_BUFFER, stanfordDragon.getPvalue(), GL_STATIC_DRAW);
+                // put the normals into buffer #2
+                glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
+                glBufferData(GL_ARRAY_BUFFER, stanfordDragon.getNvalue(), GL_STATIC_DRAW);
+            }
+        }
     }
 }
