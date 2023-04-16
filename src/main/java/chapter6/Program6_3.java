@@ -13,7 +13,6 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL43.*;
 
 
-// TODO: 2023/4/5 我不知道為什麼最後輸出的結果材質顯示有問題，到時候拿到原版程式再來測試看按
 public class Program6_3 {
     private static long windowHandle;
 
