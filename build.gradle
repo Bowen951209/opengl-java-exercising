@@ -74,3 +74,8 @@ tasks.register('copyRuntimeLibs', Copy) {
     from configurations.runtimeClasspath
     into "build/dependencies/"
 }
+apply plugin: 'application'
+mainClassName = "chapter7.lighting_and_texture.Main"
+applicationDefaultJvmArgs = [
+        "-Djava.util.logging.config.file=src/main/resources/logging.properties"
+]
