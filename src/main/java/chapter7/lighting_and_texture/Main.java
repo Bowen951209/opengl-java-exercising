@@ -121,7 +121,7 @@ public class Main {
             glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
             glEnableVertexAttribArray(2);
 
-            glDrawArrays(GL_TRIANGLES, 0, DOLPHIN.getNumOfVectors());
+            glDrawArrays(GL_TRIANGLES, 0, DOLPHIN.getNumOfvertices());
 
             glfwSwapBuffers(windowHandle);
             glfwPollEvents();

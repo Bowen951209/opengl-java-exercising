@@ -22,11 +22,11 @@ public class ModelReader {
     private float[] tvalue;
     private float[] nvalue;
 
-    public int getNumOfVectors() {
-        return numOfVectors;
+    public int getNumOfvertices() {
+        return numOfvertices;
     }
 
-    private int numOfVectors;
+    private int numOfvertices;
 
     public ModelReader(String filepath) {
 
@@ -49,12 +49,12 @@ public class ModelReader {
     }
 
     private void processMesh(AIMesh mesh) {
-        AIVector3D.Buffer vectors = mesh.mVertices();
+        AIVector3D.Buffer vertices = mesh.mVertices();
 
-        numOfVectors = vectors.limit();
-        pvalue = new float[numOfVectors * 3];
-        for (int i = 0; i < numOfVectors; i++) {
-            AIVector3D vector = vectors.get(i);
+        numOfvertices = vertices.limit();
+        pvalue = new float[numOfvertices * 3];
+        for (int i = 0; i < numOfvertices; i++) {
+            AIVector3D vector = vertices.get(i);
 
             pvalue[i * 3] = vector.x();
             pvalue[i * 3 + 1] = vector.y();

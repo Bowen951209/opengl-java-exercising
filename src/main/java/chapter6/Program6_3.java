@@ -112,7 +112,7 @@ public class Program6_3 {
             glDepthFunc(GL_LEQUAL);
 
             glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-            glDrawArrays(GL_TRIANGLES, 0, myModel.getNumOfVectors()); // 繪製
+            glDrawArrays(GL_TRIANGLES, 0, myModel.getNumOfvertices()); // 繪製
 
 
             glfwSwapBuffers(windowHandle);
