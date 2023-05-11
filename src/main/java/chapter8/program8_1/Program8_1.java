@@ -50,14 +50,14 @@ public class Program8_1 {
 
 
     private static ModelReader pyramid;
-    private static int p1shadowMVPLoc, p2mvLoc, p2projLoc,p2nLoc, p2sLoc, p2mshiLoc, p2ambLoc, p2globalAmbLoc, p2diffLoc, p2specLoc, p2posLoc, p2mambLoc, p2mdiffLoc, p2mspecLoc;
+    private static int p1shadowMVPLoc, p2mvLoc, p2projLoc, p2nLoc, p2sLoc, p2mshiLoc, p2ambLoc, p2globalAmbLoc, p2diffLoc, p2specLoc, p2posLoc, p2mambLoc, p2mdiffLoc, p2mspecLoc;
     private static final Vector3f ORIGIN = new Vector3f(0.0f, 0.0f, 0.0f);
     private static final Vector3fc UP = new Vector3f(0.0f, 1.0f, 0.0f);
     private static final Matrix4f B = new Matrix4f(
-            .5f,0f,0f,0f,
-            0f,.5f, 0f,0f,
-            0f,0f,.5f,0f,
-            .5f,.5f,.5f,1f
+            .5f, 0f, 0f, 0f,
+            0f, .5f, 0f, 0f,
+            0f, 0f, .5f, 0f,
+            .5f, .5f, .5f, 1f
     );
     private static Matrix4f lightPMat, lightVMat;
     private static int shadowFrameBuffer;
@@ -66,7 +66,9 @@ public class Program8_1 {
     public static void main(String[] args) {
         init();
         // 迴圈
-        loop();
+        while (!GLFW.glfwWindowShouldClose(windowHandle)) {
+            loop();
+        }
         // 釋出
         GLFW.glfwTerminate();
         System.out.println("Program exit and freed glfw.");
@@ -131,24 +133,23 @@ public class Program8_1 {
     }
 
     private static void loop() {
-        while (!GLFW.glfwWindowShouldClose(windowHandle)) {
-            // ROUND1 從光源處渲染
+        // ROUND1 從光源處渲染
 
-            // 使用自定義幀緩衝區
-            glBindFramebuffer(GL_FRAMEBUFFER, shadowFrameBuffer);
+        // 使用自定義幀緩衝區
+        glBindFramebuffer(GL_FRAMEBUFFER, shadowFrameBuffer);
 
-            Matrix4f torusMMat = new Matrix4f().translate(torusPos).rotateX(toRadians(30f)).rotateY(toRadians(40f));
-            Matrix4f pyramidMMat = new Matrix4f().translate(pyramidPos).rotateX(toRadians(25f));
-            passOne(torusMMat, pyramidMMat);
+        Matrix4f torusMMat = new Matrix4f().translate(torusPos).rotateX(toRadians(30f)).rotateY(toRadians(40f));
+        Matrix4f pyramidMMat = new Matrix4f().translate(pyramidPos).rotateX(toRadians(25f));
+        passOne(torusMMat, pyramidMMat);
 
-            // 使用顯示緩衝區，重新繪製
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // 使用顯示緩衝區，重新繪製
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-            passTwo(torusMMat, pyramidMMat);
+        passTwo(torusMMat, pyramidMMat);
 
-            glfwSwapBuffers(windowHandle);
-            glfwPollEvents();
-        }
+        glfwSwapBuffers(windowHandle);
+        glfwPollEvents();
+
     }
 
 
@@ -222,7 +223,6 @@ public class Program8_1 {
         glBufferData(GL_ARRAY_BUFFER, pyramid.getPvalue(), GL_STATIC_DRAW);
 
 
-
         System.out.println("Model load done.");
     }
 
@@ -269,7 +269,7 @@ public class Program8_1 {
     }
 
     private static void setupLights(float[] matAmb, float[] matDif, float[] matSpe, float matShi) {
-        glProgramUniform4fv(renderingProgram2, p2globalAmbLoc,  globalAmbient);
+        glProgramUniform4fv(renderingProgram2, p2globalAmbLoc, globalAmbient);
         glProgramUniform4fv(renderingProgram2, p2ambLoc, lightAmbient);
         glProgramUniform4fv(renderingProgram2, p2diffLoc, lightDiffuse);
         glProgramUniform4fv(renderingProgram2, p2specLoc, lightSpecular);
@@ -287,7 +287,7 @@ public class Program8_1 {
     }
 
     private static void getAllUniformsLoc() {
-        p1shadowMVPLoc =  glGetUniformLocation(renderingProgram1, "shadowMVP");
+        p1shadowMVPLoc = glGetUniformLocation(renderingProgram1, "shadowMVP");
         p2mvLoc = glGetUniformLocation(renderingProgram2, "mv_matrix");
         p2projLoc = glGetUniformLocation(renderingProgram2, "proj_matrix");
         p2nLoc = glGetUniformLocation(renderingProgram2, "norm_matrix");
