@@ -7,11 +7,12 @@ import utilities.Camera;
 
 import java.nio.IntBuffer;
 
-import static org.lwjgl.glfw.GLFW.glfwGetFramebufferSize;
-import static org.lwjgl.glfw.GLFW.glfwSetCursorPos;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class CursorCB extends GLFWCursorPosCallback {
     private Camera CAMERA;
+    private long window;
+
     public CursorCB setCamera(Camera camera) {
         this.CAMERA = camera;
         return this;
@@ -27,12 +28,16 @@ public class CursorCB extends GLFWCursorPosCallback {
     public void changeLock() {
         if (lockCursor) {
             unlockCursor();
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         } else {
             lockCursor();
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
         }
     }
     @Override
     public void invoke(long window, double xpos, double ypos) {
+        this.window = window;
+
         if (lockCursor) {
             IntBuffer width = BufferUtils.createIntBuffer(1);
             IntBuffer height = BufferUtils.createIntBuffer(1);

@@ -148,9 +148,9 @@ public class Program7_1 {
 
             switch (usingModel) {
                 case "torus" -> glDrawElements(GL_TRIANGLES, myTorus.getNumIndices(), GL_UNSIGNED_INT, 0);
-                case "dolphin" -> glDrawArrays(GL_TRIANGLES, 0, dolphin.getNumOfvertices());
-                case "stanford-bunny" -> glDrawArrays(GL_TRIANGLES, 0, stanfordBunny.getNumOfvertices());
-                case "stanford-dragon" -> glDrawArrays(GL_TRIANGLES, 0, stanfordDragon.getNumOfvertices());
+                case "dolphin" -> glDrawArrays(GL_TRIANGLES, 0, dolphin.getNumOfVertices());
+                case "stanford-bunny" -> glDrawArrays(GL_TRIANGLES, 0, stanfordBunny.getNumOfVertices());
+                case "stanford-dragon" -> glDrawArrays(GL_TRIANGLES, 0, stanfordDragon.getNumOfVertices());
             }
 
 

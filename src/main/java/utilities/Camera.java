@@ -27,8 +27,19 @@ public class Camera {
     private boolean backward;
     private boolean left;
     private boolean right;
-    public float step;
-    private final float sensitive = .04f;
+
+    public Camera step(float step) {
+        this.step = step;
+        return this;
+    }
+    private float step = .05f;
+
+    public Camera sensitive(float sensitive) {
+        this.sensitive = sensitive;
+        return this;
+    }
+
+    private float sensitive = .04f;
 
     public void updateVMat() {
         Vector3f lookAtPoint = new Vector3f(POSITION).add(DIRECTION);

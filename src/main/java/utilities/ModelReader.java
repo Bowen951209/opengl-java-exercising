@@ -1,7 +1,12 @@
 package utilities;
 
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.assimp.*;
+import org.lwjgl.assimp.AIMesh;
+import org.lwjgl.assimp.AIScene;
+import org.lwjgl.assimp.AIVector3D;
+import org.lwjgl.assimp.Assimp;
+
+import java.nio.file.Path;
 
 public class ModelReader {
 
@@ -22,18 +27,21 @@ public class ModelReader {
     private float[] tvalue;
     private float[] nvalue;
 
-    public int getNumOfvertices() {
-        return numOfvertices;
+    public int getNumOfVertices() {
+        return numOfVertices;
     }
 
-    private int numOfvertices;
+    private int numOfVertices;
+    private final String FILE_NAME;
 
     public ModelReader(String filepath) {
+        Path filePath = Path.of(filepath);
+        FILE_NAME = filePath.getFileName().toString();
 
         AIScene scene = Assimp.aiImportFile(filepath, Assimp.aiProcess_Triangulate);
 
         assert scene != null;
-        System.out.println("    Number of Meshes: " + scene.mNumMeshes());
+        System.out.println(FILE_NAME + " has " + scene.mNumMeshes() + " meshes");
         PointerBuffer buffer = scene.mMeshes();
 
         if (buffer != null) {
@@ -41,7 +49,7 @@ public class ModelReader {
                 AIMesh mesh = AIMesh.create(buffer.get(i));
                 processMesh(mesh);
             }
-        }else {
+        } else {
             throw new RuntimeException("scene.mMeshes is null");
         }
 
@@ -51,9 +59,9 @@ public class ModelReader {
     private void processMesh(AIMesh mesh) {
         AIVector3D.Buffer vertices = mesh.mVertices();
 
-        numOfvertices = vertices.limit();
-        pvalue = new float[numOfvertices * 3];
-        for (int i = 0; i < numOfvertices; i++) {
+        numOfVertices = vertices.limit();
+        pvalue = new float[numOfVertices * 3];
+        for (int i = 0; i < numOfVertices; i++) {
             AIVector3D vector = vertices.get(i);
 
             pvalue[i * 3] = vector.x();
@@ -72,7 +80,7 @@ public class ModelReader {
                 tvalue[i * 2 + 1] = tc.y();
             }
         } else {
-            System.err.println("The model has no texture coordinates.");
+            System.err.println(FILE_NAME + " has no texture coordinates.");
         }
 
 
@@ -90,7 +98,5 @@ public class ModelReader {
         } else {
             throw new RuntimeException("No normal values");
         }
-
-
     }
 }

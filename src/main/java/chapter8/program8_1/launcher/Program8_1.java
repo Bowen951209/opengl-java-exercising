@@ -30,11 +30,12 @@ public class Program8_1 {
 
     private static final FloatBuffer valsOf16 = BufferUtils.createFloatBuffer(16);// utility buffer for transferring matrices
     private static final FloatBuffer valsOf3 = BufferUtils.createFloatBuffer(3);
-    private static final int[] vbo = new int[6];
+    private static final int[] vbo = new int[8];
 
     private static final Vector3f LIGHT_POS = new Vector3f(-3.8f, 2.2f, 1.1f);
     private static final Vector3f TORUS_POS = new Vector3f(1.6f, 0f, -.3f);
     private static final Vector3f PYRAMID_POS = new Vector3f(-1f, .1f, .3f);
+    private static final Vector3f GRID_POS = new Vector3f(0f, 9f, -9.5f);
 
     // 白光特性
     private static final float[] GLOBAL_AMBIENT = {0.7f, 0.7f, 0.7f, 1.0f};
@@ -46,7 +47,7 @@ public class Program8_1 {
     private static int renderingProgram1, renderingProgram2;
 
 
-    private static ModelReader pyramid;
+    private static ModelReader pyramid, grid;
     private static int p1shadowMVPLoc, p2mvLoc, p2projLoc, p2nLoc, p2sLoc, p2mshiLoc, p2ambLoc, p2globalAmbLoc, p2diffLoc, p2specLoc, p2posLoc, p2mambLoc, p2mdiffLoc, p2mspecLoc;
     private static final Vector3f ORIGIN = new Vector3f(0.0f, 0.0f, 0.0f);
     private static final Vector3fc UP = new Vector3f(0.0f, 1.0f, 0.0f);
@@ -60,7 +61,7 @@ public class Program8_1 {
     private static int shadowFrameBuffer;
     private static int shadowTex;
 
-    private static final Camera CAMERA = new Camera();
+    private static final Camera CAMERA = new Camera().sensitive(.04f).step(.05f);
     private static final CursorCB CURSOR_CB = new CursorCB().setCamera(CAMERA);
 
 
@@ -96,7 +97,6 @@ public class Program8_1 {
                 , Path.of("src/main/java/chapter8/program8_1/shaders/frag2Shader.glsl"))
                 .getProgram();
 
-        CAMERA.step = .05f;
         setupVertices();
         createShadowBuffers(windowHandle);
         configShadowFrameBuffer();
@@ -138,13 +138,14 @@ public class Program8_1 {
 
         Matrix4f torusMMat = new Matrix4f().translate(TORUS_POS).rotateX(toRadians(30f)).rotateY(toRadians(40f));
         Matrix4f pyramidMMat = new Matrix4f().translate(PYRAMID_POS).rotateX(toRadians(25f));
-        passOne(torusMMat, pyramidMMat);
+        Matrix4f gridMMat = new Matrix4f().translate(GRID_POS).scale(1);
+        passOne(torusMMat, pyramidMMat, gridMMat);
 
         // ROUND2 從相機處渲染
         // 使用顯示緩衝區，重新繪製
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        passTwo(torusMMat, pyramidMMat);
+        passTwo(torusMMat, pyramidMMat, gridMMat);
 
         CAMERA.handle();
 
@@ -154,7 +155,7 @@ public class Program8_1 {
     }
 
 
-    private static void passOne(Matrix4f torusMMat, Matrix4f pyramidMMat) {
+    private static void passOne(Matrix4f torusMMat, Matrix4f pyramidMMat, Matrix4f gridMMat) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(renderingProgram1);
 
@@ -174,13 +175,23 @@ public class Program8_1 {
         glUniformMatrix4fv(p1shadowMVPLoc, false, shadowMVP1.get(valsOf16));
         glBindBuffer(GL_ARRAY_BUFFER, vbo[4]);
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-        glDrawArrays(GL_TRIANGLES, 0, pyramid.getNumOfvertices());
+        glDrawArrays(GL_TRIANGLES, 0, pyramid.getNumOfVertices());
+
+        // 繪製grid
+        shadowMVP1 = new Matrix4f().mul(lightPMat).mul(lightVMat).mul(gridMMat);
+
+        glUniformMatrix4fv(p1shadowMVPLoc, false, shadowMVP1.get(valsOf16));
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[6]);
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+        glDrawArrays(GL_TRIANGLES, 0, grid.getNumOfVertices());
     }
 
     private static void setupVertices() {
         System.out.println("Loading models...");
+
         torus = new Torus(.5f, .2f, 48, true);
         pyramid = new ModelReader("src/main/java/chapter8/program8_1/models/pyr.obj");
+        grid = new ModelReader("src/main/java/chapter8/program8_1/models/cube.obj");
 
         int[] vao = new int[1];
         glGenVertexArrays(vao);
@@ -223,11 +234,18 @@ public class Program8_1 {
         glBindBuffer(GL_ARRAY_BUFFER, vbo[5]); // #5: 法向量
         glBufferData(GL_ARRAY_BUFFER, pyramid.getPvalue(), GL_STATIC_DRAW);
 
+        // grid
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[6]); // #6: 頂點
+        glBufferData(GL_ARRAY_BUFFER, grid.getPvalue(), GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[7]); // #7: 法向量
+        glBufferData(GL_ARRAY_BUFFER, grid.getPvalue(), GL_STATIC_DRAW);
+
 
         System.out.println("Model load done.");
     }
 
-    private static void passTwo(Matrix4f torusMMat, Matrix4f pyramidMMat) {
+    private static void passTwo(Matrix4f torusMMat, Matrix4f pyramidMMat, Matrix4f gridMMat) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(renderingProgram2);
 
@@ -248,6 +266,7 @@ public class Program8_1 {
         glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
         glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
 
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]);
         glDrawElements(GL_TRIANGLES, torus.getNumIndices(), GL_UNSIGNED_INT, 0);
 
 
@@ -255,7 +274,7 @@ public class Program8_1 {
         setupLights(Materials.bronzeAmbient(), Materials.bronzeDiffuse(), Materials.bronzeSpecular(), Materials.bronzeShininess());
         mvMat = new Matrix4f(CAMERA.getVMat()).mul(pyramidMMat);
         invTrMat = new Matrix4f(mvMat).invert().transpose();
-        shadowMVP2 = new Matrix4f(B).mul(lightPMat).mul(lightVMat).mul(torusMMat);
+        shadowMVP2 = new Matrix4f(B).mul(lightPMat).mul(lightVMat).mul(pyramidMMat);
         glUniformMatrix4fv(p2mvLoc, false, mvMat.get(valsOf16));
         glUniformMatrix4fv(p2projLoc, false, CAMERA.getProjMat().get(valsOf16));
         glUniformMatrix4fv(p2nLoc, false, invTrMat.get(valsOf16));
@@ -266,7 +285,25 @@ public class Program8_1 {
         glBindBuffer(GL_ARRAY_BUFFER, vbo[5]);
         glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
 
-        glDrawArrays(GL_TRIANGLES, 0, pyramid.getNumOfvertices());
+        glDrawArrays(GL_TRIANGLES, 0, pyramid.getNumOfVertices());
+
+        // 繪製grid
+        setupLights(Materials.bronzeAmbient(), Materials.bronzeDiffuse(), Materials.bronzeSpecular(), Materials.bronzeShininess());
+        mvMat = new Matrix4f(CAMERA.getVMat()).mul(gridMMat);
+        invTrMat = new Matrix4f(mvMat).invert().transpose();
+        shadowMVP2 = new Matrix4f(B).mul(lightPMat).mul(lightVMat).mul(gridMMat);
+        glUniformMatrix4fv(p2mvLoc, false, mvMat.get(valsOf16));
+        glUniformMatrix4fv(p2projLoc, false, CAMERA.getProjMat().get(valsOf16));
+        glUniformMatrix4fv(p2nLoc, false, invTrMat.get(valsOf16));
+        glUniformMatrix4fv(p2sLoc, false, shadowMVP2.get(valsOf16));
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[6]);
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[7]);
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[6]);
+        glDrawArrays(GL_TRIANGLES, 0, grid.getNumOfVertices());
     }
 
     private static void setupLights(float[] matAmb, float[] matDif, float[] matSpe, float matShi) {
