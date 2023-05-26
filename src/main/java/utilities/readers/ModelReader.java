@@ -1,4 +1,4 @@
-package utilities;
+package utilities.readers;
 
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.AIMesh;

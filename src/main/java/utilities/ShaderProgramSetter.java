@@ -1,6 +1,8 @@
 package utilities;
 
 
+import utilities.readers.GLSLReader;
+
 import java.nio.file.Path;
 
 import static org.lwjgl.opengl.GL43.*;

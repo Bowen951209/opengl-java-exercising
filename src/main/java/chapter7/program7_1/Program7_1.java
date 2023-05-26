@@ -8,6 +8,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
 import utilities.*;
+import utilities.readers.ModelReader;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;

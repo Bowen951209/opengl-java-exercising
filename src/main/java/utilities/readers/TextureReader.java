@@ -1,4 +1,4 @@
-package utilities;
+package utilities.readers;
 
 import org.lwjgl.stb.STBImage;
 import static org.lwjgl.opengl.GL43.*;

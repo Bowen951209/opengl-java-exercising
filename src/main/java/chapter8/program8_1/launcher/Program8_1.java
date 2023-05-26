@@ -2,6 +2,7 @@ package chapter8.program8_1.launcher;
 
 
 import chapter6.Torus;
+import utilities.buffers.ShadowFrameBuffer;
 import chapter8.program8_1.callbacks.CursorCB;
 import chapter8.program8_1.callbacks.FrameBufferResizeCB;
 import chapter8.program8_1.callbacks.KeyCB;
@@ -11,6 +12,7 @@ import org.joml.Vector3fc;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import utilities.*;
+import utilities.readers.ModelReader;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -58,8 +60,7 @@ public class Program8_1 {
             .5f, .5f, .5f, 1f
     );
     private static Matrix4f lightPMat, lightVMat;
-    private static int shadowFrameBuffer;
-    private static int shadowTex;
+    private static ShadowFrameBuffer shadowFrameBuffer;
 
     private static final Camera CAMERA = new Camera().sensitive(.04f).step(.05f);
     private static final CursorCB CURSOR_CB = new CursorCB().setCamera(CAMERA);
@@ -82,7 +83,8 @@ public class Program8_1 {
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, "第8章");
         windowHandle = glfwWindow.getWindowHandle();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
-        glfwSetFramebufferSizeCallback(windowHandle, new FrameBufferResizeCB(CAMERA));
+        shadowFrameBuffer = new ShadowFrameBuffer(windowHandle);
+        glfwSetFramebufferSizeCallback(windowHandle, new FrameBufferResizeCB(CAMERA, shadowFrameBuffer));
         glfwSetCursorPosCallback(windowHandle, CURSOR_CB);
         glfwSetKeyCallback(windowHandle, new KeyCB(CAMERA, CURSOR_CB));
         glEnable(GL_CULL_FACE);
@@ -98,43 +100,16 @@ public class Program8_1 {
                 .getProgram();
 
         setupVertices();
-        createShadowBuffers(windowHandle);
-        configShadowFrameBuffer();
         getAllUniformsLoc();
 
         System.out.println("Hint: You can press F1 to look around.");
-    }
-
-    private static void configShadowFrameBuffer() {
-        // 使用自定義幀緩衝區，將紋理附著到其上
-        glBindFramebuffer(GL_FRAMEBUFFER, shadowFrameBuffer);
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowTex, 0);
-        // 關閉繪製顏色
-        glDrawBuffer(GL_NONE);
-    }
-
-    private static void createShadowBuffers(long window) {
-        IntBuffer frameBufW = BufferUtils.createIntBuffer(1), frameBufH = BufferUtils.createIntBuffer(1);
-        glfwGetFramebufferSize(window, frameBufW, frameBufH);
-
-        // 創建自定義frame buffer
-        shadowFrameBuffer = glGenFramebuffers();
-
-        // 創建陰影紋理儲存深度訊息
-        shadowTex = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D, shadowTex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, frameBufW.get(0), frameBufH.get(0), 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
     }
 
     private static void loop() {
         // ROUND1 從光源處渲染
 
         // 使用自定義幀緩衝區
-        glBindFramebuffer(GL_FRAMEBUFFER, shadowFrameBuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, shadowFrameBuffer.getShadowFrameBuffer());
 
         Matrix4f torusMMat = new Matrix4f().translate(TORUS_POS).rotateX(toRadians(30f)).rotateY(toRadians(40f));
         Matrix4f pyramidMMat = new Matrix4f().translate(PYRAMID_POS).rotateX(toRadians(25f));

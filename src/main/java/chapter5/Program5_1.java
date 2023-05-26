@@ -8,7 +8,7 @@ import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
 import utilities.Color;
 import utilities.GLFWWindow;
 import utilities.ShaderProgramSetter;
-import utilities.TextureReader;
+import utilities.readers.TextureReader;
 
 import java.nio.file.Path;
 

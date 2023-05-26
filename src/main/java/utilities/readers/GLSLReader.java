@@ -1,4 +1,4 @@
-package utilities;
+package utilities.readers;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -7,8 +7,8 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class GLSLReader {
-    private List<String> data;
-    GLSLReader(Path path) {
+    private final List<String> data;
+    public GLSLReader(Path path) {
 
         try {
             data = Files.readAllLines(path, StandardCharsets.UTF_8);
