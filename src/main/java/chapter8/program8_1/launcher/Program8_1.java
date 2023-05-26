@@ -288,7 +288,7 @@ public class Program8_1 {
         glDrawArrays(GL_TRIANGLES, 0, pyramid.getNumOfVertices());
 
         // 繪製grid
-        setupLights(Materials.bronzeAmbient(), Materials.bronzeDiffuse(), Materials.bronzeSpecular(), Materials.bronzeShininess());
+        setupLights(Materials.silverAmbient(), Materials.silverDiffuse(), Materials.silverSpecular(), Materials.silverShininess());
         mvMat = new Matrix4f(CAMERA.getVMat()).mul(gridMMat);
         invTrMat = new Matrix4f(mvMat).invert().transpose();
         shadowMVP2 = new Matrix4f(B).mul(lightPMat).mul(lightVMat).mul(gridMMat);
