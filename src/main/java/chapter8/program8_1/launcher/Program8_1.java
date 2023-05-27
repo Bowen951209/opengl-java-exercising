@@ -114,6 +114,11 @@ public class Program8_1 {
         Matrix4f torusMMat = new Matrix4f().translate(TORUS_POS).rotateX(toRadians(30f)).rotateY(toRadians(40f));
         Matrix4f pyramidMMat = new Matrix4f().translate(PYRAMID_POS).rotateX(toRadians(25f));
         Matrix4f gridMMat = new Matrix4f().translate(GRID_POS).scale(1);
+
+        // 減少陰影偽影
+        glEnable(GL_POLYGON_OFFSET_FILL);
+        glPolygonOffset(2f, 4f);
+
         passOne(torusMMat, pyramidMMat, gridMMat);
 
         // ROUND2 從相機處渲染
@@ -121,6 +126,8 @@ public class Program8_1 {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         passTwo(torusMMat, pyramidMMat, gridMMat);
+
+        glDisable(GL_POLYGON_OFFSET_FILL);
 
         CAMERA.handle();
 
