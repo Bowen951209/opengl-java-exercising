@@ -26,6 +26,7 @@ import static org.lwjgl.opengl.GL43.*;
 public class Program8_1 {
 
     private static long windowHandle;
+
     public static long getWindowHandle() {
         return windowHandle;
     }
@@ -37,7 +38,7 @@ public class Program8_1 {
     private static final Vector3f LIGHT_POS = new Vector3f(-3.8f, 2.2f, 1.1f);
     private static final Vector3f TORUS_POS = new Vector3f(1.6f, 0f, -.3f);
     private static final Vector3f PYRAMID_POS = new Vector3f(-1f, .1f, .3f);
-    private static final Vector3f GRID_POS = new Vector3f(0f, 9f, -9.5f);
+    private static final Vector3f GRID_POS = new Vector3f(0f, 8.5f, -9.5f);
 
     // 白光特性
     private static final float[] GLOBAL_AMBIENT = {0.7f, 0.7f, 0.7f, 1.0f};
@@ -50,7 +51,8 @@ public class Program8_1 {
 
 
     private static ModelReader pyramid, grid;
-    private static int p1shadowMVPLoc, p2mvLoc, p2projLoc, p2nLoc, p2sLoc, p2mshiLoc, p2ambLoc, p2globalAmbLoc, p2diffLoc, p2specLoc, p2posLoc, p2mambLoc, p2mdiffLoc, p2mspecLoc;
+    private static int p1shadowMVPLoc, p2mvLoc, p2projLoc, p2nLoc, p2sLoc, p2mshiLoc, p2ambLoc, p2globalAmbLoc, p2diffLoc,
+            p2specLoc, p2posLoc, p2mambLoc, p2mdiffLoc, p2mspecLoc, p2FrameBufferWidthLoc, p2FrameBufferHeightLoc;
     private static final Vector3f ORIGIN = new Vector3f(0.0f, 0.0f, 0.0f);
     private static final Vector3fc UP = new Vector3f(0.0f, 1.0f, 0.0f);
     private static final Matrix4f B = new Matrix4f(
@@ -115,19 +117,13 @@ public class Program8_1 {
         Matrix4f pyramidMMat = new Matrix4f().translate(PYRAMID_POS).rotateX(toRadians(25f));
         Matrix4f gridMMat = new Matrix4f().translate(GRID_POS).scale(1);
 
-        // 減少陰影偽影
-        glEnable(GL_POLYGON_OFFSET_FILL);
-        glPolygonOffset(2f, 4f);
-
         passOne(torusMMat, pyramidMMat, gridMMat);
 
         // ROUND2 從相機處渲染
         // 使用顯示緩衝區，重新繪製
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        passTwo(torusMMat, pyramidMMat, gridMMat);
-
-        glDisable(GL_POLYGON_OFFSET_FILL);
+        passTwo(torusMMat, pyramidMMat, gridMMat, GLFWWindow.getFrameBufferSize(windowHandle));
 
         CAMERA.handle();
 
@@ -227,11 +223,14 @@ public class Program8_1 {
         System.out.println("Model load done.");
     }
 
-    private static void passTwo(Matrix4f torusMMat, Matrix4f pyramidMMat, Matrix4f gridMMat) {
+    private static void passTwo(Matrix4f torusMMat, Matrix4f pyramidMMat, Matrix4f gridMMat, int[] frameBufferSize) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(renderingProgram2);
 
         CAMERA.updateVMat();
+
+        glUniform1i(p2FrameBufferWidthLoc, frameBufferSize[0]);
+        glUniform1i(p2FrameBufferHeightLoc, frameBufferSize[1]);
 
         // 繪製torus
         setupLights(Materials.goldAmbient(), Materials.goldDiffuse(), Materials.goldSpecular(), Materials.goldShininess());
@@ -315,5 +314,7 @@ public class Program8_1 {
         p2mdiffLoc = glGetUniformLocation(renderingProgram2, "material.diffuse");
         p2mspecLoc = glGetUniformLocation(renderingProgram2, "material.specular");
         p2mshiLoc = glGetUniformLocation(renderingProgram2, "material.shininess");
+        p2FrameBufferWidthLoc = glGetUniformLocation(renderingProgram2, "frameBufferSize.width");
+        p2FrameBufferHeightLoc = glGetUniformLocation(renderingProgram2, "frameBufferSize.height");
     }
 }

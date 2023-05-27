@@ -47,6 +47,9 @@ public class ShadowFrameBuffer {
         glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowTex, 0);
         // 關閉繪製顏色
         glDrawBuffer(GL_NONE);
+        // 減少陰影偽影
+        glEnable(GL_POLYGON_OFFSET_FILL);
+        glPolygonOffset(2f, 4f);
     }
     public void resetTex(int width, int height) {
         glBindTexture(GL_TEXTURE_2D, shadowTex);

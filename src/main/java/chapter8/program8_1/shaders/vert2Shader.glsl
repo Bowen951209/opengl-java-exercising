@@ -14,6 +14,9 @@ struct Material
 {	vec4 ambient, diffuse, specular;
 	float shininess;
 };
+struct FrameBufferSize {
+	int width, height;
+};
 
 uniform vec4 globalAmbient;
 uniform PositionalLight light;
@@ -22,6 +25,7 @@ uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
 uniform mat4 shadowMVP;
+uniform FrameBufferSize frameBufferSize;
 layout (binding=0) uniform sampler2DShadow shadowTex;
 
 void main(void){

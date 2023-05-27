@@ -13,6 +13,9 @@ struct Material
 { vec4 ambient, diffuse, specular;
     float shininess;
 };
+struct FrameBufferSize {
+    int width, height;
+};
 
 uniform vec4 globalAmbient;
 uniform PositionalLight light;
@@ -21,10 +24,12 @@ uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
 uniform mat4 shadowMVP;
+uniform FrameBufferSize frameBufferSize;
 layout (binding=0) uniform sampler2DShadow shadowTex;
 
 float lookUp(float ox, float oy) {
-    float t = textureProj(shadowTex, shadow_coord + vec4(ox * 1f/1500f * shadow_coord.w, oy * 1f/1000f * shadow_coord.w, -.01, .0));
+    float t = textureProj(shadowTex, shadow_coord + vec4(ox / frameBufferSize.width * shadow_coord.w,
+    oy / frameBufferSize.height * shadow_coord.w, -.01, .0));
     // 第三個參數"-.01"是用於消除陰影痤瘡的偏移量
     return t;
 }
@@ -56,5 +61,5 @@ void main(void) {
     * pow(max(dot(H, N), 0.0), material.shininess*3.0);
 
 
-   	fragColor = vec4(shadowColor.xyz + shadowFactor * (lightedColor.xyz), 1f);
+    fragColor = vec4(shadowColor.xyz + shadowFactor * (lightedColor.xyz), 1f);
 }

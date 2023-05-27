@@ -1,11 +1,14 @@
 package utilities;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import static org.lwjgl.opengl.GL43.*;
 import org.lwjgl.system.MemoryUtil;
 
+
+import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -21,10 +24,6 @@ public class GLFWWindow {
 
 
     private static Color clearColor = new Color(0f, 0f,0f, 0f);
-    public static Color getClearColor() {
-        return clearColor;
-    }
-
     public void setClearColor(Color clearColor) {
         GLFWWindow.clearColor = clearColor;
         glClearColor(clearColor.getR(), clearColor.getG(), clearColor.getB(), clearColor.getA());
@@ -53,9 +52,6 @@ public class GLFWWindow {
         glfwMakeContextCurrent(windowHandle);
 
 
-
-
-
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
         // LWJGL detects the context that is current in the current thread,
@@ -69,7 +65,10 @@ public class GLFWWindow {
 
     }
 
-
-
-
+    public static int[] getFrameBufferSize(long window) {
+        IntBuffer w = BufferUtils.createIntBuffer(1);
+        IntBuffer h = BufferUtils.createIntBuffer(1);
+        glfwGetFramebufferSize(window, w, h);
+        return new int[]{w.get(0), h.get(0)};
+    }
 }
