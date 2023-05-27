@@ -4,6 +4,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class Camera {
+    private static final Vector3f Y = new Vector3f(0f, 1f, 0f);
     private final Vector3f POSITION = new Vector3f(0f, 0f, 5f);
     private final Vector3f DIRECTION = new Vector3f(0f, 0f, -1f);
     private Matrix4f VMat;
@@ -32,6 +33,7 @@ public class Camera {
         this.step = step;
         return this;
     }
+
     private float step = .05f;
 
     public Camera sensitive(float sensitive) {
@@ -48,19 +50,14 @@ public class Camera {
     }
 
     public void lookUp() {
-        if (POSITION.z >= 0f) {
-            DIRECTION.rotateX(sensitive);
-        } else {
-            DIRECTION.rotateX(-sensitive);
-        }
+        Vector3f liftVec = new Vector3f(DIRECTION).cross(Y);
+        DIRECTION.rotateAxis(sensitive, liftVec.x,  liftVec.y, liftVec.z);
+
     }
 
     public void lookDown() {
-        if (POSITION.z >= 0f) {
-            DIRECTION.rotateX(-sensitive);
-        } else {
-            DIRECTION.rotateX(sensitive);
-        }
+        Vector3f liftVec = new Vector3f(DIRECTION).cross(Y);
+        DIRECTION.rotateAxis(-sensitive, liftVec.x,  liftVec.y, liftVec.z);
     }
 
     public void lookLeft() {
