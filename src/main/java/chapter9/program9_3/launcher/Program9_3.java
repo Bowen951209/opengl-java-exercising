@@ -31,14 +31,14 @@ public class Program9_3 {
     }
 
     private static final FloatBuffer valsOf16 = BufferUtils.createFloatBuffer(16);// utility buffer for transferring matrices
-    private static final int[] vbo = new int[9];
+    private static final int[] vbo = new int[5];
 
     private static final Vector3f TORUS_POS = new Vector3f(0f, 0f, 0f);
 
     private static Torus torus;
-    private static int renderingProgram, skyBoxProgram;
+    private static int defaultProgram, skyBoxProgram;
 
-    private static int p2mvLoc, p2projLoc, pSkyVMat, pSkyPMat;
+    private static int pDefaultMvLoc, pDefaultProjLoc, pDefaultNormLoc, pSkyVMat, pSkyPMat;
 
 
     private static final Camera CAMERA = new Camera().sensitive(.04f).step(.05f);
@@ -70,14 +70,14 @@ public class Program9_3 {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE1);
-        renderingProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_3/shaders/default/vertShader.glsl")
+        defaultProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_3/shaders/default/vertShader.glsl")
                 , Path.of("src/main/java/chapter9/program9_3/shaders/default/fragShader.glsl"))
                 .getProgram();
         skyBoxProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_3/shaders/skybox/CubeVertShader.glsl")
                 , Path.of("src/main/java/chapter9/program9_3/shaders/skybox/SkyboxFragShader.glsl"))
                 .getProgram();
 
-        CubeMapReader skyboxTexture = new CubeMapReader("src/main/java/chapter9/program9_3/skybox");
+        CubeMapReader skyboxTexture = new CubeMapReader("src/main/java/chapter9/program9_3/textures/skybox");
         skyboxTexture.bind();
 
         setupVertices();
@@ -89,7 +89,10 @@ public class Program9_3 {
     private static void loop() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         CAMERA.updateVMat();
-        Matrix4f torusMMat = new Matrix4f().translate(TORUS_POS).rotateX(toRadians(30f)).rotateY(toRadians(40f));
+        Matrix4f torusMMat = new Matrix4f()
+                .translate(TORUS_POS)
+                .rotateX(toRadians((float) glfwGetTime() * 100f))
+                .scale(2.5f);
 
         drawSkybox();
         drawScene(torusMMat);
@@ -155,7 +158,7 @@ public class Program9_3 {
                 -1.0f,  1.0f, -1.0f, 1.0f,  1.0f, -1.0f, 1.0f,  1.0f,  1.0f,
                 1.0f,  1.0f,  1.0f, -1.0f,  1.0f,  1.0f, -1.0f,  1.0f, -1.0f
         };
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[8]);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[4]);
         glBufferData(GL_ARRAY_BUFFER, skyboxVertices, GL_STATIC_DRAW);
 
         System.out.println("Model load done.");
@@ -168,7 +171,7 @@ public class Program9_3 {
         glUniformMatrix4fv(pSkyVMat, false, CAMERA.getVMat().get(valsOf16));
         glUniformMatrix4fv(pSkyPMat, false, CAMERA.getProjMat().get(valsOf16));
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[8]);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[4]);
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
         glDrawArrays(GL_TRIANGLES, 0, 108);
 
@@ -176,13 +179,16 @@ public class Program9_3 {
     }
 
     private static void drawScene(Matrix4f torusMMat) {
-        glUseProgram(renderingProgram);
+        glUseProgram(defaultProgram);
         glEnable(GL_DEPTH_TEST);
 
         // 繪製torus
         Matrix4f mvMat = new Matrix4f(CAMERA.getVMat()).mul(torusMMat);
-        glUniformMatrix4fv(p2mvLoc, false, mvMat.get(valsOf16));
-        glUniformMatrix4fv(p2projLoc, false, CAMERA.getProjMat().get(valsOf16));
+        glUniformMatrix4fv(pDefaultMvLoc, false, mvMat.get(valsOf16));
+        glUniformMatrix4fv(pDefaultProjLoc, false, CAMERA.getProjMat().get(valsOf16));
+
+        Matrix4f invTrMat = new Matrix4f(mvMat).invert().transpose();
+        glUniformMatrix4fv(pDefaultNormLoc, false, invTrMat.get(valsOf16));
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
@@ -194,8 +200,10 @@ public class Program9_3 {
     }
 
     private static void getAllUniformsLoc() {
-        p2mvLoc = glGetUniformLocation(renderingProgram, "mv_matrix");
-        p2projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
+        pDefaultMvLoc = glGetUniformLocation(defaultProgram, "mv_matrix");
+        pDefaultProjLoc = glGetUniformLocation(defaultProgram, "proj_matrix");
+        pDefaultNormLoc = glGetUniformLocation(defaultProgram, "norm_matrix");
+
         pSkyVMat = glGetUniformLocation(skyBoxProgram, "v_matrix");
         pSkyPMat = glGetUniformLocation(skyBoxProgram, "p_matrix");
     }
