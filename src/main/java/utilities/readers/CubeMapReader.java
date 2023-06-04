@@ -35,10 +35,11 @@ public class CubeMapReader {
         loadImageToTexture(zp, GL_TEXTURE_CUBE_MAP_POSITIVE_Z);
         loadImageToTexture(zn, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z);
 
+        // 經過測試，沒有這2行無法執行。沒有設定這2行，OpenGL會將這個Texture視為"不完整"!
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        // 經過測試，沒有這2行無法執行。沒有設定這2行，OpenGL會將這個Texture視為"不完整"!
 
+        // 消除連接處縫隙
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
