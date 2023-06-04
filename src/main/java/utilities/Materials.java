@@ -48,4 +48,5 @@ public class Materials {
     public static float silverShininess() {
         return 51.2f;
     }
+
 }

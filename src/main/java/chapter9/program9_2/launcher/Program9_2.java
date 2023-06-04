@@ -1,17 +1,21 @@
-package chapter8.program8_1.launcher;
+/*
+* This program is a demo of skybox.*/
+
+package chapter9.program9_2.launcher;
 
 
 import chapter6.Torus;
-import utilities.buffers.ShadowFrameBuffer;
-import chapter8.program8_1.callbacks.CursorCB;
-import chapter8.program8_1.callbacks.FrameBufferResizeCB;
-import chapter8.program8_1.callbacks.KeyCB;
+import chapter9.program9_2.callbacks.P9_2CursorCB;
+import chapter9.program9_2.callbacks.P9_2FrameBufferResizeCB;
+import chapter9.program9_2.callbacks.P9_2KeyCB;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import utilities.*;
+import utilities.buffers.ShadowFrameBuffer;
+import utilities.readers.CubeMapReader;
 import utilities.readers.ModelReader;
 
 import java.nio.FloatBuffer;
@@ -21,9 +25,7 @@ import java.nio.file.Path;
 import static org.joml.Math.toRadians;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL43.*;
-
-
-public class Program8_1 {
+public class Program9_2 {
 
     private static long windowHandle;
 
@@ -33,7 +35,7 @@ public class Program8_1 {
 
     private static final FloatBuffer valsOf16 = BufferUtils.createFloatBuffer(16);// utility buffer for transferring matrices
     private static final FloatBuffer valsOf3 = BufferUtils.createFloatBuffer(3);
-    private static final int[] vbo = new int[8];
+    private static final int[] vbo = new int[9];
 
     private static final Vector3f LIGHT_POS = new Vector3f(-3.8f, 2.2f, 1.1f);
     private static final Vector3f TORUS_POS = new Vector3f(1.6f, 0f, -.3f);
@@ -47,12 +49,12 @@ public class Program8_1 {
     private static final float[] LIGHT_SPECULAR = {1.0f, 1.0f, 1.0f, 1.0f};
 
     private static Torus torus;
-    private static int renderingProgram1, renderingProgram2;
+    private static int renderingProgram1, renderingProgram2, skyBoxProgram;
 
 
     private static ModelReader pyramid, grid;
     private static int p1shadowMVPLoc, p2mvLoc, p2projLoc, p2nLoc, p2sLoc, p2mshiLoc, p2ambLoc, p2globalAmbLoc, p2diffLoc,
-            p2specLoc, p2posLoc, p2mambLoc, p2mdiffLoc, p2mspecLoc, p2FrameBufferWidthLoc, p2FrameBufferHeightLoc;
+            p2specLoc, p2posLoc, p2mambLoc, p2mdiffLoc, p2mspecLoc, p2FrameBufferWidthLoc, p2FrameBufferHeightLoc, pSkyVMat, pSkyPMat;
     private static final Vector3f ORIGIN = new Vector3f(0.0f, 0.0f, 0.0f);
     private static final Vector3fc UP = new Vector3f(0.0f, 1.0f, 0.0f);
     private static final Matrix4f B = new Matrix4f(
@@ -65,7 +67,7 @@ public class Program8_1 {
     private static ShadowFrameBuffer shadowFrameBuffer;
 
     private static final Camera CAMERA = new Camera().sensitive(.04f).step(.05f);
-    private static final CursorCB CURSOR_CB = new CursorCB().setCamera(CAMERA);
+    private static final P9_2CursorCB CURSOR_CB = new P9_2CursorCB().setCamera(CAMERA);
 
 
     public static void main(String[] args) {
@@ -82,24 +84,31 @@ public class Program8_1 {
     private static void init() {
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
         CAMERA.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
-        GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, "第8章");
+        GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, "第9章 天空盒");
         windowHandle = glfwWindow.getWindowHandle();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
         shadowFrameBuffer = new ShadowFrameBuffer(windowHandle);
-        glfwSetFramebufferSizeCallback(windowHandle, new FrameBufferResizeCB(CAMERA, shadowFrameBuffer));
+        glfwSetFramebufferSizeCallback(windowHandle, new P9_2FrameBufferResizeCB(CAMERA, shadowFrameBuffer));
         glfwSetCursorPosCallback(windowHandle, CURSOR_CB);
-        glfwSetKeyCallback(windowHandle, new KeyCB(CAMERA, CURSOR_CB));
+        glfwSetKeyCallback(windowHandle, new P9_2KeyCB(CAMERA, CURSOR_CB));
         glEnable(GL_CULL_FACE);
         glFrontFace(GL_CCW);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE0);
-        renderingProgram1 = new ShaderProgramSetter(Path.of("src/main/java/chapter8/program8_1/shaders/vert1Shader.glsl")
-                , Path.of("src/main/java/chapter8/program8_1/shaders/frag1Shader.glsl"))
+        glActiveTexture(GL_TEXTURE1);
+        renderingProgram1 = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_2/shaders/vert1Shader.glsl")
+                , Path.of("src/main/java/chapter9/program9_2/shaders/frag1Shader.glsl"))
                 .getProgram();
-        renderingProgram2 = new ShaderProgramSetter(Path.of("src/main/java/chapter8/program8_1/shaders/vert2Shader.glsl")
-                , Path.of("src/main/java/chapter8/program8_1/shaders/frag2Shader.glsl"))
+        renderingProgram2 = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_2/shaders/vert2Shader.glsl")
+                , Path.of("src/main/java/chapter9/program9_2/shaders/frag2Shader.glsl"))
                 .getProgram();
+        skyBoxProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_2/shaders/skybox/CubeVertShader.glsl")
+                , Path.of("src/main/java/chapter9/program9_2/shaders/skybox/SkyboxFragShader.glsl"))
+                .getProgram();
+
+        CubeMapReader skyboxTexture = new CubeMapReader("src/main/java/chapter9/program9_2/skybox");
+        skyboxTexture.bind();
 
         setupVertices();
         getAllUniformsLoc();
@@ -168,8 +177,8 @@ public class Program8_1 {
         System.out.println("Loading models...");
 
         torus = new Torus(.5f, .2f, 48, true);
-        pyramid = new ModelReader("src/main/java/chapter8/program8_1/models/pyr.obj");
-        grid = new ModelReader("src/main/java/chapter8/program8_1/models/cube.obj");
+        pyramid = new ModelReader("src/main/java/chapter9/program9_2/models/pyr.obj");
+        grid = new ModelReader("src/main/java/chapter9/program9_2/models/cube.obj");
 
         int[] vao = new int[1];
         glGenVertexArrays(vao);
@@ -219,15 +228,46 @@ public class Program8_1 {
         glBindBuffer(GL_ARRAY_BUFFER, vbo[7]); // #7: 法向量
         glBufferData(GL_ARRAY_BUFFER, grid.getPvalue(), GL_STATIC_DRAW);
 
+        // skybox
+        float[] skyboxVertices = {	-1.0f,  1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f,
+                1.0f, -1.0f, -1.0f, 1.0f,  1.0f, -1.0f, -1.0f,  1.0f, -1.0f,
+                1.0f, -1.0f, -1.0f, 1.0f, -1.0f,  1.0f, 1.0f,  1.0f, -1.0f,
+                1.0f, -1.0f,  1.0f, 1.0f,  1.0f,  1.0f, 1.0f,  1.0f, -1.0f,
+                1.0f, -1.0f,  1.0f, -1.0f, -1.0f,  1.0f, 1.0f,  1.0f,  1.0f,
+                -1.0f, -1.0f,  1.0f, -1.0f,  1.0f,  1.0f, 1.0f,  1.0f,  1.0f,
+                -1.0f, -1.0f,  1.0f, -1.0f, -1.0f, -1.0f, -1.0f,  1.0f,  1.0f,
+                -1.0f, -1.0f, -1.0f, -1.0f,  1.0f, -1.0f, -1.0f,  1.0f,  1.0f,
+                -1.0f, -1.0f,  1.0f,  1.0f, -1.0f,  1.0f,  1.0f, -1.0f, -1.0f,
+                1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f,  1.0f,
+                -1.0f,  1.0f, -1.0f, 1.0f,  1.0f, -1.0f, 1.0f,  1.0f,  1.0f,
+                1.0f,  1.0f,  1.0f, -1.0f,  1.0f,  1.0f, -1.0f,  1.0f, -1.0f
+        };
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[8]);
+        glBufferData(GL_ARRAY_BUFFER, skyboxVertices, GL_STATIC_DRAW);
 
         System.out.println("Model load done.");
     }
 
     private static void passTwo(Matrix4f torusMMat, Matrix4f pyramidMMat, Matrix4f gridMMat, int[] frameBufferSize) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glUseProgram(renderingProgram2);
-
         CAMERA.updateVMat();
+
+        // Draw skybox
+        glUseProgram(skyBoxProgram);
+
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
+        glUniformMatrix4fv(pSkyVMat, false, CAMERA.getVMat().get(valsOf16));
+        glUniformMatrix4fv(pSkyPMat, false, CAMERA.getProjMat().get(valsOf16));
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[8]);
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 108);
+
+
+        // Draw scene
+        glUseProgram(renderingProgram2);
+        glEnable(GL_CULL_FACE);
+        glEnable(GL_DEPTH_TEST);
 
         glUniform1i(p2FrameBufferWidthLoc, frameBufferSize[0]);
         glUniform1i(p2FrameBufferHeightLoc, frameBufferSize[1]);
@@ -247,7 +287,7 @@ public class Program8_1 {
         glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
         glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]);
+//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]);
         glDrawElements(GL_TRIANGLES, torus.getNumIndices(), GL_UNSIGNED_INT, 0);
 
 
@@ -283,7 +323,6 @@ public class Program8_1 {
         glBindBuffer(GL_ARRAY_BUFFER, vbo[7]);
         glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[6]);
         glDrawArrays(GL_TRIANGLES, 0, grid.getNumOfVertices());
     }
 
@@ -316,5 +355,7 @@ public class Program8_1 {
         p2mshiLoc = glGetUniformLocation(renderingProgram2, "material.shininess");
         p2FrameBufferWidthLoc = glGetUniformLocation(renderingProgram2, "frameBufferSize.width");
         p2FrameBufferHeightLoc = glGetUniformLocation(renderingProgram2, "frameBufferSize.height");
+        pSkyVMat = glGetUniformLocation(skyBoxProgram, "v_matrix");
+        pSkyPMat = glGetUniformLocation(skyBoxProgram, "p_matrix");
     }
 }
