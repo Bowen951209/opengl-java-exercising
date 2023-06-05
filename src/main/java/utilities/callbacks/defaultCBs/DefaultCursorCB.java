@@ -1,4 +1,4 @@
-package chapter9.program9_3.callbacks;
+package utilities.callbacks.defaultCBs;
 
 import chapter9.program9_3.launcher.Program9_3;
 import org.lwjgl.BufferUtils;
@@ -9,13 +9,12 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class P9_3CursorCB extends GLFWCursorPosCallback {
-    private Camera CAMERA;
+class DefaultCursorCB extends GLFWCursorPosCallback {
+    private final Camera CAMERA;
     private long window;
 
-    public P9_3CursorCB setCamera(Camera camera) {
+    public DefaultCursorCB(Camera camera) {
         this.CAMERA = camera;
-        return this;
     }
 
     private boolean lockCursor;
@@ -34,6 +33,7 @@ public class P9_3CursorCB extends GLFWCursorPosCallback {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
         }
     }
+
     @Override
     public void invoke(long window, double xpos, double ypos) {
         this.window = window;
@@ -41,7 +41,7 @@ public class P9_3CursorCB extends GLFWCursorPosCallback {
         if (lockCursor) {
             IntBuffer width = BufferUtils.createIntBuffer(1);
             IntBuffer height = BufferUtils.createIntBuffer(1);
-            glfwGetFramebufferSize(Program9_3.getWindowHandle(), width, height);
+            glfwGetFramebufferSize(Program9_3.getWindowID(), width, height);
             assert width.get(0) == 0;
             assert height.get(0) == 0;
 
@@ -66,5 +66,4 @@ public class P9_3CursorCB extends GLFWCursorPosCallback {
             }
         }
     }
-
 }

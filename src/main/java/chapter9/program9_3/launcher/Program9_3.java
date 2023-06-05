@@ -2,9 +2,6 @@ package chapter9.program9_3.launcher;
 
 
 import chapter6.Torus;
-import chapter9.program9_3.callbacks.P9_3CursorCB;
-import chapter9.program9_3.callbacks.P9_3FrameBufferResizeCB;
-import chapter9.program9_3.callbacks.P9_3KeyCB;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -13,6 +10,7 @@ import utilities.Camera;
 import utilities.Color;
 import utilities.GLFWWindow;
 import utilities.ShaderProgramSetter;
+import utilities.callbacks.defaultCBs.DefaultCallbacks;
 import utilities.readers.CubeMapReader;
 
 import java.nio.FloatBuffer;
@@ -24,10 +22,10 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL43.*;
 public class Program9_3 {
 
-    private static long windowHandle;
+    private static long windowID;
 
-    public static long getWindowHandle() {
-        return windowHandle;
+    public static long getWindowID() {
+        return windowID;
     }
 
     private static final FloatBuffer valsOf16 = BufferUtils.createFloatBuffer(16);// utility buffer for transferring matrices
@@ -42,13 +40,12 @@ public class Program9_3 {
 
 
     private static final Camera CAMERA = new Camera().sensitive(.04f).step(.05f);
-    private static final P9_3CursorCB CURSOR_CB = new P9_3CursorCB().setCamera(CAMERA);
 
 
     public static void main(String[] args) {
         init();
         // 迴圈
-        while (!GLFW.glfwWindowShouldClose(windowHandle)) {
+        while (!GLFW.glfwWindowShouldClose(windowID)) {
             loop();
         }
         // 釋出
@@ -60,11 +57,11 @@ public class Program9_3 {
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
         CAMERA.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, "第9章 環境貼圖");
-        windowHandle = glfwWindow.getWindowHandle();
+        windowID = glfwWindow.getWindowHandle();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
-        glfwSetFramebufferSizeCallback(windowHandle, new P9_3FrameBufferResizeCB(CAMERA));
-        glfwSetCursorPosCallback(windowHandle, CURSOR_CB);
-        glfwSetKeyCallback(windowHandle, new P9_3KeyCB(CAMERA, CURSOR_CB));
+
+        new DefaultCallbacks(windowID, CAMERA).bindToGLFW();
+
         glEnable(GL_CULL_FACE);
         glFrontFace(GL_CCW);
         glEnable(GL_DEPTH_TEST);
@@ -99,7 +96,7 @@ public class Program9_3 {
 
         CAMERA.handle();
 
-        glfwSwapBuffers(windowHandle);
+        glfwSwapBuffers(windowID);
         glfwPollEvents();
     }
 

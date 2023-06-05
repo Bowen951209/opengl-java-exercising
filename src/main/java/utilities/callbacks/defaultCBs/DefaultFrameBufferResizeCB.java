@@ -1,14 +1,14 @@
-package chapter9.program9_3.callbacks;
+package utilities.callbacks.defaultCBs;
 
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import utilities.Camera;
 
 import static org.lwjgl.opengl.GL11.glViewport;
 
-public class P9_3FrameBufferResizeCB extends GLFWFramebufferSizeCallback {
+class DefaultFrameBufferResizeCB extends GLFWFramebufferSizeCallback {
     private final Camera CAMERA;
 
-    public P9_3FrameBufferResizeCB(Camera CAMERA) {
+    public DefaultFrameBufferResizeCB(Camera CAMERA) {
         this.CAMERA = CAMERA;
     }
     @Override
