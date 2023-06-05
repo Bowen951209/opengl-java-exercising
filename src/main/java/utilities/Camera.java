@@ -3,11 +3,13 @@ package utilities;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
+import static utilities.ValuesContainer.VEC3_FOR_UTILS;
+
 public class Camera {
     private static final Vector3f Y = new Vector3f(0f, 1f, 0f);
     private final Vector3f POSITION = new Vector3f(0f, 0f, 5f);
     private final Vector3f DIRECTION = new Vector3f(0f, 0f, -1f);
-    private Matrix4f VMat;
+    private final Matrix4f VMat = new Matrix4f();
 
     public Matrix4f getVMat() {
         return VMat;
@@ -44,20 +46,23 @@ public class Camera {
     private float sensitive = .04f;
 
     public void updateVMat() {
-        Vector3f lookAtPoint = new Vector3f(POSITION).add(DIRECTION);
-        this.VMat = new Matrix4f();
-        this.VMat.lookAt(this.POSITION, lookAtPoint, new Vector3f(0f, 1f, 0f));
+        Vector3f lookAtPoint = VEC3_FOR_UTILS;
+        lookAtPoint.set(POSITION).add(DIRECTION);
+        VMat.identity();
+        VMat.lookAt(this.POSITION, lookAtPoint, Y);
     }
 
     public void lookUp() {
-        Vector3f liftVec = new Vector3f(DIRECTION).cross(Y);
-        DIRECTION.rotateAxis(sensitive, liftVec.x,  liftVec.y, liftVec.z);
+        Vector3f leftVec = VEC3_FOR_UTILS;
+        leftVec.set(DIRECTION).cross(Y);
+        DIRECTION.rotateAxis(sensitive, leftVec.x,  leftVec.y, leftVec.z);
 
     }
 
     public void lookDown() {
-        Vector3f liftVec = new Vector3f(DIRECTION).cross(Y);
-        DIRECTION.rotateAxis(-sensitive, liftVec.x,  liftVec.y, liftVec.z);
+        Vector3f leftVec = VEC3_FOR_UTILS;
+        leftVec.set(DIRECTION).cross(Y);
+        DIRECTION.rotateAxis(-sensitive, leftVec.x,  leftVec.y, leftVec.z);
     }
 
     public void lookLeft() {
@@ -101,23 +106,23 @@ public class Camera {
     }
 
     public void handle() {
-        final Vector3f DIRECTION_MUL_STEP = new Vector3f(this.DIRECTION).mul(step);
+        final Vector3f DIRECTION_MUL_STEP = VEC3_FOR_UTILS.set(DIRECTION).mul(step);
 
-        final Vector3f CAM_FRONT = new Vector3f(DIRECTION_MUL_STEP.x, 0f, DIRECTION_MUL_STEP.z);
+        final Vector3f CAM_FRONT = VEC3_FOR_UTILS.set(DIRECTION_MUL_STEP.x, 0f, DIRECTION_MUL_STEP.z);
 
         if (forward) {
             POSITION.add(CAM_FRONT);
         }
         if (backward) {
-            final Vector3f CAM_BACK = new Vector3f(CAM_FRONT).mul(-1f);
+            final Vector3f CAM_BACK = VEC3_FOR_UTILS.set(CAM_FRONT).mul(-1f);
             POSITION.add(CAM_BACK);
         }
         if (left) {
-            final Vector3f CAM_LEFT = new Vector3f(CAM_FRONT).rotateY(.5f * 3.14f); // 90 DEG
+            final Vector3f CAM_LEFT = VEC3_FOR_UTILS.set(CAM_FRONT).rotateY(.5f * 3.14f); // 90 DEG
             POSITION.add(CAM_LEFT);
         }
         if (right) {
-            final Vector3f CAM_RIGHT = new Vector3f(CAM_FRONT).rotateY(1.5f * 3.14f);
+            final Vector3f CAM_RIGHT = VEC3_FOR_UTILS.set(CAM_FRONT).rotateY(1.5f * 3.14f);
             POSITION.add(CAM_RIGHT);
         }
     }
