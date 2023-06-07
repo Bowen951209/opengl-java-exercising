@@ -106,6 +106,7 @@ public class Camera {
     }
 
     public void handle() {
+        // TODO: 2023/6/7 Don't use util container, because it is super unsafe!
         final Vector3f DIRECTION_MUL_STEP = VEC3_FOR_UTILS.set(DIRECTION).mul(step);
 
         final Vector3f CAM_FRONT = VEC3_FOR_UTILS.set(DIRECTION_MUL_STEP.x, 0f, DIRECTION_MUL_STEP.z);
