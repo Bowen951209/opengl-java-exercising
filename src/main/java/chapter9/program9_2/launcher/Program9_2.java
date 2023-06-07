@@ -4,7 +4,7 @@
 package chapter9.program9_2.launcher;
 
 
-import chapter6.Torus;
+import utilities.models.Torus;
 import chapter9.program9_2.callbacks.P9_2CursorCB;
 import chapter9.program9_2.callbacks.P9_2FrameBufferResizeCB;
 import chapter9.program9_2.callbacks.P9_2KeyCB;

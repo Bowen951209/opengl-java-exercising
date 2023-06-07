@@ -1,8 +1,6 @@
 package chapter9.program9_3.launcher;
 
 
-import chapter6.Torus;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
@@ -11,16 +9,17 @@ import utilities.Color;
 import utilities.GLFWWindow;
 import utilities.ShaderProgramSetter;
 import utilities.callbacks.defaultCBs.DefaultCallbacks;
+import utilities.models.Torus;
 import utilities.readers.CubeMapReader;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
 
-import static org.joml.Math.toRadians;
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL43.*;
-import static utilities.ValuesContainer.*;
+import static utilities.ValuesContainer.VALS_OF_16;
 
 public class Program9_3 {
 
@@ -87,14 +86,9 @@ public class Program9_3 {
     private static void loop() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         CAMERA.updateVMat();
-        // TODO: 2023/6/5 Model matrix should NEVER use util container. Instead, create a separated container in a model's own class.
-        Matrix4f torusMMat = new Matrix4f()
-                .translate(TORUS_POS)
-                .rotateX(toRadians((float) glfwGetTime() * 100f))
-                .scale(2.5f);
 
         drawSkybox();
-        drawScene(torusMMat);
+        drawScene();
 
         CAMERA.handle();
 
@@ -107,7 +101,7 @@ public class Program9_3 {
     private static void setupVertices() {
         System.out.println("Loading models...");
 
-        torus = new Torus(.5f, .2f, 48, true);
+        torus = new Torus(.5f, .2f, 48, true, TORUS_POS);
 
         int[] vao = new int[1];
         glGenVertexArrays(vao);
@@ -177,18 +171,19 @@ public class Program9_3 {
         glEnable(GL_DEPTH_TEST);
     }
 
-    private static void drawScene(Matrix4f torusMMat) {
+    private static void drawScene() {
         glUseProgram(defaultProgram);
         glEnable(GL_DEPTH_TEST);
 
 //         繪製torus
-        Matrix4f mvMat = MAT4_FOR_UTILS.set(CAMERA.getVMat()).mul(torusMMat);
+        torus.updateState(CAMERA);
 
-        glUniformMatrix4fv(pDefaultMvLoc, false, mvMat.get(VALS_OF_16));
+//        glUniformMatrix4fv(pDefaultMvLoc, false, mvMat.get(VALS_OF_16));
+        glUniformMatrix4fv(pDefaultMvLoc, false, torus.getMvMat().get(VALS_OF_16));
         glUniformMatrix4fv(pDefaultProjLoc, false, CAMERA.getProjMat().get(VALS_OF_16));
 
-        Matrix4f invTrMat = MAT4_FOR_UTILS.set(mvMat).invert().transpose();
-        glUniformMatrix4fv(pDefaultNormLoc, false, invTrMat.get(VALS_OF_16));
+//        glUniformMatrix4fv(pDefaultNormLoc, false, invTrMat.get(VALS_OF_16));
+        glUniformMatrix4fv(pDefaultNormLoc, false, torus.getInvTrMat().get(VALS_OF_16));
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);

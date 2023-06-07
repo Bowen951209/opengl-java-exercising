@@ -1,7 +1,7 @@
 package chapter7.program7_1;
 
 
-import chapter6.Torus;
+import utilities.models.Torus;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;

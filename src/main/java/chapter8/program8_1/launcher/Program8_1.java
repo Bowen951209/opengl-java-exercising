@@ -1,7 +1,7 @@
 package chapter8.program8_1.launcher;
 
 
-import chapter6.Torus;
+import utilities.models.Torus;
 import utilities.buffers.ShadowFrameBuffer;
 import chapter8.program8_1.callbacks.CursorCB;
 import chapter8.program8_1.callbacks.FrameBufferResizeCB;

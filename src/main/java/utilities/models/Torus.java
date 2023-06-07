@@ -1,14 +1,16 @@
-package chapter6;
+package utilities.models;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
+import utilities.Camera;
 
 import java.nio.IntBuffer;
 
 import static org.joml.Math.toRadians;
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
-public class Torus {
+public class Torus extends Model {
     private int numVertices;
     private final int prec;
     private int[] indices;
@@ -23,6 +25,17 @@ public class Torus {
     private IntBuffer indicesBuffer;
 
     public Torus(float innerRadius, float outerRadius, int precision, boolean usingBuffer) {
+        position = new Vector3f();
+
+        inner = innerRadius;
+        outer = outerRadius;
+        prec = precision;
+        initTorus(usingBuffer);
+    }
+
+    public Torus(float innerRadius, float outerRadius, int precision, boolean usingBuffer, Vector3f position) {
+        this.position = position;
+
         inner = innerRadius;
         outer = outerRadius;
         prec = precision;
@@ -142,7 +155,23 @@ public class Torus {
     public int[] getIndicesInArray() {
         return indices;
     }
+
     public IntBuffer getIndicesInBuffer() {
         return indicesBuffer;
+    }
+
+    @Override
+    protected void updateMMat() {
+        mMat.identity()
+                .translate(position)
+                .rotateX(toRadians((float) glfwGetTime() * 100f))
+                .scale(2.5f);
+    }
+
+    @Override
+    public void updateState(Camera camera) {
+        updateMMat();
+        updateMvMat(camera);
+        updateInvTrMat();
     }
 }

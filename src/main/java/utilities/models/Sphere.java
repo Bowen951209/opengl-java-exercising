@@ -1,11 +1,11 @@
-package chapter6;
+package utilities.models;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import static org.joml.Math.*;
 
-public class Sphere {
+public class Sphere{
     private int numIndices;
     private final int prec; // prec = precision
     private int[ ] indices;
