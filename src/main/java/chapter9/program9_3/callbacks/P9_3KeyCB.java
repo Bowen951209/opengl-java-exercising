@@ -1,7 +1,7 @@
 package chapter9.program9_3.callbacks;
 
 import org.lwjgl.glfw.GLFWKeyCallback;
-import utilities.Camera;
+import utilities.sceneComponents.Camera;
 
 import static org.lwjgl.glfw.GLFW.*;
 

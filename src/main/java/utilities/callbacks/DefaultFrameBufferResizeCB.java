@@ -1,7 +1,7 @@
 package utilities.callbacks;
 
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
-import utilities.Camera;
+import utilities.sceneComponents.Camera;
 
 import static org.lwjgl.opengl.GL11.glViewport;
 

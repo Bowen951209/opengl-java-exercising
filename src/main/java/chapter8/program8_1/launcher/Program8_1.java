@@ -13,6 +13,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import utilities.*;
 import utilities.readers.ModelReader;
+import utilities.sceneComponents.Camera;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;

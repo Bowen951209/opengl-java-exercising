@@ -17,6 +17,7 @@ import utilities.*;
 import utilities.buffers.ShadowFrameBuffer;
 import utilities.readers.CubeMapReader;
 import utilities.readers.ModelReader;
+import utilities.sceneComponents.Camera;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;

@@ -1,7 +1,7 @@
 package utilities.callbacks;
 
 
-import utilities.Camera;
+import utilities.sceneComponents.Camera;
 
 import static org.lwjgl.glfw.GLFW.*;
 

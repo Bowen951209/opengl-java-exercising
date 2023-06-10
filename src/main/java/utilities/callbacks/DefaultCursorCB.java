@@ -2,7 +2,7 @@ package utilities.callbacks;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
-import utilities.Camera;
+import utilities.sceneComponents.Camera;
 
 import java.nio.IntBuffer;
 

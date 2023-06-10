@@ -1,4 +1,4 @@
-package utilities;
+package utilities.sceneComponents;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -9,6 +9,8 @@ public class Camera {
     private static final Vector3f Y = new Vector3f(0f, 1f, 0f);
     private final Vector3f POSITION = new Vector3f(0f, 0f, 5f);
     private final Vector3f DIRECTION = new Vector3f(0f, 0f, -1f);
+    private final Vector3f DIRECTION_MUL_STEP = new Vector3f();
+    private final Vector3f CAM_FRONT = new Vector3f();
     private final Matrix4f VMat = new Matrix4f();
 
     public Matrix4f getVMat() {
@@ -106,10 +108,9 @@ public class Camera {
     }
 
     public void handle() {
-        // TODO: 2023/6/7 Don't use util container, because it is super unsafe!
-        final Vector3f DIRECTION_MUL_STEP = VEC3_FOR_UTILS.set(DIRECTION).mul(step);
+        DIRECTION_MUL_STEP.set(DIRECTION).mul(step);
 
-        final Vector3f CAM_FRONT = VEC3_FOR_UTILS.set(DIRECTION_MUL_STEP.x, 0f, DIRECTION_MUL_STEP.z);
+        CAM_FRONT.set(DIRECTION_MUL_STEP.x, 0f, DIRECTION_MUL_STEP.z);
 
         if (forward) {
             POSITION.add(CAM_FRONT);

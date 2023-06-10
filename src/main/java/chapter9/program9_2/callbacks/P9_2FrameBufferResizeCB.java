@@ -2,7 +2,7 @@ package chapter9.program9_2.callbacks;
 
 import utilities.buffers.ShadowFrameBuffer;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
-import utilities.Camera;
+import utilities.sceneComponents.Camera;
 
 import static org.lwjgl.opengl.GL11.glViewport;
 
