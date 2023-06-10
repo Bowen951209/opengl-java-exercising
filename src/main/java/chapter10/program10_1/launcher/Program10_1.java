@@ -62,14 +62,14 @@ public class Program10_1 {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE1);
-        defaultProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_3/shaders/default/vertShader.glsl")
-                , Path.of("src/main/java/chapter9/program9_3/shaders/default/fragShader.glsl"))
+        defaultProgram = new ShaderProgramSetter(Path.of("src/main/resources/shaders/program10_1/vert.glsl")
+                , Path.of("src/main/resources/shaders/program10_1/frag.glsl"))
                 .getProgram();
         skyBoxProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_3/shaders/skybox/CubeVertShader.glsl")
                 , Path.of("src/main/java/chapter9/program9_3/shaders/skybox/SkyboxFragShader.glsl"))
                 .getProgram();
 
-        CubeMapReader skyboxTexture = new CubeMapReader("src/main/java/chapter9/program9_3/textures/skybox");
+        CubeMapReader skyboxTexture = new CubeMapReader("src/main/resources/textures/skycubes/lakesIsland");
         skyboxTexture.bind();
 
         getAllUniformsLoc();
@@ -83,6 +83,7 @@ public class Program10_1 {
         CAMERA.updateVMat();
 
         skybox.draw();
+
         drawScene();
 
         CAMERA.handle();

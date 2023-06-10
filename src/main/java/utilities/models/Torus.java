@@ -9,8 +9,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import static org.joml.Math.toRadians;
-import static org.lwjgl.glfw.GLFW.glfwGetTime;
-import static org.lwjgl.opengl.GL43.*;
+import static org.lwjgl.opengl.GL43.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL43.glDrawElements;
 
 public class Torus extends Model {
     private int numVertices;
@@ -186,8 +186,12 @@ public class Torus extends Model {
     protected void updateMMat() {
         M_MAT.identity()
                 .translate(POSITION)
-                .rotateX(toRadians((float) glfwGetTime() * 100f))
-                .scale(2.5f);
+                .scale(2.5f)
+                .rotateX(.5f);
+//        M_MAT.identity()
+//                .translate(POSITION)
+//                .rotateX(toRadians((float) glfwGetTime() * 100f))
+//                .scale(2.5f);
     }
 
     @Override
