@@ -1,4 +1,4 @@
-package utilities.callbacks.defaultCBs;
+package utilities.callbacks;
 
 
 import utilities.Camera;

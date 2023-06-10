@@ -1,14 +1,11 @@
-package chapter9.program9_3.launcher;
+package chapter10.program10_1.launcher;
 
 
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
-import utilities.Camera;
-import utilities.Color;
-import utilities.GLFWWindow;
-import utilities.ShaderProgramSetter;
-import chapter9.program9_3.callbacks.P9_3Callbacks;
+import utilities.*;
+import utilities.callbacks.DefaultCallbacks;
 import utilities.models.Torus;
 import utilities.readers.CubeMapReader;
 
@@ -21,46 +18,45 @@ import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL43.*;
 import static utilities.ValuesContainer.VALS_OF_16;
 
-public class Program9_3 {
+public class Program10_1 {
 
-    private static long windowID;
+    private long windowID;
 
-    public static long getWindowID() {
-        return windowID;
-    }
-
-    private static final int[] vbo = new int[5];
-
-    private static final Vector3f TORUS_POS = new Vector3f(0f, 0f, 0f);
-
-    private static Torus torus;
-    private static int defaultProgram, skyBoxProgram;
-
-    private static int pDefaultMvLoc, pDefaultProjLoc, pDefaultNormLoc, pSkyVMat, pSkyPMat;
-
-
-    private static final Camera CAMERA = new Camera().sensitive(.04f).step(.05f);
-
-
-    public static void main(String[] args) {
-        init();
-        // 迴圈
+    public Program10_1(String title) {
+        init(title);
         while (!GLFW.glfwWindowShouldClose(windowID)) {
             loop();
         }
+    }
+
+    private final int[] vbo = new int[5];
+
+    private final Vector3f TORUS_POS = new Vector3f(0f, 0f, 0f);
+
+    private Torus torus;
+    private int defaultProgram, skyBoxProgram;
+
+    private int pDefaultMvLoc, pDefaultProjLoc, pDefaultNormLoc, pSkyVMat, pSkyPMat;
+
+
+    private final Camera CAMERA = new Camera().sensitive(.04f).step(.05f);
+
+
+    public static void main(String[] args) {
+        new Program10_1("Procedural Bump Mapping");
         // 釋出
         GLFW.glfwTerminate();
         System.out.println("Program exit and freed glfw.");
     }
 
-    private static void init() {
+    public void init(String title) {
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
         CAMERA.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
-        GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, "第9章 環境貼圖");
+        GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, title);
         windowID = glfwWindow.getWindowHandle();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
 
-        new P9_3Callbacks(windowID, CAMERA).bindToGLFW();
+        new DefaultCallbacks(windowID, CAMERA).bindToGLFW();
 
         glEnable(GL_CULL_FACE);
         glFrontFace(GL_CCW);
@@ -83,7 +79,7 @@ public class Program9_3 {
         System.out.println("Hint: You can press F1 to look around.");
     }
 
-    private static void loop() {
+    public void loop() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         CAMERA.updateVMat();
 
@@ -97,8 +93,7 @@ public class Program9_3 {
     }
 
 
-
-    private static void setupVertices() {
+    private void setupVertices() {
         System.out.println("Loading models...");
 
         torus = new Torus(.5f, .2f, 48, true, TORUS_POS);
@@ -138,18 +133,18 @@ public class Program9_3 {
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
 
         // skybox
-        float[] skyboxVertices = {	-1.0f,  1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f,
-                1.0f, -1.0f, -1.0f, 1.0f,  1.0f, -1.0f, -1.0f,  1.0f, -1.0f,
-                1.0f, -1.0f, -1.0f, 1.0f, -1.0f,  1.0f, 1.0f,  1.0f, -1.0f,
-                1.0f, -1.0f,  1.0f, 1.0f,  1.0f,  1.0f, 1.0f,  1.0f, -1.0f,
-                1.0f, -1.0f,  1.0f, -1.0f, -1.0f,  1.0f, 1.0f,  1.0f,  1.0f,
-                -1.0f, -1.0f,  1.0f, -1.0f,  1.0f,  1.0f, 1.0f,  1.0f,  1.0f,
-                -1.0f, -1.0f,  1.0f, -1.0f, -1.0f, -1.0f, -1.0f,  1.0f,  1.0f,
-                -1.0f, -1.0f, -1.0f, -1.0f,  1.0f, -1.0f, -1.0f,  1.0f,  1.0f,
-                -1.0f, -1.0f,  1.0f,  1.0f, -1.0f,  1.0f,  1.0f, -1.0f, -1.0f,
-                1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f,  1.0f,
-                -1.0f,  1.0f, -1.0f, 1.0f,  1.0f, -1.0f, 1.0f,  1.0f,  1.0f,
-                1.0f,  1.0f,  1.0f, -1.0f,  1.0f,  1.0f, -1.0f,  1.0f, -1.0f
+        float[] skyboxVertices = {-1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f,
+                1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f,
+                1.0f, -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f, -1.0f,
+                1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f,
+                1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+                -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+                -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, 1.0f,
+                -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f,
+                -1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f,
+                1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,
+                -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f,
+                1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f
         };
         glBindBuffer(GL_ARRAY_BUFFER, vbo[4]);
         glBufferData(GL_ARRAY_BUFFER, skyboxVertices, GL_STATIC_DRAW);
@@ -157,7 +152,7 @@ public class Program9_3 {
         System.out.println("Model load done.");
     }
 
-    private static void drawSkybox() {
+    private void drawSkybox() {
         glUseProgram(skyBoxProgram);
 
         glDisable(GL_DEPTH_TEST);
@@ -171,7 +166,7 @@ public class Program9_3 {
         glEnable(GL_DEPTH_TEST);
     }
 
-    private static void drawScene() {
+    private void drawScene() {
         glUseProgram(defaultProgram);
         glEnable(GL_DEPTH_TEST);
 
@@ -194,7 +189,7 @@ public class Program9_3 {
         glDrawElements(GL_TRIANGLES, torus.getNumIndices(), GL_UNSIGNED_INT, 0);
     }
 
-    private static void getAllUniformsLoc() {
+    private void getAllUniformsLoc() {
         pDefaultMvLoc = glGetUniformLocation(defaultProgram, "mv_matrix");
         pDefaultProjLoc = glGetUniformLocation(defaultProgram, "proj_matrix");
         pDefaultNormLoc = glGetUniformLocation(defaultProgram, "norm_matrix");

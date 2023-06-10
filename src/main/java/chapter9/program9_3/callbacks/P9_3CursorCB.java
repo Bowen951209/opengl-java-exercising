@@ -1,4 +1,4 @@
-package utilities.callbacks.defaultCBs;
+package chapter9.program9_3.callbacks;
 
 import chapter9.program9_3.launcher.Program9_3;
 import org.lwjgl.BufferUtils;
@@ -9,11 +9,11 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-class DefaultCursorCB extends GLFWCursorPosCallback {
+class P9_3CursorCB extends GLFWCursorPosCallback {
     private final Camera CAMERA;
     private long window;
 
-    public DefaultCursorCB(Camera camera) {
+    public P9_3CursorCB(Camera camera) {
         this.CAMERA = camera;
     }
 

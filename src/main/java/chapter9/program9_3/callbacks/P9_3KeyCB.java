@@ -1,15 +1,15 @@
-package utilities.callbacks.defaultCBs;
+package chapter9.program9_3.callbacks;
 
 import org.lwjgl.glfw.GLFWKeyCallback;
 import utilities.Camera;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-class DefaultKeyCB extends GLFWKeyCallback {
-    private final DefaultCursorCB CURSOR_CB;
+class P9_3KeyCB extends GLFWKeyCallback {
+    private final P9_3CursorCB CURSOR_CB;
     private final Camera CAMERA;
 
-    public DefaultKeyCB(Camera camera, DefaultCursorCB cursorCB) {
+    public P9_3KeyCB(Camera camera, P9_3CursorCB cursorCB) {
         this.CAMERA = camera;
         this.CURSOR_CB = cursorCB;
     }
