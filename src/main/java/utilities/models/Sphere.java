@@ -15,7 +15,7 @@ public class Sphere extends Model {
     private int numIndices;
     private final int prec; // prec = precision
     private int[] indices;
-    private Vector3f[] vertices;
+    private Vector3f[] vertices, tangent;
     private Vector2f[] texCoords;
     private Vector3f[] normals;
     private int numVertices;
@@ -68,6 +68,7 @@ public class Sphere extends Model {
         numIndices = prec * prec * 6;
         indices = new int[numIndices];
         vertices = new Vector3f[numVertices];
+        tangent = new Vector3f[numVertices];
         texCoords = new Vector2f[numVertices];
         normals = new Vector3f[numVertices];
         for (int i = 0; i < numVertices; i++) {
@@ -84,6 +85,16 @@ public class Sphere extends Model {
                 vertices[i * (prec + 1) + j].set(x, y, z);
                 texCoords[i * (prec + 1) + j].set((float) j / prec, (float) i / prec);
                 normals[i * (prec + 1) + j].set(x, y, z);
+
+                // calculate tangent vector
+
+                // if North or South Pole
+                if ((x == 0) && (y == 1) && (z == 0) || (x == 0) && (y == -1) && (z == 0)) {
+                    // set tangent to -Z axis
+                    tangent[i * (prec + 1) + j].set(0f, 0f, -1f);
+                } else { // If not pole, calculate tangent
+                    tangent[i * (prec + 1) + j] = (new Vector3f(0, 1, 0).cross(new Vector3f(x, y, z)));
+                }
             }
         }
         // calculate triangle indices
