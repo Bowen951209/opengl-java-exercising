@@ -104,6 +104,10 @@ public abstract class Model {
 
     protected abstract void updateMMat();
 
-    public abstract void updateState(Camera camera);
+    public void updateState(Camera camera) {
+        updateMMat();
+        updateMvMat(camera);
+        updateInvTrMat();
+    }
     public abstract void draw(int mode);
 }

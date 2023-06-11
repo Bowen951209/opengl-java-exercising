@@ -19,7 +19,7 @@ import static utilities.ValuesContainer.VALS_OF_16;
 
 public class Program10_1 {
 
-    private long windowID;
+    protected long windowID;
 
     public Program10_1(String title) {
         init(title);
@@ -38,7 +38,7 @@ public class Program10_1 {
     private int pDefaultMvLoc, pDefaultProjLoc, pDefaultNormLoc, pSkyVMatLoc, pSkyPMatLoc;
 
 
-    private final Camera CAMERA = new Camera().sensitive(.04f).step(.05f);
+    protected final Camera CAMERA = new Camera().sensitive(.04f).step(.05f);
 
 
     public static void main(String[] args) {
@@ -48,7 +48,7 @@ public class Program10_1 {
         System.out.println("Program exit and freed glfw.");
     }
 
-    public void init(String title) {
+    protected void init(String title) {
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
         CAMERA.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, title);
@@ -78,7 +78,7 @@ public class Program10_1 {
         System.out.println("Hint: You can press F1 to look around.");
     }
 
-    public void loop() {
+    protected void loop() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         CAMERA.updateVMat();
 
@@ -116,7 +116,7 @@ public class Program10_1 {
         torus.draw(GL_TRIANGLES);
     }
 
-    private void getAllUniformsLoc() {
+    protected void getAllUniformsLoc() {
         pDefaultMvLoc = glGetUniformLocation(defaultProgram, "mv_matrix");
         pDefaultProjLoc = glGetUniformLocation(defaultProgram, "proj_matrix");
         pDefaultNormLoc = glGetUniformLocation(defaultProgram, "norm_matrix");

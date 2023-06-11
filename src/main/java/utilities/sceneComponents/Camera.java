@@ -12,7 +12,7 @@ public class Camera {
     private final Vector3f DIRECTION_MUL_STEP = new Vector3f();
     private final Vector3f CAM_FRONT = new Vector3f();
     private final Matrix4f VMat = new Matrix4f();
-
+    public Camera() {}
     public Matrix4f getVMat() {
         return VMat;
     }

@@ -205,6 +205,5 @@ public class Torus extends Model {
     public void draw(int mode) {
         bindVAO();
         glDrawElements(mode, numIndices, GL_UNSIGNED_INT, 0);
-        indicesInBuffer.flip();
     }
 }
