@@ -33,7 +33,7 @@ public class Torus extends Model {
     }
 
     public Torus(float innerRadius, float outerRadius, int precision, boolean usingBuffer, Vector3f position) {
-        super(position, true, false);
+        super(position, true, false, false);
 
         INNER = innerRadius;
         OUTER = outerRadius;

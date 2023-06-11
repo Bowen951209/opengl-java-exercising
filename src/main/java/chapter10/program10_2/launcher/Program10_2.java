@@ -8,6 +8,7 @@ import utilities.ShaderProgramSetter;
 import utilities.callbacks.DefaultCallbacks;
 import utilities.models.Sphere;
 import utilities.sceneComponents.PositionalLight;
+import utilities.sceneComponents.Texture;
 
 import java.nio.file.Path;
 
@@ -24,6 +25,7 @@ public class Program10_2 extends Program10_1 {
     private Sphere sphere;
     private int defaultProgram;
     private Materials material;
+
     public Program10_2(String title) {
         super(title);
     }
@@ -52,6 +54,8 @@ public class Program10_2 extends Program10_1 {
         sphere = new Sphere();
         positionalLight = new PositionalLight();
         material = new Materials("gold");
+        Texture normalMapTexture = new Texture(0, "src/main/resources/textures/normalMaps/castleroofNORMAL.jpg");
+        normalMapTexture.bind();
 
         System.out.println("Hint: You can press F1 to look around.");
     }

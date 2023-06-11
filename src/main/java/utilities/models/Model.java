@@ -26,9 +26,9 @@ public abstract class Model {
 
     protected final Vector3f POSITION;
     private final int VAO, VERTICES_VBO, NORMALS_VBO;
-    private int ebo, tcVBO;
+    private int ebo, tcVBO, tangentsVBO;
 
-    protected Model(Vector3f position, boolean isUsingEBO, boolean isUsingTTextureCoordinate) {
+    protected Model(Vector3f position, boolean isUsingEBO, boolean isUsingTTextureCoordinate, boolean isUsingTangents) {
         this.POSITION = position;
         VAO = glGenVertexArrays();
         bindVAO();
@@ -51,12 +51,19 @@ public abstract class Model {
             tcVBO = glGenBuffers();
 
             glBindBuffer(GL_ARRAY_BUFFER, tcVBO);
+            glEnableVertexAttribArray(2);
+            glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
+        }
+        if (isUsingTangents) {
+            tangentsVBO = glGenBuffers();
+
+            glBindBuffer(GL_ARRAY_BUFFER, tangentsVBO);
             glEnableVertexAttribArray(3);
-            glVertexAttribPointer(3, 2, GL_FLOAT, false, 0, 0);
+            glVertexAttribPointer(3, 3, GL_FLOAT, false, 0, 0);
         }
     }
 
-    private void binEBO() {
+    private void bindEBO() {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     }
 
@@ -79,6 +86,11 @@ public abstract class Model {
         glBufferData(GL_ARRAY_BUFFER, tcs, GL_STATIC_DRAW);
     }
 
+    private void storeTangents(FloatBuffer tangents) {
+        glBindBuffer(GL_ARRAY_BUFFER, tangentsVBO);
+        glBufferData(GL_ARRAY_BUFFER, tangents, GL_STATIC_DRAW);
+    }
+
     protected void storeDataToVBOs(FloatBuffer vertices, FloatBuffer normals) {
         storeVertices(vertices);
         storeNormals(normals);
@@ -89,8 +101,13 @@ public abstract class Model {
         storeTextureCoords(tcs);
     }
 
+    protected void storeDataToVBOs(FloatBuffer vertices, FloatBuffer normals, FloatBuffer tcs, FloatBuffer tangents) {
+        storeDataToVBOs(vertices, normals, tcs);
+        storeTangents(tangents);
+    }
+
     protected void storeIndicesToEBO(IntBuffer indices) {
-        binEBO();
+        bindEBO();
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
     }
 
@@ -109,5 +126,6 @@ public abstract class Model {
         updateMvMat(camera);
         updateInvTrMat();
     }
+
     public abstract void draw(int mode);
 }

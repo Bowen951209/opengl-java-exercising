@@ -2,10 +2,15 @@
 
 layout (location = 0) in vec3 vertPos;
 layout (location = 1) in vec3 vertNormal;
+layout (location = 2) in vec2 tc;
+layout (location = 3) in vec3 tangent;
+
 out vec3 varyingNormal;
 out vec3 varyingLightDir;
 out vec3 varyingVertPos;
 out vec3 varyingHalfVector;
+out vec3 varyingTangent;
+out vec2 varyingTc;
 
 struct PositionalLight {
     vec4 ambient;
@@ -27,6 +32,8 @@ uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
 
+layout(binding = 0) uniform sampler2D normMap;
+
 void main(void) {
     // modify from blinn phong shader
 
@@ -35,6 +42,8 @@ void main(void) {
     varyingNormal = (norm_matrix * vec4(vertNormal, 1.0)).xyz;
     varyingHalfVector =
     normalize(normalize(varyingLightDir) + normalize(-varyingVertPos)).xyz;
+    varyingTc = tc;
+    varyingTangent = tangent;
 
     gl_Position = proj_matrix * mv_matrix * vec4(vertPos, 1.0);
 }

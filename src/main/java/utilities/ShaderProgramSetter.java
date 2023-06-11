@@ -35,7 +35,7 @@ public class ShaderProgramSetter {
         glAttachShader(programID, fragmentShaderID);
         glLinkProgram(programID);
         if (glGetProgrami(programID, GL_LINK_STATUS) == 0) {
-            System.err.println("Program Linked Failed. Error Output: " + glGetProgramInfoLog(programID));
+            throw new RuntimeException("Program" + programID + " linked failed\n" + glGetProgramInfoLog(programID));
         } else {
             System.out.println("ProgramID:"+ programID +" linked succeeded.");
         }
@@ -47,7 +47,7 @@ public class ShaderProgramSetter {
         glCompileShader(shaderID);
 
         if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == 0) {
-            System.err.println("Shader Compiled Failed. Error Output: " + glGetShaderInfoLog(shaderID));
+            throw new RuntimeException("Shader" + shaderID + " compiled failed\n" + glGetShaderInfoLog(shaderID));
         } else {
             System.out.println("    Shader ID:" +shaderID + " compiled succeeded.");
         }
