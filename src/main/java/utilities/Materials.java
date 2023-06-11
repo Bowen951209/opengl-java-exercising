@@ -1,6 +1,56 @@
 package utilities;
 
+import org.lwjgl.BufferUtils;
+
+import java.nio.FloatBuffer;
+
 public class Materials {
+    public FloatBuffer getAMBIENT() {
+        return AMBIENT;
+    }
+
+    public FloatBuffer getDIFFUSE() {
+        return DIFFUSE;
+    }
+
+    public FloatBuffer getSPECULAR() {
+        return SPECULAR;
+    }
+
+    public FloatBuffer getSHININESS() {
+        return SHININESS;
+    }
+
+    private final FloatBuffer AMBIENT = BufferUtils.createFloatBuffer(4);
+    private final FloatBuffer DIFFUSE = BufferUtils.createFloatBuffer(4);
+    private final FloatBuffer SPECULAR = BufferUtils.createFloatBuffer(4);
+    private final FloatBuffer SHININESS = BufferUtils.createFloatBuffer(1);
+
+    public Materials(String material) {
+        switch (material) {
+            case "gold" -> {
+                AMBIENT.put(goldAmbient());
+                DIFFUSE.put(goldDiffuse());
+                SPECULAR.put(goldSpecular());
+                SHININESS.put(goldShininess());
+            }
+            case "bronze" -> {
+                AMBIENT.put(bronzeAmbient());
+                DIFFUSE.put(bronzeDiffuse());
+                SPECULAR.put(bronzeSpecular());
+                SHININESS.put(bronzeShininess());
+            }
+            case "silver" -> {
+                AMBIENT.put(silverAmbient());
+                DIFFUSE.put(silverDiffuse());
+                SPECULAR.put(silverSpecular());
+                SHININESS.put(silverShininess());
+            }
+            default -> throw new RuntimeException("Undefined material is passed in.");
+        }
+    }
+
+
     public static float[] goldAmbient() {
         return new float[]{0.2473f, 0.1995f, 0.0745f, 1f};
     }
@@ -49,4 +99,10 @@ public class Materials {
         return 51.2f;
     }
 
+    public void flipAll() {
+        AMBIENT.flip();
+        DIFFUSE.flip();
+        SPECULAR.flip();
+        SHININESS.flip();
+    }
 }
