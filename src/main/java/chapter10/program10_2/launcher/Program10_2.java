@@ -46,15 +46,15 @@ public class Program10_2 extends Program10_1 {
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE0);
 
-        defaultProgram = new ShaderProgramSetter(Path.of("src/main/resources/shaders/program10_2/vert.glsl")
-                , Path.of("src/main/resources/shaders/program10_2/frag.glsl"))
+        defaultProgram = new ShaderProgramSetter(Path.of("assets/shaders/program10_2/vert.glsl")
+                , Path.of("assets/shaders/program10_2/frag.glsl"))
                 .getProgram();
 
         getAllUniformsLoc();
         sphere = new Sphere();
         positionalLight = new PositionalLight();
         material = new Materials("gold");
-        Texture normalMapTexture = new Texture(0, "src/main/resources/textures/normalMaps/castleroofNORMAL.jpg");
+        Texture normalMapTexture = new Texture(0, "assets/textures/normalMaps/castleroofNORMAL.jpg");
         normalMapTexture.bind();
 
         System.out.println("Hint: You can press F1 to look around.");
