@@ -89,7 +89,7 @@ public class Program10_2 extends Program10_1 {
         glfwPollEvents();
     }
 
-    private void drawScene() {
+    protected void drawScene() {
         glUseProgram(defaultProgram);
 
         //繪製sphere

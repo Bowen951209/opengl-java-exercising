@@ -32,13 +32,13 @@ switch (OperatingSystem.current()) {
                 : "natives-linux" as GStringImpl
         break
     case OperatingSystem.MAC_OS:
-        project.ext.lwjglNatives = System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos" as GStringImpl
+        project.ext.lwjglNatives = System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos" as GStringImpl as GStringImpl
         break
     case OperatingSystem.WINDOWS:
         def osArch = System.getProperty("os.arch")
         project.ext.lwjglNatives = osArch.contains("64")
                 ? "natives-windows${osArch.startsWith("aarch64") ? "-arm64" : ""}"
-                : "natives-windows-x86" as GStringImpl
+                : "natives-windows-x86" as GStringImpl as GStringImpl
         break
 }
 
@@ -75,7 +75,7 @@ tasks.register('copyRuntimeLibs', Copy) {
     into "build/dependencies/"
 }
 apply plugin: 'application'
-mainClassName = "chapter10.program10_2.launcher.Program10_2"
+mainClassName = "chapter10.program10_3.launcher.Program10_3"
 applicationDefaultJvmArgs = [
         "-Djava.util.logging.config.file=src/main/resources/logging.properties"
 ]

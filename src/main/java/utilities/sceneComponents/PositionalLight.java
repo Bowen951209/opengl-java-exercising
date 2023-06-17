@@ -37,7 +37,7 @@ public class PositionalLight {
 
     public PositionalLight() {
         this(
-                new float[] {0.7f, 0.7f, 0.7f, 1.0f},
+                new float[] {0.1f, 0.1f, 0.1f, 1.0f},
                 new float[] {0.0f, 0.0f, 0.0f, 1.0f},
                 new float[] {1.0f, 1.0f, 1.0f, 1.0f},
                 new float[] {1.0f, 1.0f, 1.0f, 1.0f},
