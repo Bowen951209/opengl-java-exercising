@@ -17,6 +17,7 @@ import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL43.*;
 import static utilities.ValuesContainer.VALS_OF_16;
 
+/*Normal Mapping*/
 public class Program10_2 extends Program10_1 {
     private int globalAmbientLoc, mv_matrixLoc, proj_matrixLoc, norm_matrixLoc, materialShininessLoc,
             lightAmbientLoc, lightDiffuseLoc, lightSpecularLoc, lightPosition, materialAmbientLoc,
