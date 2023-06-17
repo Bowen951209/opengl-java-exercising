@@ -1,4 +1,3 @@
-import org.codehaus.groovy.runtime.GStringImpl
 import org.gradle.internal.os.OperatingSystem
 
 plugins {
@@ -24,21 +23,21 @@ test {
 project.ext.lwjglVersion = "3.3.1"
 project.ext.jomlVersion = "1.10.5"
 
+
 switch (OperatingSystem.current()) {
     case OperatingSystem.LINUX:
         def osArch = System.getProperty("os.arch")
         project.ext.lwjglNatives = osArch.startsWith("arm") || osArch.startsWith("aarch64")
                 ? "natives-linux-${osArch.contains("64") || osArch.startsWith("armv8") ? "arm64" : "arm32"}"
-                : "natives-linux" as GStringImpl
-        break
+                : "natives-linux"
     case OperatingSystem.MAC_OS:
-        project.ext.lwjglNatives = System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos" as GStringImpl as GStringImpl
+        project.ext.lwjglNatives = System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos"
         break
     case OperatingSystem.WINDOWS:
         def osArch = System.getProperty("os.arch")
         project.ext.lwjglNatives = osArch.contains("64")
                 ? "natives-windows${osArch.startsWith("aarch64") ? "-arm64" : ""}"
-                : "natives-windows-x86" as GStringImpl as GStringImpl
+                : "natives-windows-x86"
         break
 }
 
@@ -51,6 +50,7 @@ repositories {
 }
 
 dependencies {
+    // LWJGL
     implementation 'org.suskalo:glfw-clj:0.1.66'
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 

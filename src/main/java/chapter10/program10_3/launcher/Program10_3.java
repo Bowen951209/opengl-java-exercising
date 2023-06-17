@@ -75,7 +75,6 @@ public class Program10_3 extends Program10_2 {
 
     @Override
     protected void drawScene() {
-
         glUseProgram(program);
 
         //繪製sphere
