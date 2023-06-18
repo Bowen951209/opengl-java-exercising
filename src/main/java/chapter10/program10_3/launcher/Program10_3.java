@@ -17,7 +17,7 @@ import static org.lwjgl.opengl.GL20.*;
 import static utilities.ValuesContainer.VALS_OF_16;
 
 public class Program10_3 extends Program10_2 {
-    private int program;
+    protected int program;
     private Sphere sphere;
     private PositionalLight positionalLight;
     private Materials material;

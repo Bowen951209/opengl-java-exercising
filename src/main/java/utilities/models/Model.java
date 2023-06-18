@@ -27,6 +27,11 @@ public abstract class Model {
     protected final Vector3f POSITION;
     private final int VAO, VERTICES_VBO, NORMALS_VBO;
     private int ebo, tcVBO, tangentsVBO;
+    protected FloatBuffer VERTICES_IN_BUF;
+    protected FloatBuffer NORMALS_IN_BUF;
+    protected FloatBuffer TC_IN_BUF;
+    protected FloatBuffer TANGENTS_IN_BUF;
+    protected IntBuffer INDICES_IN_BUFFER;
 
     protected Model(Vector3f position, boolean isUsingEBO, boolean isUsingTTextureCoordinate, boolean isUsingTangents) {
         this.POSITION = position;

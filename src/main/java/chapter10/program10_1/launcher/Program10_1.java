@@ -11,6 +11,7 @@ import utilities.sceneComponents.Camera;
 import utilities.sceneComponents.Skybox;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL43.*;
@@ -127,7 +128,11 @@ public class Program10_1 {
 
     protected void destroy() {
         // overrideable
+        glfwDestroyWindow(windowID);
+        System.out.println("GLFW window destroyed");
         glfwTerminate();
         System.out.println("GLFW terminated");
+        Objects.requireNonNull(glfwSetErrorCallback(null)).free();
+        System.out.println("GLFW error callback freed");
     }
 }

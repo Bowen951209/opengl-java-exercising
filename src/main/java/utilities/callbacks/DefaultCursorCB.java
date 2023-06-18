@@ -11,7 +11,6 @@ import static org.lwjgl.glfw.GLFW.*;
 class DefaultCursorCB extends GLFWCursorPosCallback {
     private final Camera CAMERA;
     private long window;
-
     public DefaultCursorCB(Camera camera) {
         this.CAMERA = camera;
     }
