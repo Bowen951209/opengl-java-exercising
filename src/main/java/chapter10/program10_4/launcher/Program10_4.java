@@ -28,7 +28,7 @@ public class Program10_4 extends Program10_3 {
     protected void init(String title) {
         // Basics
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
-        CAMERA.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
+        CAMERA.step(.01f).setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, title);
         windowID = glfwWindow.getWindowHandle();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
@@ -54,7 +54,7 @@ public class Program10_4 extends Program10_3 {
         heightMap = new Texture(1, "assets/textures/heightMaps/height.jpg");
 
         // Models
-        grid = new Grid(new Vector3f(0f, -.5f, 0f));
+        grid = new Grid(new Vector3f(0f, -.1f, 4f));
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         // Hints
