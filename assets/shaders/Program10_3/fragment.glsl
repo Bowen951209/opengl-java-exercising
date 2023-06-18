@@ -29,9 +29,11 @@ uniform Material material;
 uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
+uniform int isUsingNormalMapInInt;
+uniform int isUsingImageTextureInInt;
 
-layout(binding = 0) uniform sampler2D normMap;
-layout(binding = 1) uniform sampler2D textureMap;
+layout (binding = 0) uniform sampler2D normMap;
+layout (binding = 1) uniform sampler2D textureMap;
 
 vec3 calcNewNormal() {
     vec3 normal = normalize(varyingNormal);
@@ -52,7 +54,15 @@ void main(void) {
 
     vec3 L = normalize(varyingLightDir);
     //    vec3 N = normalize(varyingNormal);
-    vec3 N = calcNewNormal();
+    vec3 N;
+    bool isUsingNormalMap = isUsingNormalMapInInt == 1;
+    bool isUsingImageTexture = isUsingImageTextureInInt == 1;
+
+    if (isUsingNormalMap) {
+        N = calcNewNormal();
+    } else {
+        N = normalize(varyingNormal);
+    }
     vec3 V = normalize(-varyingVertPos);
     float cosTheta = dot(L, N);
     vec3 H = normalize(varyingHalfVector);
@@ -61,9 +71,15 @@ void main(void) {
     // standard texture
     vec4 texel = texture(textureMap, varyingTc);
 
-    fragColor = globalAmbient
-            + texel * (light.ambient + light.diffuse * max(cosTheta, 0.0))
-            + light.specular * pow(max(cosPhi, 0.0), material.shininess);
-
-//    fragColor =globalAmbient + texel * (light.ambient + light.diffuse * max(cosTheta, 0.0));
+    if (isUsingNormalMap && isUsingImageTexture) {
+        fragColor = globalAmbient
+        + texel * (light.ambient + light.diffuse * max(cosTheta, 0.0))
+        + light.specular * pow(max(cosPhi, 0.0), material.shininess);
+    } else if (isUsingImageTexture) {
+        fragColor = texel;
+    } else {
+        fragColor = globalAmbient
+        + (light.ambient + light.diffuse * max(cosTheta, 0.0))
+        + light.specular * pow(max(cosPhi, 0.0), material.shininess);
+    }
 }

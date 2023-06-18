@@ -12,8 +12,7 @@ import utilities.sceneComponents.Skybox;
 
 import java.nio.file.Path;
 
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL43.*;
 import static utilities.ValuesContainer.VALS_OF_16;
 
@@ -26,6 +25,7 @@ public class Program10_1 {
         while (!GLFW.glfwWindowShouldClose(windowID)) {
             loop();
         }
+        destroy();
     }
 
 
@@ -123,5 +123,11 @@ public class Program10_1 {
 
         pSkyVMatLoc = glGetUniformLocation(skyBoxProgram, "v_matrix");
         pSkyPMatLoc = glGetUniformLocation(skyBoxProgram, "p_matrix");
+    }
+
+    protected void destroy() {
+        // overrideable
+        glfwTerminate();
+        System.out.println("GLFW terminated");
     }
 }

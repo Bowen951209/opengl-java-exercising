@@ -31,6 +31,8 @@ uniform Material material;
 uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
+uniform int isUsingNormalMapInInt;
+uniform int isUsingImageTextureInInt;
 
 layout(binding = 0) uniform sampler2D normMap;
 layout(binding = 1) uniform sampler2D textureMap;
