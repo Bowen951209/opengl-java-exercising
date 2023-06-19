@@ -141,5 +141,6 @@ public class Program10_4 extends Program10_3 {
         System.out.println("GLFW terminated");
         Objects.requireNonNull(glfwSetErrorCallback(null)).free();
         System.out.println("GLFW error callback freed");
+        gui.destroy();
     }
 }
