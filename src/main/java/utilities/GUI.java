@@ -5,37 +5,47 @@ import imgui.ImGuiIO;
 import imgui.gl3.ImGuiImplGl3;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public abstract class GUI {
-    final ImGuiIO IO;
-    final ImGuiImplGl3 IM_GUI_GL3;
-    final long WINDOW_ID;
+    final ImGuiIO io;
+    final ImGuiImplGl3 imGuiImplGl3;
+    final long windowId;
+
+    public Map<String, Object> getElementStates() {
+        return elementStates;
+    }
+    private final Map<String, Object> elementStates = new HashMap<>();
     public GUI(int initWindowWidth, int initWindowHeight, long windowID, float fontScale) {
-        WINDOW_ID = windowID;
+        windowId = windowID;
 
         ImGui.createContext();
         ImGui.styleColorsLight();
-        IM_GUI_GL3 = new ImGuiImplGl3();
-        IM_GUI_GL3.init("#version 430 core");
+        imGuiImplGl3 = new ImGuiImplGl3();
+        imGuiImplGl3.init("#version 430 core");
 
-        IO = ImGui.getIO();
-        IO.setIniFilename(null);
-        IO.setDisplaySize(initWindowWidth, initWindowHeight);
-        IO.setFontGlobalScale(fontScale);
+        io = ImGui.getIO();
+        io.setIniFilename(null);
+        io.setDisplaySize(initWindowWidth, initWindowHeight);
+        io.setFontGlobalScale(fontScale);
+
+        initElementStates();
     }
     public void update() {
 
         drawFrame();
         // Cursor
         // left button down
-        boolean isMouse1Down = GLFW.glfwGetMouseButton(WINDOW_ID, GLFW.GLFW_MOUSE_BUTTON_1) == 1;
-        IO.setMouseDown(0, isMouse1Down);
+        boolean isMouse1Down = GLFW.glfwGetMouseButton(windowId, GLFW.GLFW_MOUSE_BUTTON_1) == 1;
+        io.setMouseDown(0, isMouse1Down);
 
-        IM_GUI_GL3.renderDrawData(ImGui.getDrawData());
+        imGuiImplGl3.renderDrawData(ImGui.getDrawData());
     }
     protected abstract void drawFrame();
-
+    protected abstract void initElementStates();
     public void destroy() {
-        IM_GUI_GL3.dispose();
+        imGuiImplGl3.dispose();
         System.out.println("ImGuiGL3 disposed");
         ImGui.destroyContext();
         System.out.println("ImGui destroyed");

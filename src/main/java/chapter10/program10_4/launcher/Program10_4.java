@@ -1,11 +1,11 @@
 package chapter10.program10_4.launcher;
 
 import chapter10.program10_3.launcher.Program10_3;
+import imgui.ImGui;
+import imgui.ImGuiIO;
+import imgui.type.ImInt;
 import org.joml.Vector3f;
-import utilities.Color;
-import utilities.GLFWWindow;
-import utilities.ShaderProgramSetter;
-import utilities.ValuesContainer;
+import utilities.*;
 import utilities.callbacks.DefaultCallbacks;
 import utilities.models.Grid;
 import utilities.sceneComponents.Texture;
@@ -19,6 +19,7 @@ import static org.lwjgl.opengl.GL43.*;
 public class Program10_4 extends Program10_3 {
     private Texture imageTexture, heightMap;
     private Grid grid;
+    private GUI gui;
 
     public Program10_4(String title) {
         super(title);
@@ -34,7 +35,7 @@ public class Program10_4 extends Program10_3 {
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
 
         // Callbacks
-        new DefaultCallbacks(windowID, CAMERA, false).bindToGLFW();
+        new DefaultCallbacks(windowID, CAMERA, true).bindToGLFW();
 
         // GL settings
         glEnable(GL_CULL_FACE);
@@ -55,10 +56,56 @@ public class Program10_4 extends Program10_3 {
 
         // Models
         grid = new Grid(new Vector3f(0f, -.1f, 4f));
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+        // GUI
+        gui = new GUI(WINDOW_INIT_W, WINDOW_INIT_H, windowID, 2.5f) {
+            final ImInt SELECTION = new ImInt();
+            final String[] POLYGON_MODES = {"GL_LINE", "GL_FILL"};
+            final ImGuiIO io = ImGui.getIO();
+            final float comboWidth = io.getDisplaySizeX() / 2f;
+            final float comboHeight = io.getDisplaySizeY() / 7f;
+
+            @Override
+            protected void drawFrame() {
+                ImGui.newFrame(); // start frame
+
+                ImGui.begin("Debugger"); // window
+
+                ImGui.setWindowSize(comboWidth, comboHeight);
+                ImGui.combo("Polygon mode", SELECTION, POLYGON_MODES);
+                Integer decidedPolygonMode = SELECTION.get() == 0 ? GL_LINE : GL_FILL;
+                getElementStates().put("Polygon mode", decidedPolygonMode);
+
+                ImGui.end();
+
+                ImGui.render(); // end frame
+            }
+
+            @Override
+            protected void initElementStates() {
+                getElementStates().put("Polygon mode", GL_LINE);
+            }
+        };
 
         // Hints
         System.out.println("Hint: You can press F1 to look around.");
+    }
+
+    @Override
+    protected void loop() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        CAMERA.updateVMat();
+
+        glPolygonMode(GL_FRONT_AND_BACK, (int)gui.getElementStates().get("Polygon mode")); // This is for gui to choose mode
+        drawScene();
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        gui.update();
+
+        CAMERA.handle();
+
+        glfwSwapBuffers(windowID);
+        glfwPollEvents();
     }
 
     @Override

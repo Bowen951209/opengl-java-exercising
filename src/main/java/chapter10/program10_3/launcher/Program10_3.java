@@ -88,6 +88,9 @@ public class Program10_3 extends Program10_2 {
 
                 ImGui.render(); // end frame
             }
+
+            @Override
+            protected void initElementStates() {}
         };
 
 
