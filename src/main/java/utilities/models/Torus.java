@@ -42,10 +42,11 @@ public class Torus extends Model {
 
         VERTICES_IN_BUF = BufferUtils.createFloatBuffer(vertices.length * 3);
         NORMALS_IN_BUF = BufferUtils.createFloatBuffer(normals.length * 3);
-
-        putDataIntoBuffer();
+        if (usingBuffer) {
+            putDataIntoBuffer(); // put into IntBuffer or FloatBuffer alike.
+            storeIndicesToEBO(indicesInBuffer); // if using IntBuffer, then store it to ebo, else not.
+        }
         storeDataToVBOs(VERTICES_IN_BUF, NORMALS_IN_BUF);
-        storeIndicesToEBO(indicesInBuffer);
     }
 
     private void putDataIntoBuffer() {

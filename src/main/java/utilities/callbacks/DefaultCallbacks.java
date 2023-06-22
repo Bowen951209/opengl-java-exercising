@@ -31,7 +31,6 @@ public class DefaultCallbacks {
         if (!isUsingImGUI) {
             defaultCursorCB = new DefaultCursorCB(camera);
             defaultFrameBufferResizeCB = new DefaultFrameBufferResizeCB(camera);
-            defaultKeyCB = new DefaultKeyCB(camera, defaultCursorCB);
         } else {
             // using imGUI
             ImGuiIO IO = ImGui.getIO();
@@ -58,8 +57,8 @@ public class DefaultCallbacks {
                     IO.setDisplaySize(frameBufferWidth.get(0), frameBufferHeight.get(0));
                 }
             };
-            defaultKeyCB = new DefaultKeyCB(camera, defaultCursorCB);
         }
+        defaultKeyCB = new DefaultKeyCB(camera, defaultCursorCB);
     }
 
     public void bindToGLFW() {
