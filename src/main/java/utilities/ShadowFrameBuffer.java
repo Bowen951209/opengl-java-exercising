@@ -1,4 +1,4 @@
-package utilities.buffers;
+package utilities;
 
 import org.lwjgl.BufferUtils;
 

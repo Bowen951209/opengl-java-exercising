@@ -14,7 +14,7 @@ import org.joml.Vector3fc;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import utilities.*;
-import utilities.buffers.ShadowFrameBuffer;
+import utilities.ShadowFrameBuffer;
 import utilities.readers.CubeMapReader;
 import utilities.readers.ModelReader;
 import utilities.sceneComponents.Camera;
