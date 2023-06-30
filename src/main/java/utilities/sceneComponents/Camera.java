@@ -7,10 +7,14 @@ import static utilities.ValuesContainer.VEC3_FOR_UTILS;
 
 public class Camera {
     private static final Vector3f Y = new Vector3f(0f, 1f, 0f);
-    private final Vector3f POSITION = new Vector3f(0f, 0f, 5f);
-    private final Vector3f DIRECTION = new Vector3f(0f, 0f, -1f);
-    private final Vector3f DIRECTION_MUL_STEP = new Vector3f();
-    private final Vector3f CAM_FRONT = new Vector3f();
+
+    private final Vector3f position = new Vector3f(0f, 0f, 5f);
+    public void setPos(float x, float y, float z) {
+        this.position.set(x, y, z);
+    }
+    private final Vector3f direction = new Vector3f(0f, 0f, -1f);
+    private final Vector3f directionMulStep = new Vector3f();
+    private final Vector3f camFront = new Vector3f();
     private final Matrix4f VMat = new Matrix4f();
     public Camera() {}
     public Matrix4f getVMat() {
@@ -49,30 +53,30 @@ public class Camera {
 
     public void updateVMat() {
         Vector3f lookAtPoint = VEC3_FOR_UTILS;
-        lookAtPoint.set(POSITION).add(DIRECTION);
+        lookAtPoint.set(position).add(direction);
         VMat.identity();
-        VMat.lookAt(this.POSITION, lookAtPoint, Y);
+        VMat.lookAt(this.position, lookAtPoint, Y);
     }
 
     public void lookUp() {
         Vector3f leftVec = VEC3_FOR_UTILS;
-        leftVec.set(DIRECTION).cross(Y);
-        DIRECTION.rotateAxis(sensitive, leftVec.x,  leftVec.y, leftVec.z);
+        leftVec.set(direction).cross(Y);
+        direction.rotateAxis(sensitive, leftVec.x,  leftVec.y, leftVec.z);
 
     }
 
     public void lookDown() {
         Vector3f leftVec = VEC3_FOR_UTILS;
-        leftVec.set(DIRECTION).cross(Y);
-        DIRECTION.rotateAxis(-sensitive, leftVec.x,  leftVec.y, leftVec.z);
+        leftVec.set(direction).cross(Y);
+        direction.rotateAxis(-sensitive, leftVec.x,  leftVec.y, leftVec.z);
     }
 
     public void lookLeft() {
-        DIRECTION.rotateY(sensitive);
+        direction.rotateY(sensitive);
     }
 
     public void lookRight() {
-        DIRECTION.rotateY(-sensitive);
+        direction.rotateY(-sensitive);
     }
 
     public void forward() {
@@ -108,24 +112,24 @@ public class Camera {
     }
 
     public void handle() {
-        DIRECTION_MUL_STEP.set(DIRECTION).mul(step);
+        directionMulStep.set(direction).mul(step);
 
-        CAM_FRONT.set(DIRECTION_MUL_STEP.x, 0f, DIRECTION_MUL_STEP.z);
+        camFront.set(directionMulStep.x, 0f, directionMulStep.z);
 
         if (forward) {
-            POSITION.add(CAM_FRONT);
+            position.add(camFront);
         }
         if (backward) {
-            final Vector3f CAM_BACK = VEC3_FOR_UTILS.set(CAM_FRONT).mul(-1f);
-            POSITION.add(CAM_BACK);
+            final Vector3f CAM_BACK = VEC3_FOR_UTILS.set(camFront).mul(-1f);
+            position.add(CAM_BACK);
         }
         if (left) {
-            final Vector3f CAM_LEFT = VEC3_FOR_UTILS.set(CAM_FRONT).rotateY(.5f * 3.14f); // 90 DEG
-            POSITION.add(CAM_LEFT);
+            final Vector3f CAM_LEFT = VEC3_FOR_UTILS.set(camFront).rotateY(.5f * 3.14f); // 90 DEG
+            position.add(CAM_LEFT);
         }
         if (right) {
-            final Vector3f CAM_RIGHT = VEC3_FOR_UTILS.set(CAM_FRONT).rotateY(1.5f * 3.14f);
-            POSITION.add(CAM_RIGHT);
+            final Vector3f CAM_RIGHT = VEC3_FOR_UTILS.set(camFront).rotateY(1.5f * 3.14f);
+            position.add(CAM_RIGHT);
         }
     }
 }

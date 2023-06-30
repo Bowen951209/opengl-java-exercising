@@ -24,13 +24,13 @@ public class Program12_1 extends Program10_4 {
     protected void init(String title) {
         // Basics
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
-        CAMERA.step(.01f).setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
+        camera.step(.01f).setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, title);
         windowID = glfwWindow.getWindowHandle();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
 
         // Callbacks
-        new DefaultCallbacks(windowID, CAMERA, false).bindToGLFW();
+        new DefaultCallbacks(windowID, camera, false).bindToGLFW();
 
         // GL settings
         glFrontFace(GL_CCW);
@@ -45,6 +45,9 @@ public class Program12_1 extends Program10_4 {
                 "assets/shaders/program12_1/tes.glsl"
         ).getProgram();
 
+        // Camera
+        camera.setPos(.5f, -.2f, 2f);
+
         // VAO
         int vao = glGenVertexArrays();
         glBindVertexArray(vao);
@@ -56,7 +59,7 @@ public class Program12_1 extends Program10_4 {
     @Override
     protected void loop() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        CAMERA.updateVMat();
+        camera.updateVMat();
 
         // Draw scene
         glUseProgram(program);
@@ -66,13 +69,13 @@ public class Program12_1 extends Program10_4 {
         Matrix4f mMat = new Matrix4f();
         Matrix4f mvpMat = new Matrix4f();
 
-        vMat.set(CAMERA.getVMat());
+        vMat.set(camera.getVMat());
 
         Vector3f terLoc = new Vector3f(0.0f, 0.0f, 0.0f);
         mMat.identity().setTranslation(terLoc.x(), terLoc.y(), terLoc.z());
         mMat.rotateX((float) Math.toRadians(35.0f));
 
-        mvpMat.set(CAMERA.getProjMat());
+        mvpMat.set(camera.getProjMat());
         mvpMat.mul(vMat);
         mvpMat.mul(mMat);
 
@@ -85,7 +88,7 @@ public class Program12_1 extends Program10_4 {
         glDrawArrays(GL_PATCHES, 0, 4);
 
         // small stuff
-        CAMERA.handle();
+        camera.handle();
 
         glfwSwapBuffers(windowID);
         glfwPollEvents();

@@ -40,12 +40,12 @@ public class Program10_3 extends Program10_2 {
     @Override
     protected void init(String title) {
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
-        CAMERA.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
+        camera.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, title);
         windowID = glfwWindow.getWindowHandle();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
 
-        new DefaultCallbacks(windowID, CAMERA, true).bindToGLFW();
+        new DefaultCallbacks(windowID, camera, true).bindToGLFW();
 
         glEnable(GL_CULL_FACE);
         glFrontFace(GL_CCW);
@@ -124,7 +124,7 @@ public class Program10_3 extends Program10_2 {
         // matrices
         glUniformMatrix4fv(mv_matrixLoc, false, sphere.getMV_MAT().get(VALS_OF_16));
         glUniformMatrix4fv(norm_matrixLoc, false, sphere.getINV_TR_MAT().get(VALS_OF_16));
-        glUniformMatrix4fv(proj_matrixLoc, false, CAMERA.getProjMat().get(VALS_OF_16));
+        glUniformMatrix4fv(proj_matrixLoc, false, camera.getProjMat().get(VALS_OF_16));
 
         // boolean
         int isUsingNormalMapInInt = isUsingNormalMap.get() ? 1 : 0;
@@ -132,7 +132,7 @@ public class Program10_3 extends Program10_2 {
         glUniform1i(isUsingNormalMapLoc, isUsingNormalMapInInt);
         glUniform1i(isUsingImageTextureLoc, isUsingImageTextureInInt);
 
-        sphere.updateState(CAMERA);
+        sphere.updateState(camera);
         sphere.draw(GL_TRIANGLES);
 
         gui.update();

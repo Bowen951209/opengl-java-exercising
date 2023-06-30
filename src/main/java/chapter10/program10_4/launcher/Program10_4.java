@@ -29,13 +29,13 @@ public class Program10_4 extends Program10_3 {
     protected void init(String title) {
         // Basics
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
-        CAMERA.step(.01f).setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
+        camera.step(.01f).setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, title);
         windowID = glfwWindow.getWindowHandle();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
 
         // Callbacks
-        new DefaultCallbacks(windowID, CAMERA, true).bindToGLFW();
+        new DefaultCallbacks(windowID, camera, true).bindToGLFW();
 
         // GL settings
         glEnable(GL_CULL_FACE);
@@ -94,7 +94,7 @@ public class Program10_4 extends Program10_3 {
     @Override
     protected void loop() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        CAMERA.updateVMat();
+        camera.updateVMat();
 
         glPolygonMode(GL_FRONT_AND_BACK, (int)gui.getElementStates().get("Polygon mode")); // This is for gui to choose mode
         drawScene();
@@ -102,7 +102,7 @@ public class Program10_4 extends Program10_3 {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         gui.update();
 
-        CAMERA.handle();
+        camera.handle();
 
         glfwSwapBuffers(windowID);
         glfwPollEvents();
@@ -114,9 +114,9 @@ public class Program10_4 extends Program10_3 {
         heightMap.bind();
 
         glUniformMatrix4fv(mvMatLoc, false, grid.getMV_MAT().get(ValuesContainer.VALS_OF_16));
-        glUniformMatrix4fv(projMatLoc, false, CAMERA.getProjMat().get(ValuesContainer.VALS_OF_16));
+        glUniformMatrix4fv(projMatLoc, false, camera.getProjMat().get(ValuesContainer.VALS_OF_16));
 
-        grid.updateState(CAMERA);
+        grid.updateState(camera);
         grid.draw(GL_TRIANGLES);
     }
 

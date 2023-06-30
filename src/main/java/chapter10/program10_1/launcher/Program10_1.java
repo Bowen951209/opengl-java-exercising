@@ -39,7 +39,7 @@ public class Program10_1 {
     private int pDefaultMvLoc, pDefaultProjLoc, pDefaultNormLoc, pSkyVMatLoc, pSkyPMatLoc;
 
 
-    protected final Camera CAMERA = new Camera().sensitive(.04f).step(.05f);
+    protected final Camera camera = new Camera().sensitive(.04f).step(.05f);
 
 
     public static void main(String[] args) {
@@ -51,12 +51,12 @@ public class Program10_1 {
 
     protected void init(String title) {
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
-        CAMERA.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
+        camera.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, title);
         windowID = glfwWindow.getWindowHandle();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
 
-        new DefaultCallbacks(windowID, CAMERA).bindToGLFW();
+        new DefaultCallbacks(windowID, camera).bindToGLFW();
 
         glEnable(GL_CULL_FACE);
         glFrontFace(GL_CCW);
@@ -81,13 +81,13 @@ public class Program10_1 {
 
     protected void loop() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        CAMERA.updateVMat();
+        camera.updateVMat();
 
         skybox.draw();
 
         drawScene();
 
-        CAMERA.handle();
+        camera.handle();
 
         glfwSwapBuffers(windowID);
         glfwPollEvents();
@@ -98,7 +98,7 @@ public class Program10_1 {
         System.out.println("Loading models...");
 
         torus = new Torus(.5f, .2f, 48, true, TORUS_POS);
-        skybox = new Skybox(skyBoxProgram, pSkyVMatLoc, pSkyPMatLoc, CAMERA);
+        skybox = new Skybox(skyBoxProgram, pSkyVMatLoc, pSkyPMatLoc, camera);
 
         System.out.println("Model load done.");
     }
@@ -107,10 +107,10 @@ public class Program10_1 {
         glUseProgram(defaultProgram);
 
 //         繪製torus
-        torus.updateState(CAMERA);
+        torus.updateState(camera);
 
         glUniformMatrix4fv(pDefaultMvLoc, false, torus.getMV_MAT().get(VALS_OF_16));
-        glUniformMatrix4fv(pDefaultProjLoc, false, CAMERA.getProjMat().get(VALS_OF_16));
+        glUniformMatrix4fv(pDefaultProjLoc, false, camera.getProjMat().get(VALS_OF_16));
 
         glUniformMatrix4fv(pDefaultNormLoc, false, torus.getINV_TR_MAT().get(VALS_OF_16));
 
