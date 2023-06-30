@@ -9,14 +9,19 @@ public class Camera {
     private static final Vector3f Y = new Vector3f(0f, 1f, 0f);
 
     private final Vector3f position = new Vector3f(0f, 0f, 5f);
+
     public void setPos(float x, float y, float z) {
         this.position.set(x, y, z);
     }
+
     private final Vector3f direction = new Vector3f(0f, 0f, -1f);
     private final Vector3f directionMulStep = new Vector3f();
     private final Vector3f camFront = new Vector3f();
     private final Matrix4f VMat = new Matrix4f();
-    public Camera() {}
+
+    public Camera() {
+    }
+
     public Matrix4f getVMat() {
         return VMat;
     }
@@ -36,6 +41,8 @@ public class Camera {
     private boolean backward;
     private boolean left;
     private boolean right;
+    private boolean fly;
+    private boolean land;
 
     public Camera step(float step) {
         this.step = step;
@@ -58,17 +65,18 @@ public class Camera {
         VMat.lookAt(this.position, lookAtPoint, Y);
     }
 
+    // looking direction
     public void lookUp() {
         Vector3f leftVec = VEC3_FOR_UTILS;
         leftVec.set(direction).cross(Y);
-        direction.rotateAxis(sensitive, leftVec.x,  leftVec.y, leftVec.z);
+        direction.rotateAxis(sensitive, leftVec.x, leftVec.y, leftVec.z);
 
     }
 
     public void lookDown() {
         Vector3f leftVec = VEC3_FOR_UTILS;
         leftVec.set(direction).cross(Y);
-        direction.rotateAxis(-sensitive, leftVec.x,  leftVec.y, leftVec.z);
+        direction.rotateAxis(-sensitive, leftVec.x, leftVec.y, leftVec.z);
     }
 
     public void lookLeft() {
@@ -79,6 +87,8 @@ public class Camera {
         direction.rotateY(-sensitive);
     }
 
+
+    // movement
     public void forward() {
         forward = true;
     }
@@ -95,6 +105,15 @@ public class Camera {
         right = true;
     }
 
+    public void fly() {
+        fly = true;
+    }
+
+    public void land() {
+        land = true;
+    }
+
+    // cancel move
     public void cancelF() {
         forward = false;
     }
@@ -110,6 +129,15 @@ public class Camera {
     public void cancelR() {
         right = false;
     }
+
+    public void cancelFly() {
+        fly = false;
+    }
+
+    public void cancelLand() {
+        land = false;
+    }
+
 
     public void handle() {
         directionMulStep.set(direction).mul(step);
@@ -130,6 +158,12 @@ public class Camera {
         if (right) {
             final Vector3f CAM_RIGHT = VEC3_FOR_UTILS.set(camFront).rotateY(1.5f * 3.14f);
             position.add(CAM_RIGHT);
+        }
+        if (fly) {
+            position.add(0f, step, 0f);
+        }
+        if (land) {
+            position.add(0f, -step, 0f);
         }
     }
 }
