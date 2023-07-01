@@ -22,7 +22,7 @@ public abstract class Program {
 
     protected abstract void destroy();
 
-    private void setGL(boolean isCullFace) {
+    private void configGL(boolean isCullFace) {
         // GL settings
         if (isCullFace)
             glEnable(GL_CULL_FACE);
@@ -48,10 +48,10 @@ public abstract class Program {
 
 
 
-    protected void run(boolean isCullFace) {
+    protected void run(boolean isWantCullFace) {
         init();
         getAllUniformLocs();
-        setGL(isCullFace);
+        configGL(isWantCullFace);
 
         assert windowID == 0;
         while (!GLFW.glfwWindowShouldClose(windowID)) {
