@@ -49,7 +49,7 @@ public class Program4_4 {
     private static void init() {
         final int windowCreatedW = 800, windowCreatedH = 600;
         GLFWWindow glfwWindow = new GLFWWindow(windowCreatedW, windowCreatedH, "第4章");
-        windowHandle = glfwWindow.getWindowHandle();
+        windowHandle = glfwWindow.getWindowID();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
         // 一開始要先呼叫，才能以長、寬構建透視矩陣
         createProjMat(windowCreatedW, windowCreatedH);
@@ -59,7 +59,7 @@ public class Program4_4 {
 
         int program = new ShaderProgramSetter(Path.of("src/main/java/chapter4/Shaders/for4_3and_4_4/VertexShader.glsl")
                 , Path.of("src/main/java/chapter4/Shaders/for4_3and_4_4/FragmentShader.glsl"))
-                .getProgram();
+                .getID();
 
         cameraX = 0f;
         cameraY = 0f;

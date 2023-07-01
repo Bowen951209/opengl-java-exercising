@@ -36,7 +36,7 @@ public class Program10_2 extends Program10_1 {
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
         camera.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, title);
-        windowID = glfwWindow.getWindowHandle();
+        windowID = glfwWindow.getWindowID();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
 
         new DefaultCallbacks(windowID, camera).bindToGLFW();
@@ -49,7 +49,7 @@ public class Program10_2 extends Program10_1 {
 
         defaultProgram = new ShaderProgramSetter(Path.of("assets/shaders/program10_2/vert.glsl")
                 , Path.of("assets/shaders/program10_2/frag.glsl"))
-                .getProgram();
+                .getID();
 
         getAllUniformsLoc();
         sphere = new Sphere();

@@ -64,14 +64,14 @@ public class Main {
     private static void init() {
         final int windowCreatedW = 800, windowCreatedH = 600;
         GLFWWindow glfwWindow = new GLFWWindow(windowCreatedW, windowCreatedH, "Texture + Light");
-        windowHandle = glfwWindow.getWindowHandle();
+        windowHandle = glfwWindow.getWindowID();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
         createProjMat(windowCreatedW, windowCreatedH);
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
         blinnPhongProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter7/lighting_and_texture/shaders/VertexShader.glsl")
                 , Path.of("src/main/java/chapter7/lighting_and_texture/shaders/FragmentShader.glsl"))
-                .getProgram();
+                .getID();
         dolphinTex = new TextureReader("src/main/java/chapter7/lighting_and_texture/textures/Dolphin_HighPolyUV.png");
 
         cameraX = 0f;

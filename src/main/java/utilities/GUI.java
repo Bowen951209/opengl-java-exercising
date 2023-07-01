@@ -43,7 +43,9 @@ public abstract class GUI {
         imGuiImplGl3.renderDrawData(ImGui.getDrawData());
     }
     protected abstract void drawFrame();
-    protected abstract void initElementStates();
+
+
+    protected void initElementStates() {}
     public void destroy() {
         imGuiImplGl3.dispose();
         System.out.println("ImGuiGL3 disposed");

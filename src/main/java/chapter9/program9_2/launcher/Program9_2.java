@@ -86,7 +86,7 @@ public class Program9_2 {
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
         CAMERA.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, "第9章 天空盒");
-        windowHandle = glfwWindow.getWindowHandle();
+        windowHandle = glfwWindow.getWindowID();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
         shadowFrameBuffer = new ShadowFrameBuffer(windowHandle);
         glfwSetFramebufferSizeCallback(windowHandle, new P9_2FrameBufferResizeCB(CAMERA, shadowFrameBuffer));
@@ -100,13 +100,13 @@ public class Program9_2 {
         glActiveTexture(GL_TEXTURE1);
         renderingProgram1 = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_2/shaders/vert1Shader.glsl")
                 , Path.of("src/main/java/chapter9/program9_2/shaders/frag1Shader.glsl"))
-                .getProgram();
+                .getID();
         renderingProgram2 = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_2/shaders/vert2Shader.glsl")
                 , Path.of("src/main/java/chapter9/program9_2/shaders/frag2Shader.glsl"))
-                .getProgram();
+                .getID();
         skyBoxProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_2/shaders/skybox/CubeVertShader.glsl")
                 , Path.of("src/main/java/chapter9/program9_2/shaders/skybox/SkyboxFragShader.glsl"))
-                .getProgram();
+                .getID();
 
         CubeMapReader skyboxTexture = new CubeMapReader("src/main/java/chapter9/program9_2/skybox");
         skyboxTexture.bind();

@@ -14,9 +14,18 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class GLFWWindow {
 
+    private final int width, height;
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
 
     private final long windowHandle;
-    public long getWindowHandle() {
+    public long getWindowID() {
         return windowHandle;
     }
     private static final int glMajorVer = 4;
@@ -33,6 +42,9 @@ public class GLFWWindow {
 
     // NOTE: 因為Gradle 不知道出了什麼問題，中文會顯示亂碼，以前還可以的，所以現在我都只打印英文。
     public GLFWWindow(int glfwWidth, int glfwHeight, String title) {
+        this.width = glfwWidth;
+        this.height = glfwHeight;
+
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
         GLFWErrorCallback.createPrint(System.err).set();

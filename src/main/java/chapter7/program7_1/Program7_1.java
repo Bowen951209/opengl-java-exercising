@@ -76,7 +76,7 @@ public class Program7_1 {
     private static void init() {
         final int windowCreatedW = 800, windowCreatedH = 600;
         GLFWWindow glfwWindow = new GLFWWindow(windowCreatedW, windowCreatedH, "第7章");
-        windowHandle = glfwWindow.getWindowHandle();
+        windowHandle = glfwWindow.getWindowID();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
         createProjMat(windowCreatedW, windowCreatedH);
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
@@ -84,13 +84,13 @@ public class Program7_1 {
 
         gouraudProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter7/program7_1/shaders/gouraud/vertShader.glsl")
                 , Path.of("src/main/java/chapter7/program7_1/shaders/gouraud/fragShader.glsl"))
-                .getProgram();
+                .getID();
         phongProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter7/program7_1/shaders/phong/vertShader.glsl")
                 , Path.of("src/main/java/chapter7/program7_1/shaders/phong/fragShader.glsl"))
-                .getProgram();
+                .getID();
         blinnPhongProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter7/program7_1/shaders/blinnPhong/vertShader.glsl")
                 , Path.of("src/main/java/chapter7/program7_1/shaders/blinnPhong/fragShader.glsl"))
-                .getProgram();
+                .getID();
 
         cameraX = 0f;
         cameraY = 0f;

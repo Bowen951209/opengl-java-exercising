@@ -53,7 +53,7 @@ public class Program10_1 {
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
         camera.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, title);
-        windowID = glfwWindow.getWindowHandle();
+        windowID = glfwWindow.getWindowID();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
 
         new DefaultCallbacks(windowID, camera).bindToGLFW();
@@ -65,10 +65,10 @@ public class Program10_1 {
         glActiveTexture(GL_TEXTURE1);
         defaultProgram = new ShaderProgramSetter(Path.of("assets/shaders/program10_1/vert.glsl")
                 , Path.of("assets/shaders/program10_1/frag.glsl"))
-                .getProgram();
+                .getID();
         skyBoxProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_3/shaders/skybox/CubeVertShader.glsl")
                 , Path.of("src/main/java/chapter9/program9_3/shaders/skybox/SkyboxFragShader.glsl"))
-                .getProgram();
+                .getID();
 
         CubeMapReader skyboxTexture = new CubeMapReader("assets/textures/skycubes/lakesIsland");
         skyboxTexture.bind();

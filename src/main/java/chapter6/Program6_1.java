@@ -53,7 +53,7 @@ public class Program6_1 {
     private static void init() {
         final int windowCreatedW = 800, windowCreatedH = 600;
         GLFWWindow glfwWindow = new GLFWWindow(windowCreatedW, windowCreatedH, "第6章");
-        windowHandle = glfwWindow.getWindowHandle();
+        windowHandle = glfwWindow.getWindowID();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
         // 一開始要先呼叫，才能以長、寬構建透視矩陣
         createProjMat(windowCreatedW, windowCreatedH);
@@ -63,7 +63,7 @@ public class Program6_1 {
 
         int program = new ShaderProgramSetter(Path.of("src/main/java/chapter5/Shaders/for5_1/VertexShader.glsl")
                 , Path.of("src/main/java/chapter5/Shaders/for5_1/FragmentShader.glsl"))
-                .getProgram();
+                .getID();
 
         cameraX = 0f; cameraY = 0f; cameraZ = 4f;
         setupVertices();

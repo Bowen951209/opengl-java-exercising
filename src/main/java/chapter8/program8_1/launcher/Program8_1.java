@@ -84,7 +84,7 @@ public class Program8_1 {
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
         CAMERA.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, "第8章");
-        windowHandle = glfwWindow.getWindowHandle();
+        windowHandle = glfwWindow.getWindowID();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
         shadowFrameBuffer = new ShadowFrameBuffer(windowHandle);
         glfwSetFramebufferSizeCallback(windowHandle, new FrameBufferResizeCB(CAMERA, shadowFrameBuffer));
@@ -97,10 +97,10 @@ public class Program8_1 {
         glActiveTexture(GL_TEXTURE0);
         renderingProgram1 = new ShaderProgramSetter(Path.of("src/main/java/chapter8/program8_1/shaders/vert1Shader.glsl")
                 , Path.of("src/main/java/chapter8/program8_1/shaders/frag1Shader.glsl"))
-                .getProgram();
+                .getID();
         renderingProgram2 = new ShaderProgramSetter(Path.of("src/main/java/chapter8/program8_1/shaders/vert2Shader.glsl")
                 , Path.of("src/main/java/chapter8/program8_1/shaders/frag2Shader.glsl"))
-                .getProgram();
+                .getID();
 
         setupVertices();
         getAllUniformsLoc();

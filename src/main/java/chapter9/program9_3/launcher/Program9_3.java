@@ -57,7 +57,7 @@ public class Program9_3 {
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
         CAMERA.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, "第9章 環境貼圖");
-        windowID = glfwWindow.getWindowHandle();
+        windowID = glfwWindow.getWindowID();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
 
         new P9_3Callbacks(windowID, CAMERA).bindToGLFW();
@@ -69,10 +69,10 @@ public class Program9_3 {
         glActiveTexture(GL_TEXTURE1);
         defaultProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_3/shaders/default/vertShader.glsl")
                 , Path.of("src/main/java/chapter9/program9_3/shaders/default/fragShader.glsl"))
-                .getProgram();
+                .getID();
         skyBoxProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_3/shaders/skybox/CubeVertShader.glsl")
                 , Path.of("src/main/java/chapter9/program9_3/shaders/skybox/SkyboxFragShader.glsl"))
-                .getProgram();
+                .getID();
 
         CubeMapReader skyboxTexture = new CubeMapReader("src/main/java/chapter9/program9_3/textures/skybox");
         skyboxTexture.bind();

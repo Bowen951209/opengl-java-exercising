@@ -10,7 +10,12 @@ import static org.lwjgl.opengl.GL43.*;
 
 public class ShaderProgramSetter {
     private final int programID;
-    public int getProgram() {return programID;}
+    public int getID() {return programID;}
+    public int use() {
+        glUseProgram(programID);
+        return programID;
+    }
+
 
     // Only vertex & fragment
     public ShaderProgramSetter(Path vertexShaderPath, Path fragmentShaderPath) {

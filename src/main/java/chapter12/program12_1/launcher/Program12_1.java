@@ -26,7 +26,7 @@ public class Program12_1 extends Program10_4 {
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
         camera.step(.01f).setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, title);
-        windowID = glfwWindow.getWindowHandle();
+        windowID = glfwWindow.getWindowID();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
 
         // Callbacks
@@ -43,7 +43,7 @@ public class Program12_1 extends Program10_4 {
                 "assets/shaders/program12_1/fragment.glsl",
                 "assets/shaders/program12_1/tcs.glsl",
                 "assets/shaders/program12_1/tes.glsl"
-        ).getProgram();
+        ).getID();
 
         // Camera
         camera.setPos(.5f, -.2f, 2f);

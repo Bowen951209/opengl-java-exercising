@@ -19,9 +19,10 @@ public class Camera {
     private final Vector3f camFront = new Vector3f();
     private final Matrix4f VMat = new Matrix4f();
 
-    public Camera() {
+    public Camera() {}
+    public Camera(int frameWidth, int frameHeight) {
+        setProjMat(frameWidth, frameHeight);
     }
-
     public Matrix4f getVMat() {
         return VMat;
     }
