@@ -32,6 +32,9 @@ public abstract class GUI {
 
         initElementStates();
     }
+    public GUI(GLFWWindow glfwWindow, float fontScale) {
+        this(glfwWindow.getWidth(), glfwWindow.getHeight(), glfwWindow.getID(), fontScale);
+    }
     public void update() {
 
         drawFrame();
