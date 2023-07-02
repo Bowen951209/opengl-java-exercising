@@ -7,6 +7,8 @@ import static utilities.ValuesContainer.VEC3_FOR_UTILS;
 
 public class Camera {
     private static final Vector3f Y = new Vector3f(0f, 1f, 0f);
+    private static final float CEIL_LIMIT = 1.57f;
+
 
     private final Vector3f position = new Vector3f(0f, 0f, 5f);
 
@@ -15,14 +17,20 @@ public class Camera {
     }
 
     private final Vector3f direction = new Vector3f(0f, 0f, -1f);
+    private float xAngleToCam = 0f;
+    private final Vector3f lookAtPoint = new Vector3f();
+    private final Vector3f leftVec = new Vector3f();
     private final Vector3f directionMulStep = new Vector3f();
     private final Vector3f camFront = new Vector3f();
     private final Matrix4f VMat = new Matrix4f();
 
-    public Camera() {}
+    public Camera() {
+    }
+
     public Camera(int frameWidth, int frameHeight) {
         setProjMat(frameWidth, frameHeight);
     }
+
     public Matrix4f getVMat() {
         return VMat;
     }
@@ -60,7 +68,6 @@ public class Camera {
     private float sensitive = .04f;
 
     public void updateVMat() {
-        Vector3f lookAtPoint = VEC3_FOR_UTILS;
         lookAtPoint.set(position).add(direction);
         VMat.identity();
         VMat.lookAt(this.position, lookAtPoint, Y);
@@ -68,16 +75,21 @@ public class Camera {
 
     // looking direction
     public void lookUp() {
-        Vector3f leftVec = VEC3_FOR_UTILS;
-        leftVec.set(direction).cross(Y);
-        direction.rotateAxis(sensitive, leftVec.x, leftVec.y, leftVec.z);
-
+        if (xAngleToCam < CEIL_LIMIT) {
+            xAngleToCam += sensitive;
+            // we want to rotate around camera's x-axis.
+            leftVec.set(direction).cross(Y);
+            direction.rotateAxis(sensitive, leftVec.x, leftVec.y, leftVec.z);
+        }
     }
 
     public void lookDown() {
-        Vector3f leftVec = VEC3_FOR_UTILS;
-        leftVec.set(direction).cross(Y);
-        direction.rotateAxis(-sensitive, leftVec.x, leftVec.y, leftVec.z);
+        if (xAngleToCam > -CEIL_LIMIT) {
+            xAngleToCam -= sensitive;
+            // we want to rotate around camera's x-axis.
+            leftVec.set(direction).cross(Y);
+            direction.rotateAxis(-sensitive, leftVec.x, leftVec.y, leftVec.z);
+        }
     }
 
     public void lookLeft() {
