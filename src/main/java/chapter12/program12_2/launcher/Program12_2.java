@@ -4,8 +4,6 @@ import imgui.ImGui;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import utilities.*;
-import utilities.callbacks.DefaultCallbacks;
-import utilities.sceneComponents.Camera;
 import utilities.sceneComponents.Texture;
 
 import static org.lwjgl.opengl.GL43.*;
@@ -18,12 +16,8 @@ public class Program12_2 extends Program {
     }
     @Override
     protected void init() {
-        // Basics
+        // give window.
         glfwWindow = new GLFWWindow(1500, 1000, "Prog12.2");
-        camera = new Camera(glfwWindow.getWidth(), glfwWindow.getHeight());
-
-        // Callbacks
-        new DefaultCallbacks(glfwWindow.getID(), camera, true).bindToGLFW();
 
         // Programs
         program = new ShaderProgramSetter(
@@ -40,7 +34,6 @@ public class Program12_2 extends Program {
         // Textures
         Texture texture = new Texture(0, "assets/textures/imageTextures/tiles.jpg");
         texture.bind();
-
 
         // GUI
         gui = new GUI(glfwWindow.getWidth(), glfwWindow.getHeight(), glfwWindow.getID(), 3f) {

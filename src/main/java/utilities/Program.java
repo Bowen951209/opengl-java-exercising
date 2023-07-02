@@ -1,6 +1,7 @@
 package utilities;
 
 import org.lwjgl.glfw.GLFW;
+import utilities.callbacks.DefaultCallbacks;
 import utilities.sceneComponents.Camera;
 
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
@@ -49,14 +50,22 @@ public abstract class Program {
 
 
     protected void run(boolean isWantCullFace) {
+        // customizable init
         init();
-        getAllUniformLocs();
-        configGL(isWantCullFace);
 
+        // always the same setup.
+        camera = new Camera(glfwWindow.getWidth(), glfwWindow.getHeight()); // camera init.
+        new DefaultCallbacks(glfwWindow.getID(), camera, true).bindToGLFW(); // callback.
+        getAllUniformLocs();
+        configGL(isWantCullFace); // In some programs, like one using tessellation, wouldn't work with face culling.
+
+        // loop.
         assert glfwWindow != null;
         while (!GLFW.glfwWindowShouldClose(glfwWindow.getID())) {
             loop();
         }
+
+        // clean up.
         destroy();
     }
 }
