@@ -84,7 +84,7 @@ public class Program8_1 {
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
         CAMERA.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, "第8章");
-        windowHandle = glfwWindow.getWindowID();
+        windowHandle = glfwWindow.getID();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
         shadowFrameBuffer = new ShadowFrameBuffer(windowHandle);
         glfwSetFramebufferSizeCallback(windowHandle, new FrameBufferResizeCB(CAMERA, shadowFrameBuffer));

@@ -31,7 +31,7 @@ public class Program10_4 extends Program10_3 {
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
         camera.step(.01f).setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, title);
-        windowID = glfwWindow.getWindowID();
+        windowID = glfwWindow.getID();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
 
         // Callbacks

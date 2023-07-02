@@ -49,7 +49,7 @@ public class Program4_4 {
     private static void init() {
         final int windowCreatedW = 800, windowCreatedH = 600;
         GLFWWindow glfwWindow = new GLFWWindow(windowCreatedW, windowCreatedH, "第4章");
-        windowHandle = glfwWindow.getWindowID();
+        windowHandle = glfwWindow.getID();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
         // 一開始要先呼叫，才能以長、寬構建透視矩陣
         createProjMat(windowCreatedW, windowCreatedH);

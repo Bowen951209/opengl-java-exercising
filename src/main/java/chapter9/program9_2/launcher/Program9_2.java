@@ -86,7 +86,7 @@ public class Program9_2 {
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
         CAMERA.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, "第9章 天空盒");
-        windowHandle = glfwWindow.getWindowID();
+        windowHandle = glfwWindow.getID();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
         shadowFrameBuffer = new ShadowFrameBuffer(windowHandle);
         glfwSetFramebufferSizeCallback(windowHandle, new P9_2FrameBufferResizeCB(CAMERA, shadowFrameBuffer));

@@ -76,7 +76,7 @@ public class Program7_1 {
     private static void init() {
         final int windowCreatedW = 800, windowCreatedH = 600;
         GLFWWindow glfwWindow = new GLFWWindow(windowCreatedW, windowCreatedH, "第7章");
-        windowHandle = glfwWindow.getWindowID();
+        windowHandle = glfwWindow.getID();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
         createProjMat(windowCreatedW, windowCreatedH);
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);

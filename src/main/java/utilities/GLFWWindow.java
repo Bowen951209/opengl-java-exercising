@@ -25,7 +25,7 @@ public class GLFWWindow {
     }
 
     private final long windowHandle;
-    public long getWindowID() {
+    public long getID() {
         return windowHandle;
     }
     private static final int glMajorVer = 4;

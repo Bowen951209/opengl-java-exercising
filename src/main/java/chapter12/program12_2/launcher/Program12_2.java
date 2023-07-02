@@ -19,12 +19,11 @@ public class Program12_2 extends Program {
     @Override
     protected void init() {
         // Basics
-        GLFWWindow glfwWindow = new GLFWWindow(1500, 1000, "Prog12.2");
-        windowID = glfwWindow.getWindowID();
+        glfwWindow = new GLFWWindow(1500, 1000, "Prog12.2");
         camera = new Camera(glfwWindow.getWidth(), glfwWindow.getHeight());
 
         // Callbacks
-        new DefaultCallbacks(windowID, camera, true).bindToGLFW();
+        new DefaultCallbacks(glfwWindow.getID(), camera, true).bindToGLFW();
 
         // Programs
         program = new ShaderProgramSetter(
@@ -44,7 +43,7 @@ public class Program12_2 extends Program {
 
 
         // GUI
-        gui = new GUI(glfwWindow.getWidth(), glfwWindow.getHeight(), windowID, 3f) {
+        gui = new GUI(glfwWindow.getWidth(), glfwWindow.getHeight(), glfwWindow.getID(), 3f) {
             @Override
             protected void drawFrame() {
                 ImGui.newFrame(); // start frame
@@ -97,6 +96,6 @@ public class Program12_2 extends Program {
 
     @Override
     protected void destroy() {
-        Destroyer.destroyAll(windowID, gui);
+        Destroyer.destroyAll(glfwWindow.getID(), gui);
     }
 }

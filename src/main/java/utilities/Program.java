@@ -8,7 +8,7 @@ import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL11.*;
 
 public abstract class Program {
-    protected long windowID;
+    protected GLFWWindow glfwWindow;
     protected GUI gui;
     protected Camera camera;
     protected int program;
@@ -42,7 +42,7 @@ public abstract class Program {
 
         camera.handle();
 
-        glfwSwapBuffers(windowID);
+        glfwSwapBuffers(glfwWindow.getID());
         glfwPollEvents();
     }
 
@@ -53,8 +53,8 @@ public abstract class Program {
         getAllUniformLocs();
         configGL(isWantCullFace);
 
-        assert windowID == 0;
-        while (!GLFW.glfwWindowShouldClose(windowID)) {
+        assert glfwWindow.getID() == 0;
+        while (!GLFW.glfwWindowShouldClose(glfwWindow.getID())) {
             loop();
         }
         destroy();
