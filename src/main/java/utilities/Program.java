@@ -53,7 +53,7 @@ public abstract class Program {
         getAllUniformLocs();
         configGL(isWantCullFace);
 
-        assert glfwWindow.getID() == 0;
+        assert glfwWindow != null;
         while (!GLFW.glfwWindowShouldClose(glfwWindow.getID())) {
             loop();
         }
