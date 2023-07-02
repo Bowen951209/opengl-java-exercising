@@ -12,8 +12,6 @@ public abstract class Program {
     protected GLFWWindow glfwWindow;
     protected GUI gui;
     protected Camera camera;
-    protected int program;
-
 
     protected abstract void init();
 

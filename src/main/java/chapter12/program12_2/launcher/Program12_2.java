@@ -9,6 +9,8 @@ import utilities.sceneComponents.Texture;
 import static org.lwjgl.opengl.GL43.*;
 
 public class Program12_2 extends Program {
+    private int program;
+
     public static void main(String[] args) {
         new Program12_2().run(false);
         // I don't know why when you enable cull face, you just view nothing in the case you use tess,
