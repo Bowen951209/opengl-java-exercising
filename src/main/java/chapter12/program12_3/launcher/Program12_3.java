@@ -1,4 +1,4 @@
-package chapter12.program23_3.launcher;
+package chapter12.program12_3.launcher;
 
 import imgui.ImGui;
 import utilities.GLFWWindow;
