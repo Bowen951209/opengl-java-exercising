@@ -79,7 +79,7 @@ public class Program9_2 {
         }
         // 釋出
         GLFW.glfwTerminate();
-        System.out.println("Program exit and freed glfw.");
+        System.out.println("App exit and freed glfw.");
     }
 
     private static void init() {
@@ -98,13 +98,13 @@ public class Program9_2 {
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE0);
         glActiveTexture(GL_TEXTURE1);
-        renderingProgram1 = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_2/shaders/vert1Shader.glsl")
+        renderingProgram1 = new Program(Path.of("src/main/java/chapter9/program9_2/shaders/vert1Shader.glsl")
                 , Path.of("src/main/java/chapter9/program9_2/shaders/frag1Shader.glsl"))
                 .getID();
-        renderingProgram2 = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_2/shaders/vert2Shader.glsl")
+        renderingProgram2 = new Program(Path.of("src/main/java/chapter9/program9_2/shaders/vert2Shader.glsl")
                 , Path.of("src/main/java/chapter9/program9_2/shaders/frag2Shader.glsl"))
                 .getID();
-        skyBoxProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_2/shaders/skybox/CubeVertShader.glsl")
+        skyBoxProgram = new Program(Path.of("src/main/java/chapter9/program9_2/shaders/skybox/CubeVertShader.glsl")
                 , Path.of("src/main/java/chapter9/program9_2/shaders/skybox/SkyboxFragShader.glsl"))
                 .getID();
 

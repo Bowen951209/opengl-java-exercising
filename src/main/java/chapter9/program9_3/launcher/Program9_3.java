@@ -7,7 +7,7 @@ import org.lwjgl.glfw.GLFW;
 import utilities.sceneComponents.Camera;
 import utilities.Color;
 import utilities.GLFWWindow;
-import utilities.ShaderProgramSetter;
+import utilities.Program;
 import chapter9.program9_3.callbacks.P9_3Callbacks;
 import utilities.models.Torus;
 import utilities.readers.CubeMapReader;
@@ -50,7 +50,7 @@ public class Program9_3 {
         }
         // 釋出
         GLFW.glfwTerminate();
-        System.out.println("Program exit and freed glfw.");
+        System.out.println("App exit and freed glfw.");
     }
 
     private static void init() {
@@ -67,10 +67,10 @@ public class Program9_3 {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE1);
-        defaultProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_3/shaders/default/vertShader.glsl")
+        defaultProgram = new Program(Path.of("src/main/java/chapter9/program9_3/shaders/default/vertShader.glsl")
                 , Path.of("src/main/java/chapter9/program9_3/shaders/default/fragShader.glsl"))
                 .getID();
-        skyBoxProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_3/shaders/skybox/CubeVertShader.glsl")
+        skyBoxProgram = new Program(Path.of("src/main/java/chapter9/program9_3/shaders/skybox/CubeVertShader.glsl")
                 , Path.of("src/main/java/chapter9/program9_3/shaders/skybox/SkyboxFragShader.glsl"))
                 .getID();
 

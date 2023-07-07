@@ -52,7 +52,7 @@ public class Program10_3 extends Program10_2 {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
 
-        program = new ShaderProgramSetter(Path.of("assets/shaders/program10_3/vertex.glsl")
+        program = new Program(Path.of("assets/shaders/program10_3/vertex.glsl")
                 , Path.of("assets/shaders/program10_3/fragment.glsl"))
                 .getID();
 

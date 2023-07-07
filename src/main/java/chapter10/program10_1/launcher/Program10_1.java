@@ -46,7 +46,7 @@ public class Program10_1 {
         new Program10_1("Procedural Bump Mapping");
         // 釋出
         GLFW.glfwTerminate();
-        System.out.println("Program exit and freed glfw.");
+        System.out.println("App exit and freed glfw.");
     }
 
     protected void init(String title) {
@@ -63,10 +63,10 @@ public class Program10_1 {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE1);
-        defaultProgram = new ShaderProgramSetter(Path.of("assets/shaders/program10_1/vert.glsl")
+        defaultProgram = new Program(Path.of("assets/shaders/program10_1/vert.glsl")
                 , Path.of("assets/shaders/program10_1/frag.glsl"))
                 .getID();
-        skyBoxProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter9/program9_3/shaders/skybox/CubeVertShader.glsl")
+        skyBoxProgram = new Program(Path.of("src/main/java/chapter9/program9_3/shaders/skybox/CubeVertShader.glsl")
                 , Path.of("src/main/java/chapter9/program9_3/shaders/skybox/SkyboxFragShader.glsl"))
                 .getID();
 

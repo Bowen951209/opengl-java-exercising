@@ -5,7 +5,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import utilities.Color;
 import utilities.GLFWWindow;
-import utilities.ShaderProgramSetter;
+import utilities.Program;
 import utilities.ValuesContainer;
 import utilities.callbacks.DefaultCallbacks;
 
@@ -38,7 +38,7 @@ public class Program12_1 extends Program10_4 {
         glDepthFunc(GL_LEQUAL);
 
         // Programs
-        program = new ShaderProgramSetter(
+        program = new Program(
                 "assets/shaders/program12_1/vertex.glsl",
                 "assets/shaders/program12_1/fragment.glsl",
                 "assets/shaders/program12_1/tcs.glsl",

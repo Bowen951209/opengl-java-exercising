@@ -8,7 +8,7 @@ import utilities.sceneComponents.Texture;
 
 import static org.lwjgl.opengl.GL43.*;
 
-public class Program12_2 extends Program {
+public class Program12_2 extends App {
     private int program;
 
     public static void main(String[] args) {
@@ -22,7 +22,7 @@ public class Program12_2 extends Program {
         glfwWindow = new GLFWWindow(1500, 1000, "Prog12.2");
 
         // Programs
-        program = new ShaderProgramSetter(
+        program = new Program(
                 "assets/shaders/program12_2/vertex.glsl",
                 "assets/shaders/program12_2/fragment.glsl",
                 "assets/shaders/program12_2/TCS.glsl",

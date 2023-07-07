@@ -1,69 +1,106 @@
 package utilities;
 
-import org.lwjgl.glfw.GLFW;
-import utilities.callbacks.DefaultCallbacks;
-import utilities.sceneComponents.Camera;
 
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.opengl.GL11.*;
+import utilities.readers.GLSLReader;
 
-public abstract class Program {
-    protected GLFWWindow glfwWindow;
-    protected GUI gui;
-    protected Camera camera;
+import java.nio.file.Path;
 
-    protected abstract void init();
+import static org.lwjgl.opengl.GL43.*;
 
-    protected abstract void getAllUniformLocs();
 
-    protected abstract void drawScene();
-
-    protected abstract void destroy();
-
-    private void configGL(boolean isCullFace) {
-        // GL settings
-        if (isCullFace)
-            glEnable(GL_CULL_FACE);
-
-        glFrontFace(GL_CCW);
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-    }
-
-    protected void loop() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        camera.updateVMat();
-
-        drawScene();
-
-        gui.update();
-
-        camera.handle();
-
-        glfwSwapBuffers(glfwWindow.getID());
-        glfwPollEvents();
+public class Program {
+    private final int id;
+    public int getID() {return id;}
+    public int use() {
+        glUseProgram(id);
+        return id;
     }
 
 
+    // Only vertex & fragment
+    public Program(Path vertexShaderPath, Path fragmentShaderPath) {
+        // 讀取Shader(glsl檔案)
+        String vertexShaderCode = new GLSLReader(vertexShaderPath).getString();
+        String fragmentShaderCode = new GLSLReader(fragmentShaderPath).getString();
 
-    protected void run(boolean isWantCullFace) {
-        // customizable init
-        init();
+        // 設定vertex shader來源、編譯
+        int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+        compileAndCatchShaderErr(vertexShaderID, vertexShaderCode);
+        // 設定fragment shader來源、編譯
+        int fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+        compileAndCatchShaderErr(fragmentShaderID, fragmentShaderCode);
 
-        // always the same setup.
-        camera = new Camera(glfwWindow.getWidth(), glfwWindow.getHeight()); // camera init.
-        new DefaultCallbacks(glfwWindow.getID(), camera, true).bindToGLFW(); // callback.
-        getAllUniformLocs();
-        configGL(isWantCullFace); // In some programs, like one using tessellation, wouldn't work with face culling.
+        // 設定program
+        id = setupProgram(vertexShaderID, fragmentShaderID);
+    }
+    public Program(String vertexShaderPath, String fragmentShaderPath) {this(Path.of(vertexShaderPath), Path.of(fragmentShaderPath));}
 
-        // loop.
-        assert glfwWindow != null;
-        while (!GLFW.glfwWindowShouldClose(glfwWindow.getID())) {
-            loop();
+
+    // vertex, fragment, tessellation control shader & tessellation evaluation shader
+    public Program(Path vertexShaderPath, Path fragmentShaderPath, Path tessellationControlShaderPath, Path tessellationEvaluationShaderPath) {
+        // 讀取Shader(glsl檔案)
+        String vertexShaderCode = new GLSLReader(vertexShaderPath).getString();
+        String fragmentShaderCode = new GLSLReader(fragmentShaderPath).getString();
+        String tcsShaderCode = new GLSLReader(tessellationControlShaderPath).getString();
+        String tesShaderCode = new GLSLReader(tessellationEvaluationShaderPath).getString();
+
+        // 設定vertex shader來源、編譯
+        int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+        compileAndCatchShaderErr(vertexShaderID, vertexShaderCode);
+        // 設定fragment shader來源、編譯
+        int fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+        compileAndCatchShaderErr(fragmentShaderID, fragmentShaderCode);
+
+        int tcsID = glCreateShader(GL_TESS_CONTROL_SHADER);
+        compileAndCatchShaderErr(tcsID, tcsShaderCode);
+        int tesID = glCreateShader(GL_TESS_EVALUATION_SHADER);
+        compileAndCatchShaderErr(tesID, tesShaderCode);
+
+        // 設定program
+        id = setupProgram(vertexShaderID, fragmentShaderID, tesID, tcsID);
+    }
+    public Program(String vertexShaderPath, String fragmentShaderPath, String tessellationControlShaderPath, String tessellationEvaluationShaderPath) {
+        this(Path.of(vertexShaderPath), Path.of(fragmentShaderPath), Path.of(tessellationControlShaderPath), Path.of(tessellationEvaluationShaderPath));
+    }
+
+    public static int setupProgram(int vertexShaderID, int fragmentShaderID) {
+        // This method returns the programID
+        int programID = glCreateProgram();
+        glAttachShader(programID, vertexShaderID);
+        glAttachShader(programID, fragmentShaderID);
+        glLinkProgram(programID);
+        checkLinkStatus(programID);
+
+        return programID;
+    }
+    public static int setupProgram(int vertexShaderID, int fragmentShaderID, int tessellationControlShaderID, int tessellationEvaluationShaderID) {
+        // This method returns the programID
+        int programID = glCreateProgram();
+        glAttachShader(programID, vertexShaderID);
+        glAttachShader(programID, fragmentShaderID);
+        glAttachShader(programID, tessellationControlShaderID);
+        glAttachShader(programID, tessellationEvaluationShaderID);
+        glLinkProgram(programID);
+        checkLinkStatus(programID);
+
+        return programID;
+    }
+    public static void checkLinkStatus(int programID) {
+        if (glGetProgrami(programID, GL_LINK_STATUS) == 0) {
+            throw new RuntimeException("App" + programID + " linked failed\n" + glGetProgramInfoLog(programID));
+        } else {
+            System.out.println("ProgramID:"+ programID +" linked succeeded.");
         }
+    }
 
-        // clean up.
-        destroy();
+    private static void compileAndCatchShaderErr(int shaderID, String source) {
+        glShaderSource(shaderID, source);
+        glCompileShader(shaderID);
+
+        if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == 0) {
+            throw new RuntimeException("Shader" + shaderID + " compiled failed\n" + glGetShaderInfoLog(shaderID));
+        } else {
+            System.out.println("    Shader ID:" +shaderID + " compiled succeeded.");
+        }
     }
 }

@@ -70,7 +70,7 @@ public class Program7_1 {
         loop();
         // 釋出
         GLFW.glfwTerminate();
-        System.out.println("Program exit and freed glfw.");
+        System.out.println("App exit and freed glfw.");
     }
 
     private static void init() {
@@ -82,13 +82,13 @@ public class Program7_1 {
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
 
-        gouraudProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter7/program7_1/shaders/gouraud/vertShader.glsl")
+        gouraudProgram = new Program(Path.of("src/main/java/chapter7/program7_1/shaders/gouraud/vertShader.glsl")
                 , Path.of("src/main/java/chapter7/program7_1/shaders/gouraud/fragShader.glsl"))
                 .getID();
-        phongProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter7/program7_1/shaders/phong/vertShader.glsl")
+        phongProgram = new Program(Path.of("src/main/java/chapter7/program7_1/shaders/phong/vertShader.glsl")
                 , Path.of("src/main/java/chapter7/program7_1/shaders/phong/fragShader.glsl"))
                 .getID();
-        blinnPhongProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter7/program7_1/shaders/blinnPhong/vertShader.glsl")
+        blinnPhongProgram = new Program(Path.of("src/main/java/chapter7/program7_1/shaders/blinnPhong/vertShader.glsl")
                 , Path.of("src/main/java/chapter7/program7_1/shaders/blinnPhong/fragShader.glsl"))
                 .getID();
 

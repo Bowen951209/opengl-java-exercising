@@ -58,7 +58,7 @@ public class Main {
         init();
         loop();
         GLFW.glfwTerminate();
-        System.out.println("Program exit and freed glfw.");
+        System.out.println("App exit and freed glfw.");
     }
 
     private static void init() {
@@ -69,7 +69,7 @@ public class Main {
         createProjMat(windowCreatedW, windowCreatedH);
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
-        blinnPhongProgram = new ShaderProgramSetter(Path.of("src/main/java/chapter7/lighting_and_texture/shaders/VertexShader.glsl")
+        blinnPhongProgram = new Program(Path.of("src/main/java/chapter7/lighting_and_texture/shaders/VertexShader.glsl")
                 , Path.of("src/main/java/chapter7/lighting_and_texture/shaders/FragmentShader.glsl"))
                 .getID();
         dolphinTex = new TextureReader("src/main/java/chapter7/lighting_and_texture/textures/Dolphin_HighPolyUV.png");

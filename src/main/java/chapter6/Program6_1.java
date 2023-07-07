@@ -9,7 +9,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
 import utilities.Color;
 import utilities.GLFWWindow;
-import utilities.ShaderProgramSetter;
+import utilities.Program;
 import utilities.models.Sphere;
 import utilities.readers.TextureReader;
 
@@ -45,7 +45,7 @@ public class Program6_1 {
         loop();
         // 釋出
         GLFW.glfwTerminate();
-        System.out.println("Program exit and freed glfw.");
+        System.out.println("App exit and freed glfw.");
 
 
     }
@@ -61,7 +61,7 @@ public class Program6_1 {
         // 設定frameBuffer大小改變callback
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
-        int program = new ShaderProgramSetter(Path.of("src/main/java/chapter5/Shaders/for5_1/VertexShader.glsl")
+        int program = new Program(Path.of("src/main/java/chapter5/Shaders/for5_1/VertexShader.glsl")
                 , Path.of("src/main/java/chapter5/Shaders/for5_1/FragmentShader.glsl"))
                 .getID();
 

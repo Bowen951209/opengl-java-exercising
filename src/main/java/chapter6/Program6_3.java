@@ -42,7 +42,7 @@ public class Program6_3 {
         loop();
         // 釋出
         GLFW.glfwTerminate();
-        System.out.println("Program exit and freed glfw.");
+        System.out.println("App exit and freed glfw.");
 
 
     }
@@ -58,7 +58,7 @@ public class Program6_3 {
         // 設定frameBuffer大小改變callback
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
-        int program = new ShaderProgramSetter(Path.of("src/main/java/chapter6/ShadersFor6_3/VertexShader.glsl")
+        int program = new Program(Path.of("src/main/java/chapter6/ShadersFor6_3/VertexShader.glsl")
                 , Path.of("src/main/java/chapter6/ShadersFor6_3/FragmentShader.glsl"))
                 .getID();
 
