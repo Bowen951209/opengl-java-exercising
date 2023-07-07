@@ -31,7 +31,7 @@ public class Program12_4 extends App {
         glBindVertexArray(vaoID);
 
         // Texture
-        texture = new Texture(0, "assets/textures/imageTextures/moon.jpg");
+        texture = new Texture(0, "assets/textures/imageTextures/squareMoonMap.jpg");
 
         // GUI
         gui = new GUI(glfwWindow, 3f) {
