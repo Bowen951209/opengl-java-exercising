@@ -50,7 +50,7 @@ public class Program12_3 extends App {
         mvpLoc = glGetUniformLocation(program.getID(), "mvp");
     }
 
-    private final Matrix4f mMat = new Matrix4f().scale(3f);
+    private final Matrix4f mMat = new Matrix4f().scale(3f).rotateX((float) Math.toRadians(180f));
     private final Matrix4f mvpMat = new Matrix4f();
     @Override
     protected void drawScene() {
@@ -71,6 +71,6 @@ public class Program12_3 extends App {
     }
 
     public static void main(String[] args) {
-        new Program12_3().run(false);
+        new Program12_3().run(true);
     }
 }
