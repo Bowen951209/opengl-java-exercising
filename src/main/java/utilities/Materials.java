@@ -1,53 +1,56 @@
 package utilities;
-
+import static org.lwjgl.opengl.GL43.*;
 import org.lwjgl.BufferUtils;
+import utilities.exceptions.InvalidMaterialException;
 
 import java.nio.FloatBuffer;
 
 public class Materials {
-    public FloatBuffer getAMBIENT() {
-        return AMBIENT;
+
+    private final FloatBuffer ambient = BufferUtils.createFloatBuffer(4);
+    private final FloatBuffer diffuse = BufferUtils.createFloatBuffer(4);
+    private final FloatBuffer specular = BufferUtils.createFloatBuffer(4);
+    private final FloatBuffer shininess = BufferUtils.createFloatBuffer(1);
+
+    public FloatBuffer getAmbient() {
+        return ambient;
     }
 
-    public FloatBuffer getDIFFUSE() {
-        return DIFFUSE;
+    public FloatBuffer getDiffuse() {
+        return diffuse;
     }
 
-    public FloatBuffer getSPECULAR() {
-        return SPECULAR;
+    public FloatBuffer getSpecular() {
+        return specular;
     }
 
-    public FloatBuffer getSHININESS() {
-        return SHININESS;
+    public FloatBuffer getShininess() {
+        return shininess;
     }
 
-    private final FloatBuffer AMBIENT = BufferUtils.createFloatBuffer(4);
-    private final FloatBuffer DIFFUSE = BufferUtils.createFloatBuffer(4);
-    private final FloatBuffer SPECULAR = BufferUtils.createFloatBuffer(4);
-    private final FloatBuffer SHININESS = BufferUtils.createFloatBuffer(1);
-
-    public Materials(String material) {
+    public Materials(String material) throws InvalidMaterialException {
         switch (material) {
             case "gold" -> {
-                AMBIENT.put(goldAmbient());
-                DIFFUSE.put(goldDiffuse());
-                SPECULAR.put(goldSpecular());
-                SHININESS.put(goldShininess());
+                ambient.put(goldAmbient());
+                diffuse.put(goldDiffuse());
+                specular.put(goldSpecular());
+                shininess.put(goldShininess());
             }
             case "bronze" -> {
-                AMBIENT.put(bronzeAmbient());
-                DIFFUSE.put(bronzeDiffuse());
-                SPECULAR.put(bronzeSpecular());
-                SHININESS.put(bronzeShininess());
+                ambient.put(bronzeAmbient());
+                diffuse.put(bronzeDiffuse());
+                specular.put(bronzeSpecular());
+                shininess.put(bronzeShininess());
             }
             case "silver" -> {
-                AMBIENT.put(silverAmbient());
-                DIFFUSE.put(silverDiffuse());
-                SPECULAR.put(silverSpecular());
-                SHININESS.put(silverShininess());
+                ambient.put(silverAmbient());
+                diffuse.put(silverDiffuse());
+                specular.put(silverSpecular());
+                shininess.put(silverShininess());
             }
-            default -> throw new RuntimeException("Undefined material is passed in.");
+            default -> throw new InvalidMaterialException("Undefined material is passed in.");
         }
+        flipAll();
     }
 
 
@@ -100,9 +103,16 @@ public class Materials {
     }
 
     public void flipAll() {
-        AMBIENT.flip();
-        DIFFUSE.flip();
-        SPECULAR.flip();
-        SHININESS.flip();
+        ambient.flip();
+        diffuse.flip();
+        specular.flip();
+        shininess.flip();
+    }
+
+    public void putToUniforms(int ambLoc, int diffLoc, int specLoc, int shineLoc) {
+        glUniform4fv(ambLoc, this.ambient);
+        glUniform4fv(diffLoc, this.diffuse);
+        glUniform4fv(specLoc, this.specular);
+        glUniform1fv(shineLoc, shininess);
     }
 }

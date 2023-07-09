@@ -1,19 +1,42 @@
 package utilities;
 
 
+import utilities.exceptions.ProgramLinkedFailedException;
+import utilities.exceptions.ShaderCompiledFailedException;
+import utilities.exceptions.UniformLocNotFoundException;
 import utilities.readers.GLSLReader;
 
 import java.nio.file.Path;
+import java.util.HashMap;
 
 import static org.lwjgl.opengl.GL43.*;
 
 
 public class Program {
     private final int id;
-    public int getID() {return id;}
+
+    public int getID() {
+        return id;
+    }
+
     public int use() {
         glUseProgram(id);
         return id;
+    }
+
+    private final HashMap<String, Integer> uniformLocMap = new HashMap<>();
+
+    public int getUniformLoc(String uniformName) {
+        return this.uniformLocMap.get(uniformName);
+    }
+
+    public void getAllUniformLocs(String[] uniforms) throws UniformLocNotFoundException {
+        for (String i : uniforms) {
+            int loc = glGetUniformLocation(this.id, i);
+            if (loc == -1)
+                throw new UniformLocNotFoundException("Uniform \"" + i + "\" not found");
+            this.uniformLocMap.put(i, loc);
+        }
     }
 
 
@@ -33,7 +56,10 @@ public class Program {
         // 設定program
         id = setupProgram(vertexShaderID, fragmentShaderID);
     }
-    public Program(String vertexShaderPath, String fragmentShaderPath) {this(Path.of(vertexShaderPath), Path.of(fragmentShaderPath));}
+
+    public Program(String vertexShaderPath, String fragmentShaderPath) {
+        this(Path.of(vertexShaderPath), Path.of(fragmentShaderPath));
+    }
 
 
     // vertex, fragment, tessellation control shader & tessellation evaluation shader
@@ -59,6 +85,7 @@ public class Program {
         // 設定program
         id = setupProgram(vertexShaderID, fragmentShaderID, tesID, tcsID);
     }
+
     public Program(String vertexShaderPath, String fragmentShaderPath, String tessellationControlShaderPath, String tessellationEvaluationShaderPath) {
         this(Path.of(vertexShaderPath), Path.of(fragmentShaderPath), Path.of(tessellationControlShaderPath), Path.of(tessellationEvaluationShaderPath));
     }
@@ -73,6 +100,7 @@ public class Program {
 
         return programID;
     }
+
     public static int setupProgram(int vertexShaderID, int fragmentShaderID, int tessellationControlShaderID, int tessellationEvaluationShaderID) {
         // This method returns the programID
         int programID = glCreateProgram();
@@ -85,11 +113,12 @@ public class Program {
 
         return programID;
     }
+
     public static void checkLinkStatus(int programID) {
         if (glGetProgrami(programID, GL_LINK_STATUS) == 0) {
-            throw new RuntimeException("App" + programID + " linked failed\n" + glGetProgramInfoLog(programID));
+            throw new ProgramLinkedFailedException("App" + programID + " linked failed\n" + glGetProgramInfoLog(programID));
         } else {
-            System.out.println("ProgramID:"+ programID +" linked succeeded.");
+            System.out.println("ProgramID:" + programID + " linked succeeded.");
         }
     }
 
@@ -98,9 +127,10 @@ public class Program {
         glCompileShader(shaderID);
 
         if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == 0) {
-            throw new RuntimeException("Shader" + shaderID + " compiled failed\n" + glGetShaderInfoLog(shaderID));
+            throw new ShaderCompiledFailedException("Shader" + shaderID + " compiled failed\n" + glGetShaderInfoLog(shaderID));
         } else {
-            System.out.println("    Shader ID:" +shaderID + " compiled succeeded.");
+            System.out.println("    Shader ID:" + shaderID + " compiled succeeded.");
         }
     }
+
 }

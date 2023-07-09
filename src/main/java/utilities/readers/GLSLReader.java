@@ -13,7 +13,7 @@ public class GLSLReader {
         try {
             data = Files.readAllLines(path, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("File \"" + path.getFileName() + "\" not found", e);
         }
     }
 

@@ -6,6 +6,7 @@ import utilities.GLFWWindow;
 import utilities.Materials;
 import utilities.Program;
 import utilities.callbacks.DefaultCallbacks;
+import utilities.exceptions.InvalidMaterialException;
 import utilities.models.Sphere;
 import utilities.sceneComponents.PositionalLight;
 import utilities.sceneComponents.Texture;
@@ -54,7 +55,11 @@ public class Program10_2 extends Program10_1 {
         getAllUniformsLoc();
         sphere = new Sphere();
         positionalLight = new PositionalLight();
-        material = new Materials("gold");
+        try {
+            material = new Materials("gold");
+        } catch (InvalidMaterialException e) {
+            throw new RuntimeException(e);
+        }
         Texture normalMapTexture = new Texture(0, "assets/textures/normalMaps/castleroofNORMAL.jpg");
         normalMapTexture.bind();
 
@@ -95,17 +100,17 @@ public class Program10_2 extends Program10_1 {
         //繪製sphere
 
         // light
-        glUniform4fv(globalAmbientLoc, positionalLight.getGLOBAL_AMBIENT());
-        glUniform4fv(lightAmbientLoc, positionalLight.getLIGHT_AMBIENT());
-        glUniform4fv(lightDiffuseLoc, positionalLight.getLIGHT_DIFFUSE());
-        glUniform4fv(lightSpecularLoc, positionalLight.getLIGHT_SPECULAR());
-        glUniform3fv(lightPosition, positionalLight.getLIGHT_POSITION());
+        glUniform4fv(globalAmbientLoc, positionalLight.getGlobalAmbient());
+        glUniform4fv(lightAmbientLoc, positionalLight.getLightAmbient());
+        glUniform4fv(lightDiffuseLoc, positionalLight.getLightDiffuse());
+        glUniform4fv(lightSpecularLoc, positionalLight.getLightSpecular());
+        glUniform3fv(lightPosition, positionalLight.getLightPosition());
         positionalLight.flipAll();
         // material
-        glUniform4fv(materialAmbientLoc, material.getAMBIENT());
-        glUniform4fv(materialDiffuseLoc, material.getDIFFUSE());
-        glUniform4fv(materialSpecularLoc, material.getSPECULAR());
-        glUniform1fv(materialShininessLoc, material.getSHININESS());
+        glUniform4fv(materialAmbientLoc, material.getAmbient());
+        glUniform4fv(materialDiffuseLoc, material.getDiffuse());
+        glUniform4fv(materialSpecularLoc, material.getSpecular());
+        glUniform1fv(materialShininessLoc, material.getShininess());
         material.flipAll();
 
 

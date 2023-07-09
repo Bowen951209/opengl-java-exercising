@@ -5,6 +5,7 @@ import org.lwjgl.assimp.AIMesh;
 import org.lwjgl.assimp.AIScene;
 import org.lwjgl.assimp.AIVector3D;
 import org.lwjgl.assimp.Assimp;
+import utilities.exceptions.NoMeshesException;
 
 import java.nio.file.Path;
 
@@ -50,7 +51,7 @@ public class ModelReader {
                 processMesh(mesh);
             }
         } else {
-            throw new RuntimeException("scene.mMeshes is null");
+            throw new NoMeshesException("scene.mMeshes is null");
         }
 
 

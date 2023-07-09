@@ -1,62 +1,81 @@
 package utilities.sceneComponents;
 
 import org.joml.Vector3f;
+import static org.lwjgl.opengl.GL43.*;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 
 public class PositionalLight {
-    private final FloatBuffer GLOBAL_AMBIENT = BufferUtils.createFloatBuffer(4);
-    private final FloatBuffer LIGHT_AMBIENT = BufferUtils.createFloatBuffer(4);
-    private final FloatBuffer LIGHT_DIFFUSE = BufferUtils.createFloatBuffer(4);
-    private final FloatBuffer LIGHT_SPECULAR = BufferUtils.createFloatBuffer(4);
+    private final FloatBuffer globalAmbient = BufferUtils.createFloatBuffer(4);
+    private final FloatBuffer lightAmbient = BufferUtils.createFloatBuffer(4);
+    private final FloatBuffer lightDiffuse = BufferUtils.createFloatBuffer(4);
+    private final FloatBuffer lightSpecular = BufferUtils.createFloatBuffer(4);
 
 
-    private final FloatBuffer LIGHT_POSITION = BufferUtils.createFloatBuffer(3);
-    private final Vector3f LIGHT_POSITION_IN_VECTOR;
+    private final FloatBuffer lightPosition = BufferUtils.createFloatBuffer(3);
+    private final Vector3f lightPositionInVector;
+    public PositionalLight setPosition(float x, float y, float z) {
+        lightPositionInVector.set(x, y, z);
+        lightPositionInVector.get(lightPosition);
 
-    public FloatBuffer getLIGHT_POSITION() {
-        LIGHT_POSITION_IN_VECTOR.get(LIGHT_POSITION);
-        return LIGHT_POSITION;
+        return this;
     }
-    public FloatBuffer getGLOBAL_AMBIENT() {
-        return GLOBAL_AMBIENT;
+    public FloatBuffer getLightPosition() {
+        lightPositionInVector.get(lightPosition);
+        return lightPosition;
     }
-
-    public FloatBuffer getLIGHT_AMBIENT() {
-        return LIGHT_AMBIENT;
-    }
-
-    public FloatBuffer getLIGHT_DIFFUSE() {
-        return LIGHT_DIFFUSE;
+    public FloatBuffer getGlobalAmbient() {
+        return globalAmbient;
     }
 
-    public FloatBuffer getLIGHT_SPECULAR() {
-        return LIGHT_SPECULAR;
+    public FloatBuffer getLightAmbient() {
+        return lightAmbient;
+    }
+
+    public FloatBuffer getLightDiffuse() {
+        return lightDiffuse;
+    }
+
+    public FloatBuffer getLightSpecular() {
+        return lightSpecular;
     }
 
     public PositionalLight() {
         this(
-                new float[] {0.1f, 0.1f, 0.1f, 1.0f},
-                new float[] {0.0f, 0.0f, 0.0f, 1.0f},
-                new float[] {1.0f, 1.0f, 1.0f, 1.0f},
-                new float[] {1.0f, 1.0f, 1.0f, 1.0f},
-                new Vector3f(5.0f, 2.0f, 2.0f)
+//                new float[] {0.9f, 0.9f, 0.9f, 1.0f),
+                new float[] {0.1f, 0.1f, 0.1f, 1.0f}, // global ambient
+                new float[] {0.0f, 0.0f, 0.0f, 1.0f}, // light ambient
+                new float[] {1.0f, 1.0f, 1.0f, 1.0f}, // light diffuse
+                new float[] {1.0f, 1.0f, 1.0f, 1.0f}, // light specular
+                new Vector3f(5.0f, 2.0f, 2.0f) // light position
         );
     }
 
     public void flipAll() {
-        GLOBAL_AMBIENT.flip();
-        LIGHT_AMBIENT.flip();
-        LIGHT_DIFFUSE.flip();
-        LIGHT_SPECULAR.flip();
-        LIGHT_POSITION.flip();
+        globalAmbient.flip();
+        lightAmbient.flip();
+        lightDiffuse.flip();
+        lightSpecular.flip();
+        lightPosition.flip();
     }
     public PositionalLight(float[] globalAmbient, float[] lightAmbient, float[] lightDiffuse, float[] lightSpecular, Vector3f lightPosition) {
-        GLOBAL_AMBIENT.put(globalAmbient);
-        LIGHT_AMBIENT.put(lightAmbient);
-        LIGHT_DIFFUSE.put(lightDiffuse);
-        LIGHT_SPECULAR.put(lightSpecular);
-        LIGHT_POSITION_IN_VECTOR = new Vector3f(lightPosition);
+        this.globalAmbient.put(globalAmbient);
+        this.lightAmbient.put(lightAmbient);
+        this.lightDiffuse.put(lightDiffuse);
+        this.lightSpecular.put(lightSpecular);
+        flipAll();
+        lightPositionInVector = new Vector3f(lightPosition);
+    }
+
+    public void putToUniforms(int globalAmbLoc, int lightAmbLoc, int lightDiffLoc, int lightSpecLoc, int lightPosLoc) {
+        // These are vec4
+        glUniform4fv(globalAmbLoc, this.globalAmbient);
+        glUniform4fv(lightAmbLoc, this.lightAmbient);
+        glUniform4fv(lightDiffLoc, this.lightDiffuse);
+        glUniform4fv(lightSpecLoc, this.lightSpecular);
+
+        // This is vec3
+        glUniform3fv(lightPosLoc, this.lightPosition);
     }
 }
