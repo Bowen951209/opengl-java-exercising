@@ -45,13 +45,13 @@ void main(void)
 	vec3 R = normalize(reflect(-L, N));
 	float cosTheta = dot(L,N);
 	float cosPhi = dot(V,R);
+  
+  vec4 ambient = globalAmbient * material.ambient  +  light.ambient * material.ambient;
+  vec4 diffuse = light.diffuse * material.diffuse * max(cosTheta,0.0);
+  vec4 specular = light.specular * material.specular * pow(max(cosPhi,0.0), 10.0 / material.shininess);
+  
+  vec4 lightedColor = ambient + diffuse + specular;
+  vec4 texturedColor = texture(tex_color, tes_out);
 	
-	color = 0.5 * 
-				( globalAmbient * material.ambient  +  light.ambient * material.ambient
-				+ light.diffuse * material.diffuse * max(cosTheta,0.0)
-				+ light.specular * material.specular * pow(max(cosPhi,0.0), material.shininess)
-				) +
-			0.5 *
-				( texture(tex_color, tes_out)
-				);
+	color = 0.5 * lightedColor + 0.5 * texturedColor;
 }

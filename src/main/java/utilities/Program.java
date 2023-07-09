@@ -3,7 +3,6 @@ package utilities;
 
 import utilities.exceptions.ProgramLinkedFailedException;
 import utilities.exceptions.ShaderCompiledFailedException;
-import utilities.exceptions.UniformLocNotFoundException;
 import utilities.readers.GLSLReader;
 
 import java.nio.file.Path;
@@ -27,14 +26,21 @@ public class Program {
     private final HashMap<String, Integer> uniformLocMap = new HashMap<>();
 
     public int getUniformLoc(String uniformName) {
-        return this.uniformLocMap.get(uniformName);
+        if(this.uniformLocMap.get(uniformName) != null) {
+            return this.uniformLocMap.get(uniformName);
+        }
+        else {
+            // No defined uniform location.
+            return -1;
+        }
     }
 
-    public void getAllUniformLocs(String[] uniforms) throws UniformLocNotFoundException {
+    public void getAllUniformLocs(String[] uniforms) {
         for (String i : uniforms) {
             int loc = glGetUniformLocation(this.id, i);
-            if (loc == -1)
-                throw new UniformLocNotFoundException("Uniform \"" + i + "\" not found");
+            if (loc == -1) {
+                System.err.println("Uniform \"" + i + "\" not found");
+            }
             this.uniformLocMap.put(i, loc);
         }
     }

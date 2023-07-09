@@ -4,7 +4,6 @@ import imgui.ImGui;
 import org.joml.Matrix4f;
 import utilities.*;
 import utilities.exceptions.InvalidMaterialException;
-import utilities.exceptions.UniformLocNotFoundException;
 import utilities.sceneComponents.PositionalLight;
 import utilities.sceneComponents.Texture;
 
@@ -63,25 +62,21 @@ public class Program12_4 extends App {
 
     @Override
     protected void getAllUniformLocs() {
-        try {
-            program.getAllUniformLocs(new String[]{
-                    "globalAmbient",
-                    "light.ambient",
-                    "light.diffuse",
-                    "light.specular",
-                    "light.position",
+        program.getAllUniformLocs(new String[]{
+                "globalAmbient",
+                "light.ambient",
+                "light.diffuse",
+                "light.specular",
+                "light.position",
 
-                    "material.ambient",
-                    "material.diffuse",
-                    "material.specular",
-                    "material.shininess",
+                "material.ambient",
+                "material.diffuse",
+                "material.specular",
+                "material.shininess",
 
-                    "mvp_matrix",
-                    "mv_matrix"
-            });
-        } catch (UniformLocNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+                "mvp_matrix",
+                "mv_matrix"
+        });
     }
 
     private final Matrix4f mMat = new Matrix4f()
@@ -111,11 +106,11 @@ public class Program12_4 extends App {
                 program.getUniformLoc("material.shininess")
         );
         glUniformMatrix4fv(
-                program.getUniformLoc("mv_matrix"),false,
+                program.getUniformLoc("mv_matrix"), false,
                 mvMat.get(ValuesContainer.VALS_OF_16)
         );
         glUniformMatrix4fv(
-                program.getUniformLoc("mvp_matrix"),false,
+                program.getUniformLoc("mvp_matrix"), false,
                 mvpMat.get(ValuesContainer.VALS_OF_16)
         );
 
