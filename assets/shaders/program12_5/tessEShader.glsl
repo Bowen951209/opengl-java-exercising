@@ -1,6 +1,6 @@
 #version 430
 
-layout (quads, equal_spacing,ccw) in;
+layout (quads, fractional_even_spacing, ccw) in;
 
 uniform mat4 mvp_matrix;
 layout (binding = 0) uniform sampler2D tex_color;
