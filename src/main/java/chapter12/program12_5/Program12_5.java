@@ -1,35 +1,36 @@
-package chapter12.program12_4.launcher;
+package chapter12.program12_5;
 
+import chapter12.program12_4.launcher.Program12_4;
 import imgui.ImGui;
-import org.joml.Matrix4f;
 import utilities.*;
 import utilities.exceptions.InvalidMaterialException;
-import utilities.sceneComponents.PositionalLight;
 import utilities.sceneComponents.Texture;
 
-import static org.lwjgl.opengl.GL43.*;
+import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL31.glDrawArraysInstanced;
+import static org.lwjgl.opengl.GL40.*;
 
-public class Program12_4 extends App {
-    protected Program program;
-    protected Texture imageTexture, heightMap, normalMap;
-    protected final PositionalLight light = new PositionalLight().setPosition(0f, .1f, .2f);
-    protected Materials material;
-
-
+public class Program12_5 extends Program12_4 {
+    public static void main(String[] args) {
+        new Program12_5().run(false);
+    }
     @Override
     protected void init() {
+        // p.s most are copied from Program12_4.
+
         // Window
-        glfwWindow = new GLFWWindow(1500, 1000, "Prog12.4");
+        glfwWindow = new GLFWWindow(1500, 1000, "Prog12.5");
 
         // Program
-        program = new Program(
-                "assets/shaders/program12_4/vertShader.glsl",
-                "assets/shaders/program12_4/fragShader.glsl",
-                "assets/shaders/program12_4/tessCShader.glsl",
-                "assets/shaders/program12_4/tessEShader.glsl"
+        super.program = new Program(
+                "assets/shaders/program12_5/vertShader.glsl",
+                "assets/shaders/program12_5/fragShader.glsl",
+                "assets/shaders/program12_5/tessCShader.glsl",
+                "assets/shaders/program12_5/tessEShader.glsl"
         );
-        program.use();
-
+        super.program.use();
 
         // VAO *every program must have a VAO*.
         int vaoID = glGenVertexArrays();
@@ -42,7 +43,7 @@ public class Program12_4 extends App {
 
         // Model's material
         try {
-            material = new Materials("silver");
+            material = new Materials("gold");
         } catch (InvalidMaterialException e) {
             throw new RuntimeException(e);
         }
@@ -53,7 +54,7 @@ public class Program12_4 extends App {
             protected void drawFrame() {
                 ImGui.newFrame(); // start frame
                 ImGui.begin("Description"); // window
-                ImGui.text("Program12.4: instanced tessellated terrain.");
+                ImGui.text("Program12.5: LOD(Level Of Detail)");
                 ImGui.end();
                 ImGui.render(); // end frame
             }
@@ -61,33 +62,10 @@ public class Program12_4 extends App {
     }
 
     @Override
-    protected void getAllUniformLocs() {
-        program.getAllUniformLocs(new String[]{
-                "globalAmbient",
-                "light.ambient",
-                "light.diffuse",
-                "light.specular",
-                "light.position",
-
-                "material.ambient",
-                "material.diffuse",
-                "material.specular",
-                "material.shininess",
-
-                "mvp_matrix",
-                "mv_matrix"
-        });
-    }
-
-    protected final Matrix4f mMat = new Matrix4f()
-            .translate(0f, -.5f, 0f)
-            .scale(10f)
-            .rotateX((float) Math.toRadians(0f));
-    protected final Matrix4f mvMat = new Matrix4f();
-    protected final Matrix4f mvpMat = new Matrix4f();
-
-    @Override
     protected void drawScene() {
+        // In this program I want to use GL_LINE
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
         // Update mv & mvp mat every frame.
         mvMat.set(camera.getVMat()).mul(mMat);
         mvpMat.set(camera.getProjMat()).mul(mvMat); // Remember to make sure multiplication order, or it'll fuck up.
@@ -122,14 +100,7 @@ public class Program12_4 extends App {
 
         glPatchParameteri(GL_PATCH_VERTICES, 4);
         glDrawArraysInstanced(GL_PATCHES, 0, 4, 64 * 64);
-    }
 
-    @Override
-    protected void destroy() {
-        Destroyer.destroyAll(glfwWindow.getID(), gui);
-    }
-
-    public static void main(String[] args) {
-        new Program12_4().run(false);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 }
