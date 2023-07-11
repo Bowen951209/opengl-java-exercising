@@ -179,11 +179,11 @@ public class Program9_3 {
         torus.updateState(CAMERA);
 
 //        glUniformMatrix4fv(pDefaultMvLoc, false, mvMat.get(VALS_OF_16));
-        glUniformMatrix4fv(pDefaultMvLoc, false, torus.getMV_MAT().get(VALS_OF_16));
+        glUniformMatrix4fv(pDefaultMvLoc, false, torus.getMvMat().get(VALS_OF_16));
         glUniformMatrix4fv(pDefaultProjLoc, false, CAMERA.getProjMat().get(VALS_OF_16));
 
 //        glUniformMatrix4fv(pDefaultNormLoc, false, invTrMat.get(VALS_OF_16));
-        glUniformMatrix4fv(pDefaultNormLoc, false, torus.getINV_TR_MAT().get(VALS_OF_16));
+        glUniformMatrix4fv(pDefaultNormLoc, false, torus.getInvTrMat().get(VALS_OF_16));
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);

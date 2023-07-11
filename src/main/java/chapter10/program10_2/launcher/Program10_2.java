@@ -115,8 +115,8 @@ public class Program10_2 extends Program10_1 {
 
 
         // matrices
-        glUniformMatrix4fv(mv_matrixLoc, false, sphere.getMV_MAT().get(VALS_OF_16));
-        glUniformMatrix4fv(norm_matrixLoc, false, sphere.getINV_TR_MAT().get(VALS_OF_16));
+        glUniformMatrix4fv(mv_matrixLoc, false, sphere.getMvMat().get(VALS_OF_16));
+        glUniformMatrix4fv(norm_matrixLoc, false, sphere.getInvTrMat().get(VALS_OF_16));
         glUniformMatrix4fv(proj_matrixLoc, false, camera.getProjMat().get(VALS_OF_16));
 
         sphere.updateState(camera);

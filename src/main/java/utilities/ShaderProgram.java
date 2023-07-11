@@ -85,6 +85,10 @@ public class ShaderProgram {
         this.id = setupProgram(vertShaderID, fragShaderID, geoShaderID);
     }
 
+    public ShaderProgram(String vertexShaderPath, String fragmentShaderPath, String geometryShaderPath) {
+        this(Path.of(vertexShaderPath), Path.of(fragmentShaderPath), Path.of(geometryShaderPath));
+    }
+
     // vertex, fragment, tessellation control shader & tessellation evaluation shader
     public ShaderProgram(Path vertexShaderPath, Path fragmentShaderPath, Path tessellationControlShaderPath, Path tessellationEvaluationShaderPath) {
         // 讀取Shader(glsl檔案)

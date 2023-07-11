@@ -113,7 +113,7 @@ public class Program10_4 extends Program10_3 {
         imageTexture.bind();
         heightMap.bind();
 
-        glUniformMatrix4fv(mvMatLoc, false, grid.getMV_MAT().get(ValuesContainer.VALS_OF_16));
+        glUniformMatrix4fv(mvMatLoc, false, grid.getMvMat().get(ValuesContainer.VALS_OF_16));
         glUniformMatrix4fv(projMatLoc, false, camera.getProjMat().get(ValuesContainer.VALS_OF_16));
 
         grid.updateState(camera);

@@ -109,10 +109,10 @@ public class Program10_1 {
 //         繪製torus
         torus.updateState(camera);
 
-        glUniformMatrix4fv(pDefaultMvLoc, false, torus.getMV_MAT().get(VALS_OF_16));
+        glUniformMatrix4fv(pDefaultMvLoc, false, torus.getMvMat().get(VALS_OF_16));
         glUniformMatrix4fv(pDefaultProjLoc, false, camera.getProjMat().get(VALS_OF_16));
 
-        glUniformMatrix4fv(pDefaultNormLoc, false, torus.getINV_TR_MAT().get(VALS_OF_16));
+        glUniformMatrix4fv(pDefaultNormLoc, false, torus.getInvTrMat().get(VALS_OF_16));
 
         torus.draw(GL_TRIANGLES);
     }

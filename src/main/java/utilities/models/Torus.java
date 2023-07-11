@@ -185,14 +185,10 @@ public class Torus extends Model {
 
     @Override
     protected void updateMMat() {
-        M_MAT.identity()
-                .translate(POSITION)
+        mMat.identity()
+                .translate(position)
                 .scale(2.5f)
                 .rotateX(.5f);
-//        M_MAT.identity()
-//                .translate(POSITION)
-//                .rotateX(toRadians((float) glfwGetTime() * 100f))
-//                .scale(2.5f);
     }
 
     @Override

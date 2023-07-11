@@ -45,6 +45,17 @@ public abstract class App {
         glfwPollEvents();
     }
 
+    private void noGUILoop() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        camera.updateVMat();
+
+        drawScene();
+
+        camera.handle();
+
+        glfwSwapBuffers(glfwWindow.getID());
+        glfwPollEvents();
+    }
 
 
     protected void run(boolean isWantCullFace) {
@@ -65,5 +76,27 @@ public abstract class App {
 
         // clean up.
         destroy();
+    }
+    public void run(boolean isWantCullFace, boolean isWantGUI) {
+        if (isWantGUI)
+            run(isWantCullFace);
+        else {
+            init();
+
+            // always the same setup.
+            camera = new Camera(glfwWindow.getWidth(), glfwWindow.getHeight()); // camera init.
+            new DefaultCallbacks(glfwWindow.getID(), camera, false).bindToGLFW(); // callback.
+            getAllUniformLocs();
+            configGL(isWantCullFace); // In some programs, like one using tessellation, wouldn't work with face culling.
+
+            // loop.
+            assert glfwWindow != null;
+            while (!GLFW.glfwWindowShouldClose(glfwWindow.getID())) {
+                noGUILoop();
+            }
+
+            // clean up.
+            destroy();
+        }
     }
 }
