@@ -4,10 +4,10 @@ package chapter9.program9_3.launcher;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
+import utilities.ShaderProgram;
 import utilities.sceneComponents.Camera;
 import utilities.Color;
 import utilities.GLFWWindow;
-import utilities.Program;
 import chapter9.program9_3.callbacks.P9_3Callbacks;
 import utilities.models.Torus;
 import utilities.readers.CubeMapReader;
@@ -67,10 +67,10 @@ public class Program9_3 {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE1);
-        defaultProgram = new Program(Path.of("src/main/java/chapter9/program9_3/shaders/default/vertShader.glsl")
+        defaultProgram = new ShaderProgram(Path.of("src/main/java/chapter9/program9_3/shaders/default/vertShader.glsl")
                 , Path.of("src/main/java/chapter9/program9_3/shaders/default/fragShader.glsl"))
                 .getID();
-        skyBoxProgram = new Program(Path.of("src/main/java/chapter9/program9_3/shaders/skybox/CubeVertShader.glsl")
+        skyBoxProgram = new ShaderProgram(Path.of("src/main/java/chapter9/program9_3/shaders/skybox/CubeVertShader.glsl")
                 , Path.of("src/main/java/chapter9/program9_3/shaders/skybox/SkyboxFragShader.glsl"))
                 .getID();
 

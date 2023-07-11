@@ -7,7 +7,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
 import utilities.Color;
 import utilities.GLFWWindow;
-import utilities.Program;
+import utilities.ShaderProgram;
 
 import java.nio.file.Path;
 
@@ -57,7 +57,7 @@ public class Program4_4 {
         // 設定frameBuffer大小改變callback
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
-        int program = new Program(Path.of("src/main/java/chapter4/Shaders/for4_3and_4_4/VertexShader.glsl")
+        int program = new ShaderProgram(Path.of("src/main/java/chapter4/Shaders/for4_3and_4_4/VertexShader.glsl")
                 , Path.of("src/main/java/chapter4/Shaders/for4_3and_4_4/FragmentShader.glsl"))
                 .getID();
 

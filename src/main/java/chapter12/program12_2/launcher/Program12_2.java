@@ -22,7 +22,7 @@ public class Program12_2 extends App {
         glfwWindow = new GLFWWindow(1500, 1000, "Prog12.2");
 
         // Programs
-        program = new Program(
+        program = new ShaderProgram(
                 "assets/shaders/program12_2/vertex.glsl",
                 "assets/shaders/program12_2/fragment.glsl",
                 "assets/shaders/program12_2/TCS.glsl",

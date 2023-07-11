@@ -82,13 +82,13 @@ public class Program7_1 {
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
 
-        gouraudProgram = new Program(Path.of("src/main/java/chapter7/program7_1/shaders/gouraud/vertShader.glsl")
+        gouraudProgram = new ShaderProgram(Path.of("src/main/java/chapter7/program7_1/shaders/gouraud/vertShader.glsl")
                 , Path.of("src/main/java/chapter7/program7_1/shaders/gouraud/fragShader.glsl"))
                 .getID();
-        phongProgram = new Program(Path.of("src/main/java/chapter7/program7_1/shaders/phong/vertShader.glsl")
+        phongProgram = new ShaderProgram(Path.of("src/main/java/chapter7/program7_1/shaders/phong/vertShader.glsl")
                 , Path.of("src/main/java/chapter7/program7_1/shaders/phong/fragShader.glsl"))
                 .getID();
-        blinnPhongProgram = new Program(Path.of("src/main/java/chapter7/program7_1/shaders/blinnPhong/vertShader.glsl")
+        blinnPhongProgram = new ShaderProgram(Path.of("src/main/java/chapter7/program7_1/shaders/blinnPhong/vertShader.glsl")
                 , Path.of("src/main/java/chapter7/program7_1/shaders/blinnPhong/fragShader.glsl"))
                 .getID();
 
@@ -99,7 +99,7 @@ public class Program7_1 {
 
         currentProgram = gouraudProgram;
         System.out.println("Using ProgramID: " + currentProgram);
-        System.out.println("Press 1, 2 or 3 to change program!");
+        System.out.println("Press 1, 2 or 3 to change shaderProgram!");
 
         getAllUniformsLoc(currentProgram);
     }

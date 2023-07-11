@@ -8,22 +8,22 @@ import utilities.sceneComponents.Texture;
 import static org.lwjgl.opengl.GL43.*;
 
 public class Program12_3 extends App {
-    private Program program;
+    private ShaderProgram shaderProgram;
     private Texture texture;
 
     @Override
     protected void init() {
         glfwWindow = new GLFWWindow(1500, 1000, "Prog12.3");
 
-        program = new Program(
+        shaderProgram = new ShaderProgram(
                 "assets/shaders/program12_3/vertex.glsl",
                 "assets/shaders/program12_3/fragment.glsl",
                 "assets/shaders/program12_3/TCS.glsl",
                 "assets/shaders/program12_3/TES.glsl"
                 );
-        program.use();
+        shaderProgram.use();
 
-        // VAO *every program must have a VAO*.
+        // VAO *every shaderProgram must have a VAO*.
         int vaoID = glGenVertexArrays();
         glBindVertexArray(vaoID);
 
@@ -47,7 +47,7 @@ public class Program12_3 extends App {
     @Override
     protected void getAllUniformLocs() {
         // Only 1 location to get here.
-        mvpLoc = glGetUniformLocation(program.getID(), "mvp");
+        mvpLoc = glGetUniformLocation(shaderProgram.getID(), "mvp");
     }
 
     private final Matrix4f mMat = new Matrix4f().scale(3f).rotateX((float) Math.toRadians(180f));

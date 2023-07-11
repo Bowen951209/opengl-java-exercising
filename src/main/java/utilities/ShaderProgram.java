@@ -11,7 +11,7 @@ import java.util.HashMap;
 import static org.lwjgl.opengl.GL43.*;
 
 
-public class Program {
+public class ShaderProgram {
     private final int id;
 
     public int getID() {
@@ -47,7 +47,7 @@ public class Program {
 
 
     // Only vertex & fragment
-    public Program(Path vertexShaderPath, Path fragmentShaderPath) {
+    public ShaderProgram(Path vertexShaderPath, Path fragmentShaderPath) {
         // 讀取Shader(glsl檔案)
         String vertexShaderCode = new GLSLReader(vertexShaderPath).getString();
         String fragmentShaderCode = new GLSLReader(fragmentShaderPath).getString();
@@ -63,13 +63,13 @@ public class Program {
         id = setupProgram(vertexShaderID, fragmentShaderID);
     }
 
-    public Program(String vertexShaderPath, String fragmentShaderPath) {
+    public ShaderProgram(String vertexShaderPath, String fragmentShaderPath) {
         this(Path.of(vertexShaderPath), Path.of(fragmentShaderPath));
     }
 
 
     // vertex, fragment, tessellation control shader & tessellation evaluation shader
-    public Program(Path vertexShaderPath, Path fragmentShaderPath, Path tessellationControlShaderPath, Path tessellationEvaluationShaderPath) {
+    public ShaderProgram(Path vertexShaderPath, Path fragmentShaderPath, Path tessellationControlShaderPath, Path tessellationEvaluationShaderPath) {
         // 讀取Shader(glsl檔案)
         String vertexShaderCode = new GLSLReader(vertexShaderPath).getString();
         String fragmentShaderCode = new GLSLReader(fragmentShaderPath).getString();
@@ -92,7 +92,7 @@ public class Program {
         id = setupProgram(vertexShaderID, fragmentShaderID, tesID, tcsID);
     }
 
-    public Program(String vertexShaderPath, String fragmentShaderPath, String tessellationControlShaderPath, String tessellationEvaluationShaderPath) {
+    public ShaderProgram(String vertexShaderPath, String fragmentShaderPath, String tessellationControlShaderPath, String tessellationEvaluationShaderPath) {
         this(Path.of(vertexShaderPath), Path.of(fragmentShaderPath), Path.of(tessellationControlShaderPath), Path.of(tessellationEvaluationShaderPath));
     }
 

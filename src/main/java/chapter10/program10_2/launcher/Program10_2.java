@@ -4,7 +4,7 @@ import chapter10.program10_1.launcher.Program10_1;
 import utilities.Color;
 import utilities.GLFWWindow;
 import utilities.Materials;
-import utilities.Program;
+import utilities.ShaderProgram;
 import utilities.callbacks.DefaultCallbacks;
 import utilities.exceptions.InvalidMaterialException;
 import utilities.models.Sphere;
@@ -48,7 +48,7 @@ public class Program10_2 extends Program10_1 {
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE0);
 
-        defaultProgram = new Program(Path.of("assets/shaders/program10_2/vert.glsl")
+        defaultProgram = new ShaderProgram(Path.of("assets/shaders/program10_2/vert.glsl")
                 , Path.of("assets/shaders/program10_2/frag.glsl"))
                 .getID();
 
