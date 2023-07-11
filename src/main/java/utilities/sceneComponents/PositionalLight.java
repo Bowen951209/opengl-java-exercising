@@ -3,6 +3,7 @@ package utilities.sceneComponents;
 import org.joml.Vector3f;
 import static org.lwjgl.opengl.GL43.*;
 import org.lwjgl.BufferUtils;
+import utilities.ValuesContainer;
 
 import java.nio.FloatBuffer;
 
@@ -25,10 +26,22 @@ public class PositionalLight {
         lightPositionInVector.get(lightPosition);
         return lightPosition;
     }
+    public PositionalLight setGlobalAmbient(float[] value) {
+        this.globalAmbient.put(value);
+        System.out.print("global.ambient set to: ");
+        ValuesContainer.printFloatBuffer(this.globalAmbient);
+        return this;
+    }
     public FloatBuffer getGlobalAmbient() {
         return globalAmbient;
     }
 
+    public PositionalLight setLightAmbient(float[] value) {
+        this.lightAmbient.put(value);
+        System.out.print("light.ambient set to: ");
+        ValuesContainer.printFloatBuffer(this.lightAmbient);
+        return this;
+    }
     public FloatBuffer getLightAmbient() {
         return lightAmbient;
     }
@@ -43,7 +56,6 @@ public class PositionalLight {
 
     public PositionalLight() {
         this(
-//                new float[] {0.9f, 0.9f, 0.9f, 1.0f),
                 new float[] {0.1f, 0.1f, 0.1f, 1.0f}, // global ambient
                 new float[] {0.0f, 0.0f, 0.0f, 1.0f}, // light ambient
                 new float[] {1.0f, 1.0f, 1.0f, 1.0f}, // light diffuse

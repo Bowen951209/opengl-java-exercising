@@ -12,7 +12,9 @@ import static org.lwjgl.opengl.GL43.*;
 public class Program13_1 extends App {
     private ShaderProgram shaderProgram;
     private Torus torus;
-    private final PositionalLight light = new PositionalLight();
+    private final PositionalLight light = new PositionalLight()
+            .setGlobalAmbient(new float[]{.5f, .5f, .5f, 1f})
+            .setLightAmbient(new float[]{.9f, .9f, .9f, 1f});
     private Materials material;
     private float inflateValue, inflateOffSet = 0.05f;
 
@@ -25,10 +27,6 @@ public class Program13_1 extends App {
                 "assets/shaders/program13_1/frag.glsl",
                 "assets/shaders/program13_1/geo.glsl"
         );
-//        shaderProgram = new ShaderProgram(
-//                "assets/shaders/program13_1/vert.glsl",
-//                "assets/shaders/program13_1/frag.glsl"
-//        );
         shaderProgram.use();
         torus = new Torus(.5f, .2f, 48, true, new Vector3f()) {
             @Override
@@ -77,11 +75,13 @@ public class Program13_1 extends App {
         glUniform4fv(shaderProgram.getUniformLoc("light.specular"), light.getLightDiffuse());
         glUniform4fv(shaderProgram.getUniformLoc("light.diffuse"), light.getLightSpecular());
         glUniform3fv(shaderProgram.getUniformLoc("light.position"), light.getLightPosition());
+        light.flipAll();
 
         glUniform4fv(shaderProgram.getUniformLoc("material.ambient"), material.getAmbient());
         glUniform4fv(shaderProgram.getUniformLoc("material.specular"), material.getDiffuse());
         glUniform4fv(shaderProgram.getUniformLoc("material.diffuse"), material.getSpecular());
         glUniform1fv(shaderProgram.getUniformLoc("material.shininess"), material.getShininess());
+        material.flipAll();
 
         glUniformMatrix4fv(shaderProgram.getUniformLoc("m_matrix"), false, torus.getMMat().get(ValuesContainer.VALS_OF_16));
         glUniformMatrix4fv(shaderProgram.getUniformLoc("v_matrix"), false, camera.getVMat().get(ValuesContainer.VALS_OF_16));
@@ -90,11 +90,10 @@ public class Program13_1 extends App {
         glUniformMatrix4fv(shaderProgram.getUniformLoc("norm_matrix"), false, torus.getInvTrMat().get(ValuesContainer.VALS_OF_16));
 
         inflateValue += inflateOffSet;
-        System.out.println("inflateValue=" + inflateValue);
         if (inflateValue >= 2f) {
             inflateOffSet = -0.05f;
         }
-        if (inflateValue<= -0.5f) {
+        if (inflateValue <= -0.5f) {
             inflateOffSet = 0.05f;
         }
 
