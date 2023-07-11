@@ -67,6 +67,23 @@ public class ShaderProgram {
         this(Path.of(vertexShaderPath), Path.of(fragmentShaderPath));
     }
 
+    // vertex, fragment, geometry shader
+    public ShaderProgram(Path vertexShaderPath, Path fragmentShaderPath, Path geometryShaderPath) {
+        String vertShaderCode = new GLSLReader((vertexShaderPath)).getString();
+        String fragShaderCode = new GLSLReader((fragmentShaderPath)).getString();
+        String geoShaderCode = new GLSLReader((geometryShaderPath)).getString();
+
+        int vertShaderID = glCreateShader(GL_VERTEX_SHADER);
+        compileAndCatchShaderErr(vertShaderID, vertShaderCode);
+
+        int fragShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+        compileAndCatchShaderErr(fragShaderID, fragShaderCode);
+
+        int geoShaderID = glCreateShader(GL_GEOMETRY_SHADER);
+        compileAndCatchShaderErr(geoShaderID, geoShaderCode);
+
+        this.id = setupProgram(vertShaderID, fragShaderID, geoShaderID);
+    }
 
     // vertex, fragment, tessellation control shader & tessellation evaluation shader
     public ShaderProgram(Path vertexShaderPath, Path fragmentShaderPath, Path tessellationControlShaderPath, Path tessellationEvaluationShaderPath) {
@@ -96,7 +113,7 @@ public class ShaderProgram {
         this(Path.of(vertexShaderPath), Path.of(fragmentShaderPath), Path.of(tessellationControlShaderPath), Path.of(tessellationEvaluationShaderPath));
     }
 
-    public static int setupProgram(int vertexShaderID, int fragmentShaderID) {
+    private static int setupProgram(int vertexShaderID, int fragmentShaderID) {
         // This method returns the programID
         int programID = glCreateProgram();
         glAttachShader(programID, vertexShaderID);
@@ -107,7 +124,18 @@ public class ShaderProgram {
         return programID;
     }
 
-    public static int setupProgram(int vertexShaderID, int fragmentShaderID, int tessellationControlShaderID, int tessellationEvaluationShaderID) {
+    private static int setupProgram(int vertexShaderID, int fragmentShaderID, int geometryShaderID) {
+        int programID = glCreateProgram();
+        glAttachShader(programID, vertexShaderID);
+        glAttachShader(programID, fragmentShaderID);
+        glAttachShader(programID, geometryShaderID);
+        glLinkProgram(programID);
+        checkLinkStatus(programID);
+
+        return programID;
+    }
+
+    private static int setupProgram(int vertexShaderID, int fragmentShaderID, int tessellationControlShaderID, int tessellationEvaluationShaderID) {
         // This method returns the programID
         int programID = glCreateProgram();
         glAttachShader(programID, vertexShaderID);
@@ -133,6 +161,7 @@ public class ShaderProgram {
         glCompileShader(shaderID);
 
         if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == 0) {
+            // TODO: 2023/7/11 Add a shader type detection so it is easier to spot what shader throws error.
             throw new ShaderCompiledFailedException("Shader" + shaderID + " compiled failed\n" + glGetShaderInfoLog(shaderID));
         } else {
             System.out.println("    Shader ID:" + shaderID + " compiled succeeded.");
