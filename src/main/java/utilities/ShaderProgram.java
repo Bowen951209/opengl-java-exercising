@@ -54,10 +54,10 @@ public class ShaderProgram {
 
         // 設定vertex shader來源、編譯
         int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-        compileAndCatchShaderErr(vertexShaderID, vertexShaderCode);
+        compileAndCatchShaderErr(vertexShaderID, vertexShaderCode, GL_VERTEX_SHADER);
         // 設定fragment shader來源、編譯
         int fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-        compileAndCatchShaderErr(fragmentShaderID, fragmentShaderCode);
+        compileAndCatchShaderErr(fragmentShaderID, fragmentShaderCode, GL_FRAGMENT_SHADER);
 
         // 設定program
         id = setupProgram(vertexShaderID, fragmentShaderID);
@@ -74,13 +74,13 @@ public class ShaderProgram {
         String geoShaderCode = new GLSLReader((geometryShaderPath)).getString();
 
         int vertShaderID = glCreateShader(GL_VERTEX_SHADER);
-        compileAndCatchShaderErr(vertShaderID, vertShaderCode);
+        compileAndCatchShaderErr(vertShaderID, vertShaderCode, GL_VERTEX_SHADER);
 
         int fragShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-        compileAndCatchShaderErr(fragShaderID, fragShaderCode);
+        compileAndCatchShaderErr(fragShaderID, fragShaderCode, GL_FRAGMENT_SHADER);
 
         int geoShaderID = glCreateShader(GL_GEOMETRY_SHADER);
-        compileAndCatchShaderErr(geoShaderID, geoShaderCode);
+        compileAndCatchShaderErr(geoShaderID, geoShaderCode, GL_GEOMETRY_SHADER);
 
         this.id = setupProgram(vertShaderID, fragShaderID, geoShaderID);
     }
@@ -95,15 +95,15 @@ public class ShaderProgram {
 
         // 設定vertex shader來源、編譯
         int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-        compileAndCatchShaderErr(vertexShaderID, vertexShaderCode);
+        compileAndCatchShaderErr(vertexShaderID, vertexShaderCode, GL_VERTEX_SHADER);
         // 設定fragment shader來源、編譯
         int fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-        compileAndCatchShaderErr(fragmentShaderID, fragmentShaderCode);
+        compileAndCatchShaderErr(fragmentShaderID, fragmentShaderCode, GL_FRAGMENT_SHADER);
 
         int tcsID = glCreateShader(GL_TESS_CONTROL_SHADER);
-        compileAndCatchShaderErr(tcsID, tcsShaderCode);
+        compileAndCatchShaderErr(tcsID, tcsShaderCode, GL_TESS_CONTROL_SHADER);
         int tesID = glCreateShader(GL_TESS_EVALUATION_SHADER);
-        compileAndCatchShaderErr(tesID, tesShaderCode);
+        compileAndCatchShaderErr(tesID, tesShaderCode, GL_TESS_EVALUATION_SHADER);
 
         // 設定program
         id = setupProgram(vertexShaderID, fragmentShaderID, tesID, tcsID);
@@ -156,15 +156,27 @@ public class ShaderProgram {
         }
     }
 
-    private static void compileAndCatchShaderErr(int shaderID, String source) {
+    private static void compileAndCatchShaderErr(int shaderID, String source, int shaderType) {
         glShaderSource(shaderID, source);
         glCompileShader(shaderID);
 
+        String shader = null;
+        switch (shaderType) {
+            case GL_VERTEX_SHADER ->
+                    shader = "Vertex Shader";
+            case GL_FRAGMENT_SHADER ->
+                    shader = "Fragment Shader";
+            case GL_GEOMETRY_SHADER ->
+                    shader = "Geometry Shader";
+            case GL_TESS_CONTROL_SHADER ->
+                    shader = "Tess Control Shader";
+            case GL_TESS_EVALUATION_SHADER ->
+                    shader = "Tess Evaluation Shader";
+        }
         if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == 0) {
-            // TODO: 2023/7/11 Add a shader type detection so it is easier to spot what shader throws error.
-            throw new ShaderCompiledFailedException("Shader" + shaderID + " compiled failed\n" + glGetShaderInfoLog(shaderID));
+            throw new ShaderCompiledFailedException(shader + " (ID=" + shaderID + ") compiled failed\n" + glGetShaderInfoLog(shaderID));
         } else {
-            System.out.println("    Shader ID:" + shaderID + " compiled succeeded.");
+            System.out.println(shader + "(ID=" + shaderID + ") compiled succeeded.");
         }
     }
 
