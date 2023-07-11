@@ -58,7 +58,7 @@ public class Program6_3 {
         // 設定frameBuffer大小改變callback
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
-        int program = new Program(Path.of("src/main/java/chapter6/ShadersFor6_3/VertexShader.glsl")
+        int program = new ShaderProgram(Path.of("src/main/java/chapter6/ShadersFor6_3/VertexShader.glsl")
                 , Path.of("src/main/java/chapter6/ShadersFor6_3/FragmentShader.glsl"))
                 .getID();
 

@@ -95,10 +95,10 @@ public class Program8_1 {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE0);
-        renderingProgram1 = new Program(Path.of("src/main/java/chapter8/program8_1/shaders/vert1Shader.glsl")
+        renderingProgram1 = new ShaderProgram(Path.of("src/main/java/chapter8/program8_1/shaders/vert1Shader.glsl")
                 , Path.of("src/main/java/chapter8/program8_1/shaders/frag1Shader.glsl"))
                 .getID();
-        renderingProgram2 = new Program(Path.of("src/main/java/chapter8/program8_1/shaders/vert2Shader.glsl")
+        renderingProgram2 = new ShaderProgram(Path.of("src/main/java/chapter8/program8_1/shaders/vert2Shader.glsl")
                 , Path.of("src/main/java/chapter8/program8_1/shaders/frag2Shader.glsl"))
                 .getID();
 

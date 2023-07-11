@@ -10,42 +10,46 @@ import java.nio.IntBuffer;
 import static org.lwjgl.opengl.GL43.*;
 
 public abstract class Model {
-    protected final Matrix4f M_MAT = new Matrix4f();
+    protected final Matrix4f mMat = new Matrix4f();
 
-    public Matrix4f getMV_MAT() {
-        return MV_MAT;
+    public Matrix4f getMMat() {
+        return mMat;
     }
 
-    protected final Matrix4f MV_MAT = new Matrix4f();
-
-    public Matrix4f getINV_TR_MAT() {
-        return INV_TR_MAT;
+    public Matrix4f getMvMat() {
+        return mvMat;
     }
 
-    private final Matrix4f INV_TR_MAT = new Matrix4f();
+    protected final Matrix4f mvMat = new Matrix4f();
 
-    protected final Vector3f POSITION;
-    private final int VAO, VERTICES_VBO, NORMALS_VBO;
+    public Matrix4f getInvTrMat() {
+        return invTrMat;
+    }
+
+    private final Matrix4f invTrMat = new Matrix4f();
+
+    protected final Vector3f position;
+    private final int vao, verticesVBO, normalsVBO;
     private int ebo, tcVBO, tangentsVBO;
-    protected FloatBuffer VERTICES_IN_BUF;
-    protected FloatBuffer NORMALS_IN_BUF;
-    protected FloatBuffer TC_IN_BUF;
-    protected FloatBuffer TANGENTS_IN_BUF;
-    protected IntBuffer INDICES_IN_BUFFER;
+    protected FloatBuffer verticesInBuf;
+    protected FloatBuffer normalsInBuf;
+    protected FloatBuffer tcInBuf;
+    protected FloatBuffer tangentsInBuf;
+    protected IntBuffer indicesInBuffer;
 
     protected Model(Vector3f position, boolean isUsingEBO, boolean isUsingTTextureCoordinate, boolean isUsingTangents) {
-        this.POSITION = position;
-        VAO = glGenVertexArrays();
+        this.position = position;
+        vao = glGenVertexArrays();
         bindVAO();
 
-        VERTICES_VBO = glGenBuffers();
-        NORMALS_VBO = glGenBuffers();
+        verticesVBO = glGenBuffers();
+        normalsVBO = glGenBuffers();
 
-        glBindBuffer(GL_ARRAY_BUFFER, VERTICES_VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, verticesVBO);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
 
-        glBindBuffer(GL_ARRAY_BUFFER, NORMALS_VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, normalsVBO);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
 
@@ -73,16 +77,16 @@ public abstract class Model {
     }
 
     public void bindVAO() {
-        glBindVertexArray(VAO);
+        glBindVertexArray(vao);
     }
 
     private void storeVertices(FloatBuffer vertices) {
-        glBindBuffer(GL_ARRAY_BUFFER, VERTICES_VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, verticesVBO);
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
     }
 
     private void storeNormals(FloatBuffer normals) {
-        glBindBuffer(GL_ARRAY_BUFFER, NORMALS_VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, normalsVBO);
         glBufferData(GL_ARRAY_BUFFER, normals, GL_STATIC_DRAW);
     }
 
@@ -117,11 +121,11 @@ public abstract class Model {
     }
 
     protected void updateMvMat(Camera camera) {
-        MV_MAT.set(camera.getVMat()).mul(M_MAT);
+        mvMat.set(camera.getVMat()).mul(mMat);
     }
 
     protected void updateInvTrMat() {
-        INV_TR_MAT.set(MV_MAT).invert().transpose();
+        invTrMat.set(mvMat).invert().transpose();
     }
 
     protected abstract void updateMMat();

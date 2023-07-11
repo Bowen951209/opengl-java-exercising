@@ -1,5 +1,5 @@
 /*
-* This program is a demo of skybox.*/
+* This shaderProgram is a demo of skybox.*/
 
 package chapter9.program9_2.launcher;
 
@@ -98,13 +98,13 @@ public class Program9_2 {
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE0);
         glActiveTexture(GL_TEXTURE1);
-        renderingProgram1 = new Program(Path.of("src/main/java/chapter9/program9_2/shaders/vert1Shader.glsl")
+        renderingProgram1 = new ShaderProgram(Path.of("src/main/java/chapter9/program9_2/shaders/vert1Shader.glsl")
                 , Path.of("src/main/java/chapter9/program9_2/shaders/frag1Shader.glsl"))
                 .getID();
-        renderingProgram2 = new Program(Path.of("src/main/java/chapter9/program9_2/shaders/vert2Shader.glsl")
+        renderingProgram2 = new ShaderProgram(Path.of("src/main/java/chapter9/program9_2/shaders/vert2Shader.glsl")
                 , Path.of("src/main/java/chapter9/program9_2/shaders/frag2Shader.glsl"))
                 .getID();
-        skyBoxProgram = new Program(Path.of("src/main/java/chapter9/program9_2/shaders/skybox/CubeVertShader.glsl")
+        skyBoxProgram = new ShaderProgram(Path.of("src/main/java/chapter9/program9_2/shaders/skybox/CubeVertShader.glsl")
                 , Path.of("src/main/java/chapter9/program9_2/shaders/skybox/SkyboxFragShader.glsl"))
                 .getID();
 

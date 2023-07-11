@@ -53,7 +53,7 @@ public class Program10_3 extends Program10_2 {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
 
-        program = new Program(Path.of("assets/shaders/program10_3/vertex.glsl")
+        program = new ShaderProgram(Path.of("assets/shaders/program10_3/vertex.glsl")
                 , Path.of("assets/shaders/program10_3/fragment.glsl"))
                 .getID();
 
@@ -62,7 +62,7 @@ public class Program10_3 extends Program10_2 {
             @Override
             protected void updateMMat() {
                 float rotateAngle = (float) GLFW.glfwGetTime() / 3f;
-                M_MAT.identity().scale(2f).translate(POSITION).rotateY(rotateAngle).rotateX(rotateAngle / 2f);
+                mMat.identity().scale(2f).translate(position).rotateY(rotateAngle).rotateX(rotateAngle / 2f);
             }
         };
         positionalLight = new PositionalLight();
@@ -127,8 +127,8 @@ public class Program10_3 extends Program10_2 {
         material.flipAll();
 
         // matrices
-        glUniformMatrix4fv(mv_matrixLoc, false, sphere.getMV_MAT().get(VALS_OF_16));
-        glUniformMatrix4fv(norm_matrixLoc, false, sphere.getINV_TR_MAT().get(VALS_OF_16));
+        glUniformMatrix4fv(mv_matrixLoc, false, sphere.getMvMat().get(VALS_OF_16));
+        glUniformMatrix4fv(norm_matrixLoc, false, sphere.getInvTrMat().get(VALS_OF_16));
         glUniformMatrix4fv(proj_matrixLoc, false, camera.getProjMat().get(VALS_OF_16));
 
         // boolean

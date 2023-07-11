@@ -11,27 +11,27 @@ public class Grid extends Model{
         super(position, false, true, false);
         ModelReader grid = new ModelReader("assets/models/grid.obj");
 
-        VERTICES_IN_BUF = BufferUtils.createFloatBuffer(grid.getNumOfVertices() * 3);
-        VERTICES_IN_BUF.put(grid.getPvalue());
-        VERTICES_IN_BUF.flip();
-        NORMALS_IN_BUF = BufferUtils.createFloatBuffer(grid.getNumOfVertices() * 3);
-        NORMALS_IN_BUF.put(grid.getNvalue());
-        NORMALS_IN_BUF.flip();
-        TC_IN_BUF = BufferUtils.createFloatBuffer(grid.getNumOfVertices() * 2);
-        TC_IN_BUF.put(grid.getTvalue());
-        TC_IN_BUF.flip();
+        verticesInBuf = BufferUtils.createFloatBuffer(grid.getNumOfVertices() * 3);
+        verticesInBuf.put(grid.getPvalue());
+        verticesInBuf.flip();
+        normalsInBuf = BufferUtils.createFloatBuffer(grid.getNumOfVertices() * 3);
+        normalsInBuf.put(grid.getNvalue());
+        normalsInBuf.flip();
+        tcInBuf = BufferUtils.createFloatBuffer(grid.getNumOfVertices() * 2);
+        tcInBuf.put(grid.getTvalue());
+        tcInBuf.flip();
 
-        storeDataToVBOs(VERTICES_IN_BUF, NORMALS_IN_BUF, TC_IN_BUF);
+        storeDataToVBOs(verticesInBuf, normalsInBuf, tcInBuf);
     }
 
     @Override
     protected void updateMMat() {
-        M_MAT.identity().translate(POSITION);
+        mMat.identity().translate(position);
     }
 
     @Override
     public void draw(int mode) {
         bindVAO();
-        glDrawArrays(mode, 0, VERTICES_IN_BUF.limit());
+        glDrawArrays(mode, 0, verticesInBuf.limit());
     }
 }

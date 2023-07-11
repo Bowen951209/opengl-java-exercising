@@ -10,7 +10,7 @@ import utilities.sceneComponents.Texture;
 import static org.lwjgl.opengl.GL43.*;
 
 public class Program12_4 extends App {
-    protected Program program;
+    protected ShaderProgram shaderProgram;
     protected Texture imageTexture, heightMap, normalMap;
     protected final PositionalLight light = new PositionalLight().setPosition(0f, .1f, .2f);
     protected Materials material;
@@ -21,17 +21,17 @@ public class Program12_4 extends App {
         // Window
         glfwWindow = new GLFWWindow(1500, 1000, "Prog12.4");
 
-        // Program
-        program = new Program(
+        // ShaderProgram
+        shaderProgram = new ShaderProgram(
                 "assets/shaders/program12_4/vertShader.glsl",
                 "assets/shaders/program12_4/fragShader.glsl",
                 "assets/shaders/program12_4/tessCShader.glsl",
                 "assets/shaders/program12_4/tessEShader.glsl"
         );
-        program.use();
+        shaderProgram.use();
 
 
-        // VAO *every program must have a VAO*.
+        // VAO *every shaderProgram must have a VAO*.
         int vaoID = glGenVertexArrays();
         glBindVertexArray(vaoID);
 
@@ -62,7 +62,7 @@ public class Program12_4 extends App {
 
     @Override
     protected void getAllUniformLocs() {
-        program.getAllUniformLocs(new String[]{
+        shaderProgram.getAllUniformLocs(new String[]{
                 "globalAmbient",
                 "light.ambient",
                 "light.diffuse",
@@ -93,24 +93,24 @@ public class Program12_4 extends App {
         mvpMat.set(camera.getProjMat()).mul(mvMat); // Remember to make sure multiplication order, or it'll fuck up.
         // Pass in uniforms
         light.putToUniforms(
-                program.getUniformLoc("globalAmbient"),
-                program.getUniformLoc("light.ambient"),
-                program.getUniformLoc("light.diffuse"),
-                program.getUniformLoc("light.specular"),
-                program.getUniformLoc("light.position")
+                shaderProgram.getUniformLoc("globalAmbient"),
+                shaderProgram.getUniformLoc("light.ambient"),
+                shaderProgram.getUniformLoc("light.diffuse"),
+                shaderProgram.getUniformLoc("light.specular"),
+                shaderProgram.getUniformLoc("light.position")
         );
         material.putToUniforms(
-                program.getUniformLoc("material.ambient"),
-                program.getUniformLoc("material.diffuse"),
-                program.getUniformLoc("material.specular"),
-                program.getUniformLoc("material.shininess")
+                shaderProgram.getUniformLoc("material.ambient"),
+                shaderProgram.getUniformLoc("material.diffuse"),
+                shaderProgram.getUniformLoc("material.specular"),
+                shaderProgram.getUniformLoc("material.shininess")
         );
         glUniformMatrix4fv(
-                program.getUniformLoc("mv_matrix"), false,
+                shaderProgram.getUniformLoc("mv_matrix"), false,
                 mvMat.get(ValuesContainer.VALS_OF_16)
         );
         glUniformMatrix4fv(
-                program.getUniformLoc("mvp_matrix"), false,
+                shaderProgram.getUniformLoc("mvp_matrix"), false,
                 mvpMat.get(ValuesContainer.VALS_OF_16)
         );
 

@@ -144,8 +144,8 @@ public class Sphere extends Model {
 
     @Override
     protected void updateMMat() {
-        M_MAT.identity()
-                .translate(POSITION);
+        mMat.identity()
+                .translate(position);
     }
 
     @Override
