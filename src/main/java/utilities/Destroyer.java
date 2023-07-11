@@ -5,6 +5,7 @@ import java.util.Objects;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Destroyer {
+    // With GUI
     public static void destroyAll(long windowID, GUI gui) {
         destroyGLFWWindow(windowID);
         terminateGLFW();
@@ -12,22 +13,29 @@ public class Destroyer {
         destroyGUI(gui);
     }
 
-    public static void destroyGLFWWindow(long windowID) {
+    // Without GUI
+    public static void destroyAll(long windowID) {
+        destroyGLFWWindow(windowID);
+        terminateGLFW();
+        freeGLFWCallback();
+    }
+
+    private static void destroyGLFWWindow(long windowID) {
         glfwDestroyWindow(windowID);
         System.out.println("GLFW window destroyed");
     }
 
-    public static void terminateGLFW() {
+    private static void terminateGLFW() {
         glfwTerminate();
         System.out.println("GLFW terminated");
     }
 
-    public static void freeGLFWCallback() {
+    private static void freeGLFWCallback() {
         Objects.requireNonNull(glfwSetErrorCallback(null)).free();
         System.out.println("GLFW error callback freed");
     }
 
-    public static void destroyGUI(GUI gui) {
+    private static void destroyGUI(GUI gui) {
         gui.destroy();
     }
 }
