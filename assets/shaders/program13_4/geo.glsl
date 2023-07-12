@@ -3,8 +3,6 @@
 // Inputs from vertex shader
 layout (triangles) in;
 in vec3 varyingNormal[];
-in vec3 varyingLightDir[];
-in vec3 varyingHalfVector[];
 
 // Outputs through rasterizer to fragment shader.
 layout (line_strip, max_vertices = 2) out;
