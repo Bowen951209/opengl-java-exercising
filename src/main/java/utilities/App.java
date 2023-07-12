@@ -15,7 +15,7 @@ public abstract class App {
 
     protected abstract void init();
 
-    protected abstract void getAllUniformLocs();
+    protected void getAllUniformLocs() {}
 
     protected abstract void drawScene();
 
