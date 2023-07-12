@@ -6,10 +6,6 @@ import utilities.*;
 import utilities.exceptions.InvalidMaterialException;
 import utilities.sceneComponents.Texture;
 
-import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
-import static org.lwjgl.opengl.GL31.glDrawArraysInstanced;
 import static org.lwjgl.opengl.GL40.*;
 
 public class Program12_5 extends Program12_4 {

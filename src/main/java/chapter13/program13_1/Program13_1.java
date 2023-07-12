@@ -37,24 +37,6 @@ public class Program13_1 extends App {
 
     @Override
     protected void getAllUniformLocs() {
-        shaderProgram.getAllUniformLocs(new String[]{
-                "globalAmbient",
-                "light.ambient",
-                "light.diffuse",
-                "light.specular",
-                "light.position",
-                "material.ambient",
-                "material.diffuse",
-                "material.specular",
-                "material.shininess",
-                "m_matrix",
-                "v_matrix",
-                "mv_matrix",
-                "p_matrix",
-                "norm_matrix",
-                "inflateValue",
-                "isLighting"
-        });
     }
 
     @Override

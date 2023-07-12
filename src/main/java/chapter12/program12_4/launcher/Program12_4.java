@@ -62,21 +62,6 @@ public class Program12_4 extends App {
 
     @Override
     protected void getAllUniformLocs() {
-        shaderProgram.getAllUniformLocs(new String[]{
-                "globalAmbient",
-                "light.ambient",
-                "light.diffuse",
-                "light.specular",
-                "light.position",
-
-                "material.ambient",
-                "material.diffuse",
-                "material.specular",
-                "material.shininess",
-
-                "mvp_matrix",
-                "mv_matrix"
-        });
     }
 
     protected final Matrix4f mMat = new Matrix4f()

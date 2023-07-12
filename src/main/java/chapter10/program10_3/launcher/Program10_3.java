@@ -13,7 +13,6 @@ import utilities.sceneComponents.Texture;
 
 import java.nio.file.Path;
 
-import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 import static utilities.ValuesContainer.VALS_OF_16;
 

@@ -27,24 +27,18 @@ public class ShaderProgram {
 
     public int getUniformLoc(String uniformName) {
         if(this.uniformLocMap.get(uniformName) != null) {
+            // Given.
             return this.uniformLocMap.get(uniformName);
         }
         else {
-            // No defined uniform location.
-            return -1;
+            // Not given.
+            int loc = glGetUniformLocation(this.id, uniformName);
+            this.uniformLocMap.put(uniformName, loc);
+            if (loc == -1)
+                System.err.println("Uniform \"" + uniformName + "\" not found");
+            return loc;
         }
     }
-
-    public void getAllUniformLocs(String[] uniforms) {
-        for (String i : uniforms) {
-            int loc = glGetUniformLocation(this.id, i);
-            if (loc == -1) {
-                System.err.println("Uniform \"" + i + "\" not found");
-            }
-            this.uniformLocMap.put(i, loc);
-        }
-    }
-
 
     // Only vertex & fragment
     public ShaderProgram(Path vertexShaderPath, Path fragmentShaderPath) {
