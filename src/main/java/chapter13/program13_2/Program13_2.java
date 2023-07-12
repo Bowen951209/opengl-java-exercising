@@ -1,30 +1,34 @@
-package chapter13.program13_1;
+package chapter13.program13_2;
 
+import chapter13.program13_1.Program13_1;
 import org.joml.Vector3f;
-import utilities.*;
+import utilities.GLFWWindow;
+import utilities.Materials;
+import utilities.ShaderProgram;
+import utilities.ValuesContainer;
 import utilities.exceptions.InvalidMaterialException;
 import utilities.models.Torus;
-import utilities.sceneComponents.PositionalLight;
 
-import static org.lwjgl.opengl.GL43.*;
+import static org.lwjgl.opengl.GL11.GL_CCW;
+import static org.lwjgl.opengl.GL11.GL_CW;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.glFrontFace;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.glUniform1i;
 
-public class Program13_1 extends App {
-    protected ShaderProgram shaderProgram;
-    protected Torus torus;
-    protected final PositionalLight light = new PositionalLight()
-            .setGlobalAmbient(new float[]{.5f, .5f, .5f, 1f})
-            .setLightAmbient(new float[]{.9f, .9f, .9f, 1f});
-    protected Materials material;
-    protected float inflateValue, inflateOffSet = 0.05f;
+public class Program13_2 extends Program13_1 {
+    public Program13_2() {
+        super();
+    }
 
     @Override
     protected void init() {
-        glfwWindow = new GLFWWindow(1500, 1000, "Prog13.1 Geometry shader first try");
+        glfwWindow = new GLFWWindow(1500, 1000, "Prog13.2 Deleting Primitives");
 
         shaderProgram = new ShaderProgram(
                 "assets/shaders/program13_1/vert.glsl",
                 "assets/shaders/program13_1/frag.glsl",
-                "assets/shaders/program13_1/geo.glsl"
+                "assets/shaders/program13_2/geo.glsl"
         );
         shaderProgram.use();
         torus = new Torus(.5f, .2f, 48, true, new Vector3f());
@@ -33,10 +37,8 @@ public class Program13_1 extends App {
         } catch (InvalidMaterialException e) {
             throw new RuntimeException(e);
         }
-    }
 
-    @Override
-    protected void getAllUniformLocs() {
+        inflateValue = 1f;
     }
 
     @Override
@@ -61,13 +63,6 @@ public class Program13_1 extends App {
         glUniformMatrix4fv(shaderProgram.getUniformLoc("p_matrix"), false, camera.getProjMat().get(ValuesContainer.VALS_OF_16));
         glUniformMatrix4fv(shaderProgram.getUniformLoc("norm_matrix"), false, torus.getInvTrMat().get(ValuesContainer.VALS_OF_16));
 
-        inflateValue += inflateOffSet;
-        if (inflateValue >= 2f) {
-            inflateOffSet = -0.05f;
-        }
-        if (inflateValue <= -0.5f) {
-            inflateOffSet = 0.05f;
-        }
         glUniform1f(shaderProgram.getUniformLoc("inflateValue"), inflateValue);
 
         // Front face, lighting enabled.
@@ -81,12 +76,7 @@ public class Program13_1 extends App {
         torus.draw(GL_TRIANGLES);
     }
 
-    @Override
-    protected void destroy() {
-        Destroyer.destroyAll(glfwWindow.getID());
-    }
-
     public static void main(String[] args) {
-        new Program13_1().run(true, false);
+        new Program13_2().run(true, false);
     }
 }
