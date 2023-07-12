@@ -29,6 +29,7 @@ uniform mat4 mv_matrix;
 uniform mat4 p_matrix;
 uniform mat4 norm_matrix;
 uniform float inflateValue; // 膨脹
+uniform int isLighting;
 
 void main(void)
 {

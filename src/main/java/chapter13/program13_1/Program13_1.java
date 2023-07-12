@@ -1,7 +1,6 @@
 package chapter13.program13_1;
 
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 import utilities.*;
 import utilities.exceptions.InvalidMaterialException;
 import utilities.models.Torus;
@@ -28,17 +27,7 @@ public class Program13_1 extends App {
                 "assets/shaders/program13_1/geo.glsl"
         );
         shaderProgram.use();
-        torus = new Torus(.5f, .2f, 48, true, new Vector3f()) {
-            @Override
-            protected void updateMMat() {
-                mMat
-                        .identity()
-                        .rotateX((float) GLFW.glfwGetTime() * 1.5f)
-                        .translate(position)
-                        .scale(2.5f)
-                        .rotateX(.5f);
-            }
-        };
+        torus = new Torus(.5f, .2f, 48, true, new Vector3f());
         try {
             material = new Materials("gold");
         } catch (InvalidMaterialException e) {
@@ -63,7 +52,8 @@ public class Program13_1 extends App {
                 "mv_matrix",
                 "p_matrix",
                 "norm_matrix",
-                "inflateValue"
+                "inflateValue",
+                "isLighting"
         });
     }
 
@@ -96,9 +86,16 @@ public class Program13_1 extends App {
         if (inflateValue <= -0.5f) {
             inflateOffSet = 0.05f;
         }
-
         glUniform1f(shaderProgram.getUniformLoc("inflateValue"), inflateValue);
 
+        // Front face, lighting enabled.
+        glUniform1i(shaderProgram.getUniformLoc("isLighting"), 1);
+        glFrontFace(GL_CCW);
+        torus.draw(GL_TRIANGLES);
+
+        // Back face, lighting disabled.
+        glUniform1i(shaderProgram.getUniformLoc("isLighting"), 0);
+        glFrontFace(GL_CW);
         torus.draw(GL_TRIANGLES);
     }
 
