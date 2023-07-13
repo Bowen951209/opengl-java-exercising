@@ -4,7 +4,7 @@
 package chapter9.program9_2.launcher;
 
 
-import utilities.models.Torus;
+import engine.models.Torus;
 import chapter9.program9_2.callbacks.P9_2CursorCB;
 import chapter9.program9_2.callbacks.P9_2FrameBufferResizeCB;
 import chapter9.program9_2.callbacks.P9_2KeyCB;
@@ -13,10 +13,10 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
-import utilities.*;
-import utilities.readers.CubeMapReader;
-import utilities.readers.ModelReader;
-import utilities.sceneComponents.Camera;
+import engine.*;
+import engine.readers.CubeMapReader;
+import engine.readers.ModelReader;
+import engine.sceneComponents.Camera;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;

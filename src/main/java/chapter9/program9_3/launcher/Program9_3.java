@@ -4,13 +4,13 @@ package chapter9.program9_3.launcher;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
-import utilities.ShaderProgram;
-import utilities.sceneComponents.Camera;
-import utilities.Color;
-import utilities.GLFWWindow;
+import engine.ShaderProgram;
+import engine.sceneComponents.Camera;
+import engine.Color;
+import engine.GLFWWindow;
 import chapter9.program9_3.callbacks.P9_3Callbacks;
-import utilities.models.Torus;
-import utilities.readers.CubeMapReader;
+import engine.models.Torus;
+import engine.readers.CubeMapReader;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -19,7 +19,7 @@ import java.nio.file.Path;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL43.*;
-import static utilities.ValuesContainer.VALS_OF_16;
+import static engine.ValuesContainer.VALS_OF_16;
 
 public class Program9_3 {
 

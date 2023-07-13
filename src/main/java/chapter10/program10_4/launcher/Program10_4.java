@@ -5,10 +5,10 @@ import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.type.ImInt;
 import org.joml.Vector3f;
-import utilities.*;
-import utilities.callbacks.DefaultCallbacks;
-import utilities.models.Grid;
-import utilities.sceneComponents.Texture;
+import engine.*;
+import engine.callbacks.DefaultCallbacks;
+import engine.models.Grid;
+import engine.sceneComponents.Texture;
 
 import java.nio.file.Path;
 import java.util.Objects;

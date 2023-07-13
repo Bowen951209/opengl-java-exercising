@@ -5,9 +5,9 @@ import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
-import utilities.*;
-import utilities.readers.ModelReader;
-import utilities.readers.TextureReader;
+import engine.*;
+import engine.readers.ModelReader;
+import engine.readers.TextureReader;
 
 import java.nio.file.Path;
 

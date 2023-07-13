@@ -5,9 +5,9 @@ import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
-import utilities.Color;
-import utilities.GLFWWindow;
-import utilities.ShaderProgram;
+import engine.Color;
+import engine.GLFWWindow;
+import engine.ShaderProgram;
 
 import java.nio.file.Path;
 

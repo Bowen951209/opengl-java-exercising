@@ -2,9 +2,9 @@ package chapter12.program12_5;
 
 import chapter12.program12_4.launcher.Program12_4;
 import imgui.ImGui;
-import utilities.*;
-import utilities.exceptions.InvalidMaterialException;
-import utilities.sceneComponents.Texture;
+import engine.*;
+import engine.exceptions.InvalidMaterialException;
+import engine.sceneComponents.Texture;
 
 import static org.lwjgl.opengl.GL40.*;
 

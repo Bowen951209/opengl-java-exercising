@@ -1,10 +1,10 @@
 package chapter13.program13_1;
 
 import org.joml.Vector3f;
-import utilities.*;
-import utilities.exceptions.InvalidMaterialException;
-import utilities.models.Torus;
-import utilities.sceneComponents.PositionalLight;
+import engine.*;
+import engine.exceptions.InvalidMaterialException;
+import engine.models.Torus;
+import engine.sceneComponents.PositionalLight;
 
 import static org.lwjgl.opengl.GL43.*;
 

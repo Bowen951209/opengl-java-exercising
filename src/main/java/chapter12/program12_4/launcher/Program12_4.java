@@ -2,10 +2,10 @@ package chapter12.program12_4.launcher;
 
 import imgui.ImGui;
 import org.joml.Matrix4f;
-import utilities.*;
-import utilities.exceptions.InvalidMaterialException;
-import utilities.sceneComponents.PositionalLight;
-import utilities.sceneComponents.Texture;
+import engine.*;
+import engine.exceptions.InvalidMaterialException;
+import engine.sceneComponents.PositionalLight;
+import engine.sceneComponents.Texture;
 
 import static org.lwjgl.opengl.GL43.*;
 

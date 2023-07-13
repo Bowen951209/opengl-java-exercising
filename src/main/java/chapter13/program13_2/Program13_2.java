@@ -2,12 +2,12 @@ package chapter13.program13_2;
 
 import chapter13.program13_1.Program13_1;
 import org.joml.Vector3f;
-import utilities.GLFWWindow;
-import utilities.Materials;
-import utilities.ShaderProgram;
-import utilities.ValuesContainer;
-import utilities.exceptions.InvalidMaterialException;
-import utilities.models.Torus;
+import engine.GLFWWindow;
+import engine.Materials;
+import engine.ShaderProgram;
+import engine.ValuesContainer;
+import engine.exceptions.InvalidMaterialException;
+import engine.models.Torus;
 
 import static org.lwjgl.opengl.GL11.GL_CCW;
 import static org.lwjgl.opengl.GL11.GL_CW;

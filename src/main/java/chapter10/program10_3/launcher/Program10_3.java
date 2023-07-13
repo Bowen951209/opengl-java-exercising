@@ -4,17 +4,17 @@ import chapter10.program10_2.launcher.Program10_2;
 import imgui.ImGui;
 import imgui.type.ImBoolean;
 import org.lwjgl.glfw.GLFW;
-import utilities.*;
-import utilities.callbacks.DefaultCallbacks;
-import utilities.exceptions.InvalidMaterialException;
-import utilities.models.Sphere;
-import utilities.sceneComponents.PositionalLight;
-import utilities.sceneComponents.Texture;
+import engine.*;
+import engine.callbacks.DefaultCallbacks;
+import engine.exceptions.InvalidMaterialException;
+import engine.models.Sphere;
+import engine.sceneComponents.PositionalLight;
+import engine.sceneComponents.Texture;
 
 import java.nio.file.Path;
 
 import static org.lwjgl.opengl.GL20.*;
-import static utilities.ValuesContainer.VALS_OF_16;
+import static engine.ValuesContainer.VALS_OF_16;
 
 public class Program10_3 extends Program10_2 {
     protected int program;

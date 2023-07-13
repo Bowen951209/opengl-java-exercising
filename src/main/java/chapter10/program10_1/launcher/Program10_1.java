@@ -3,19 +3,19 @@ package chapter10.program10_1.launcher;
 
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-import utilities.*;
-import utilities.callbacks.DefaultCallbacks;
-import utilities.models.Torus;
-import utilities.readers.CubeMapReader;
-import utilities.sceneComponents.Camera;
-import utilities.sceneComponents.Skybox;
+import engine.*;
+import engine.callbacks.DefaultCallbacks;
+import engine.models.Torus;
+import engine.readers.CubeMapReader;
+import engine.sceneComponents.Camera;
+import engine.sceneComponents.Skybox;
 
 import java.nio.file.Path;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL43.*;
-import static utilities.ValuesContainer.VALS_OF_16;
+import static engine.ValuesContainer.VALS_OF_16;
 
 public class Program10_1 {
 

@@ -3,8 +3,8 @@ package chapter12.program12_2.launcher;
 import imgui.ImGui;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import utilities.*;
-import utilities.sceneComponents.Texture;
+import engine.*;
+import engine.sceneComponents.Texture;
 
 import static org.lwjgl.opengl.GL43.*;
 

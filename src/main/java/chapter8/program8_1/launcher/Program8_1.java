@@ -1,7 +1,7 @@
 package chapter8.program8_1.launcher;
 
 
-import utilities.models.Torus;
+import engine.models.Torus;
 import chapter8.program8_1.callbacks.CursorCB;
 import chapter8.program8_1.callbacks.FrameBufferResizeCB;
 import chapter8.program8_1.callbacks.KeyCB;
@@ -10,9 +10,9 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
-import utilities.*;
-import utilities.readers.ModelReader;
-import utilities.sceneComponents.Camera;
+import engine.*;
+import engine.readers.ModelReader;
+import engine.sceneComponents.Camera;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;

@@ -6,9 +6,9 @@ import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
-import utilities.*;
-import utilities.readers.ModelReader;
-import utilities.readers.TextureReader;
+import engine.*;
+import engine.readers.ModelReader;
+import engine.readers.TextureReader;
 
 import java.nio.FloatBuffer;
 import java.nio.file.Path;

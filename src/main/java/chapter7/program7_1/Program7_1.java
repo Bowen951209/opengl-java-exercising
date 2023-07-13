@@ -1,14 +1,14 @@
 package chapter7.program7_1;
 
 
-import utilities.models.Torus;
+import engine.models.Torus;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
-import utilities.*;
-import utilities.readers.ModelReader;
+import engine.*;
+import engine.readers.ModelReader;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
