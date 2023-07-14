@@ -9,6 +9,7 @@ layout (binding = 1) uniform sampler2D tex_height;
 
 in vec2 tcs_out[];
 out vec2 tes_out;
+out vec3 vertEyeSpacePos;
 
 void main (void) {
     vec2 tc = vec2(
@@ -27,4 +28,6 @@ void main (void) {
 
     gl_Position = p_matrix * mv_matrix * tessellatedPoint;
     tes_out = tc;
+
+    vertEyeSpacePos = (mv_matrix * tessellatedPoint).xyz;
 }
