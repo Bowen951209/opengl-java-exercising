@@ -67,6 +67,7 @@ public class Main extends App {
 
         // Transparency
         glEnable(GL_BLEND);
+        glEnable(GL_CULL_FACE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glBlendEquation(GL_FUNC_ADD);
 
@@ -90,7 +91,6 @@ public class Main extends App {
         transparencyProgram.putUniformMatrix4f("norm_matrix", torus.getInvTrMat().get(ValuesContainer.VALS_OF_16));
 
         transparencyProgram.putUniform1f("alpha", 1f);
-        transparencyProgram.putUniform1f("flipNormal", 1f);
         torus.updateState(camera);
         torus.draw(GL_TRIANGLES);
 
@@ -106,19 +106,20 @@ public class Main extends App {
 
         //I. render back face first
         glCullFace(GL_FRONT);
-        transparencyProgram.putUniform1f("alpha", 0.7f);
-        transparencyProgram.putUniform1f("flipNormal", 1f); // don't flip normals
+        transparencyProgram.putUniform1f("alpha", 0.3f);
+        transparencyProgram.putUniform1f("flipNormal", -1f); // don't flip normals
         pyramid.updateState(camera);
         pyramid.draw(GL_TRIANGLES);
 
         //II. then render front face
         glCullFace(GL_BACK);
-        transparencyProgram.putUniform1f("alpha", 0.3f);
-        transparencyProgram.putUniform1f("flipNormal", -1f); // flip normals to inside(back face)
+        transparencyProgram.putUniform1f("alpha", 0.7f);
+        transparencyProgram.putUniform1f("flipNormal", 1f); // flip normals to inside(back face)
         pyramid.updateState(camera);
         pyramid.draw(GL_TRIANGLES);
 
         glDisable(GL_BLEND);
+        glDisable(GL_CULL_FACE);
     }
 
     @Override
