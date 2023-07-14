@@ -10,15 +10,18 @@ import static org.lwjgl.opengl.GL43.*;
 
 public class TessGrid extends Model {
     private static ShaderProgram tessRenderProgram;
+    public static void useTessProgram() {
+        tessRenderProgram.use();
+    }
     private final Texture imageTexture, heightMap;
     private int drawMode = GL_FILL;
 
 
     public TessGrid(String imageTexturePath, String heightMapPath) {
-        this(new Vector3f(), imageTexturePath, heightMapPath);
+        this(imageTexturePath, heightMapPath, new Vector3f());
     }
 
-    public TessGrid(Vector3f position, String imageTexturePath, String heightMapPath) {
+    public TessGrid(String imageTexturePath, String heightMapPath, Vector3f position) {
         super(position, false, true, false);
         imageTexture = new Texture(0, imageTexturePath);
         heightMap = new Texture(1, heightMapPath);
@@ -33,7 +36,7 @@ public class TessGrid extends Model {
 
         // default mMat
         super.mMat.identity()
-                .translate(0f, -.5f, 0f)
+                .translate(position)
                 .scale(10f);
     }
 
@@ -43,7 +46,6 @@ public class TessGrid extends Model {
     @Override
     public void draw(int mode) {
         // mode is no use here
-        tessRenderProgram.use();
 
         bindVAO();
 

@@ -5,6 +5,7 @@ import engine.exceptions.ProgramLinkedFailedException;
 import engine.exceptions.ShaderCompiledFailedException;
 import engine.readers.GLSLReader;
 
+import java.nio.FloatBuffer;
 import java.nio.file.Path;
 import java.util.HashMap;
 
@@ -38,6 +39,14 @@ public class ShaderProgram {
                 System.err.println("Uniform \"" + uniformName + "\" not found");
             return loc;
         }
+    }
+
+    public void putUniformMatrix4f(String uniformName, FloatBuffer values) {
+        glUniformMatrix4fv(getUniformLoc(uniformName), false, values);
+    }
+
+    public void putUniform1f(String uniformName, float value) {
+        glUniform1f(getUniformLoc(uniformName), value);
     }
 
     // Only vertex & fragment

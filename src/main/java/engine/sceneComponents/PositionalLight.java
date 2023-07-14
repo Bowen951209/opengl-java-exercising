@@ -64,6 +64,10 @@ public class PositionalLight {
         );
     }
 
+    public PositionalLight brightLight() {
+        return setGlobalAmbient(new float[] {0.5f, 0.5f, 0.5f, 1.0f});
+    }
+
     public void flipAll() {
         globalAmbient.flip();
         lightAmbient.flip();

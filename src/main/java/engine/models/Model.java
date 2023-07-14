@@ -85,12 +85,27 @@ public abstract class Model {
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
     }
 
+    private void storeVertices(float[] vertices) {
+        glBindBuffer(GL_ARRAY_BUFFER, verticesVBO);
+        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
+    }
+
     private void storeNormals(FloatBuffer normals) {
         glBindBuffer(GL_ARRAY_BUFFER, normalsVBO);
         glBufferData(GL_ARRAY_BUFFER, normals, GL_STATIC_DRAW);
     }
 
+    private void storeNormals(float[] normals) {
+        glBindBuffer(GL_ARRAY_BUFFER, normalsVBO);
+        glBufferData(GL_ARRAY_BUFFER, normals, GL_STATIC_DRAW);
+    }
+
     private void storeTextureCoords(FloatBuffer tcs) {
+        glBindBuffer(GL_ARRAY_BUFFER, tcVBO);
+        glBufferData(GL_ARRAY_BUFFER, tcs, GL_STATIC_DRAW);
+    }
+
+    private void storeTextureCoords(float[] tcs) {
         glBindBuffer(GL_ARRAY_BUFFER, tcVBO);
         glBufferData(GL_ARRAY_BUFFER, tcs, GL_STATIC_DRAW);
     }
@@ -105,7 +120,17 @@ public abstract class Model {
         storeNormals(normals);
     }
 
+    protected void storeDataToVBOs(float[] vertices, float[] normals) {
+        storeVertices(vertices);
+        storeNormals(normals);
+    }
+
     protected void storeDataToVBOs(FloatBuffer vertices, FloatBuffer normals, FloatBuffer tcs) {
+        storeDataToVBOs(vertices, normals);
+        storeTextureCoords(tcs);
+    }
+
+    protected void storeDataToVBOs(float[] vertices, float[] normals, float[] tcs) {
         storeDataToVBOs(vertices, normals);
         storeTextureCoords(tcs);
     }
