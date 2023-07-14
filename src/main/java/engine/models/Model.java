@@ -120,11 +120,11 @@ public abstract class Model {
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
     }
 
-    protected void updateMvMat(Camera camera) {
+    private void updateMvMat(Camera camera) {
         mvMat.set(camera.getVMat()).mul(mMat);
     }
 
-    protected void updateInvTrMat() {
+    private void updateInvTrMat() {
         invTrMat.set(mvMat).invert().transpose();
     }
 
