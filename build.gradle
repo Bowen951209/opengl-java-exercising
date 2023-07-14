@@ -85,7 +85,7 @@ tasks.register('copyRuntimeLibs', Copy) {
     into "build/dependencies/"
 }
 apply plugin: 'application'
-mainClassName = "chapter13.program13_1.Program13_1"
+mainClassName = "chapter14.Main"
 applicationDefaultJvmArgs = [
         "-Djava.util.logging.config.file=src/main/resources/logging.properties"
 ]
