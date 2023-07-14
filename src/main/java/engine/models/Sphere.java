@@ -3,13 +3,13 @@ package engine.models;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
-import engine.sceneComponents.Camera;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import static org.joml.Math.*;
-import static org.lwjgl.opengl.GL43.*;
+import static org.lwjgl.opengl.GL43.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL43.glDrawElements;
 
 public class Sphere extends Model {
     private int numIndices;
@@ -146,11 +146,6 @@ public class Sphere extends Model {
     protected void updateMMat() {
         mMat.identity()
                 .translate(position);
-    }
-
-    @Override
-    public void updateState(Camera camera) {
-        super.updateState(camera);
     }
 
     @Override

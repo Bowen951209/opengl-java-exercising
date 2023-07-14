@@ -3,7 +3,6 @@ package engine.models;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
-import engine.sceneComponents.Camera;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -189,13 +188,6 @@ public class Torus extends Model {
                 .translate(position)
                 .scale(2.5f)
                 .rotateX(.5f);
-    }
-
-    @Override
-    public void updateState(Camera camera) {
-        updateMMat();
-        updateMvMat(camera);
-        updateInvTrMat();
     }
 
     @Override
