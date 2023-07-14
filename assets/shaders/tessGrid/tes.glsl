@@ -2,7 +2,8 @@
 
 layout (quads, fractional_even_spacing, ccw) in;
 
-uniform mat4 mvp_matrix;
+uniform mat4 mv_matrix;
+uniform mat4 p_matrix;
 layout (binding = 0) uniform sampler2D tex_color;
 layout (binding = 1) uniform sampler2D tex_height;
 
@@ -24,6 +25,6 @@ void main (void) {
     // add the height from the height map to the vertex:
     tessellatedPoint.y += (texture(tex_height, tc).r) / 20.0;
 
-    gl_Position = mvp_matrix * tessellatedPoint;
+    gl_Position = p_matrix * mv_matrix * tessellatedPoint;
     tes_out = tc;
 }

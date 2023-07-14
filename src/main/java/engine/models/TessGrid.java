@@ -1,13 +1,12 @@
 package engine.models;
 
-import static org.lwjgl.opengl.GL43.*;
-
 import engine.ShaderProgram;
 import engine.ValuesContainer;
 import engine.sceneComponents.Camera;
 import engine.sceneComponents.Texture;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
+
+import static org.lwjgl.opengl.GL43.*;
 
 public class TessGrid extends Model {
     private static ShaderProgram tessRenderProgram;
@@ -57,11 +56,14 @@ public class TessGrid extends Model {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // for gui to render
     }
 
-    private final Matrix4f mvp = new Matrix4f();
     public void putUniform(Camera camera) {
-        // mvp
-        glUniformMatrix4fv(tessRenderProgram.getUniformLoc("mvp_matrix"),
-                false, this.mvp.set(camera.getProjMat()).mul(super.mvMat).get(ValuesContainer.VALS_OF_16));
+        // mv
+        glUniformMatrix4fv(tessRenderProgram.getUniformLoc("mv_matrix"),
+                false, mvMat.get(ValuesContainer.VALS_OF_16));
+
+        // proj
+        glUniformMatrix4fv(tessRenderProgram.getUniformLoc("p_matrix"),
+                false, camera.getProjMat().get(ValuesContainer.VALS_OF_16));
     }
 
     @Override

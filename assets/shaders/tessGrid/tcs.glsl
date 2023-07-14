@@ -5,7 +5,8 @@ layout (vertices = 4) out;
 in vec2 tc[];
 out vec2 tcs_out[];
 
-uniform mat4 mvp_matrix;
+uniform mat4 mv_matrix;
+uniform mat4 p_matrix;
 layout (binding = 0) uniform sampler2D tex_color;
 layout (binding = 1) uniform sampler2D tex_height;
 
@@ -13,6 +14,7 @@ void main(void) {
     float subdivision = 16.0;
 
     if (gl_InvocationID == 0) {
+        mat4 mvp_matrix = p_matrix * mv_matrix;
         // Control points in screen sace:
         vec4 p0 = mvp_matrix * gl_in[0].gl_Position;
         vec4 p1 = mvp_matrix * gl_in[2].gl_Position;
