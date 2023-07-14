@@ -50,8 +50,9 @@ public class Main extends App {
             protected void drawFrame() {
                 ImGui.newFrame(); // start frame
                 ImGui.begin("Description"); // window
-                // TODO: 2023/7/14 type things here
-                ImGui.text("TODO: type descriptions here.");
+                ImGui.text("This is a all in one program in chapter14.");
+                ImGui.text("1 - fog");
+                ImGui.text("2 - transparency");
                 ImGui.end();
                 ImGui.render(); // end frame
             }
