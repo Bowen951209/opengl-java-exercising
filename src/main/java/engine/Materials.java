@@ -1,11 +1,35 @@
 package engine;
+
 import static org.lwjgl.opengl.GL43.*;
+
 import org.lwjgl.BufferUtils;
 import engine.exceptions.InvalidMaterialException;
 
 import java.nio.FloatBuffer;
 
 public class Materials {
+    private static Materials goldMaterialInstance;
+    private static Materials bronzeMaterialInstance;
+
+    public static Materials getMaterial(String material) {
+        try {
+            if (material.equalsIgnoreCase("GOLD")) {
+                if (goldMaterialInstance == null) {
+                    goldMaterialInstance = new Materials("gold");
+                }
+                return goldMaterialInstance;
+            } else if (material.equalsIgnoreCase("BRONZE")) {
+                if (bronzeMaterialInstance == null) {
+                    bronzeMaterialInstance = new Materials("bronze");
+                }
+                return bronzeMaterialInstance;
+            } else {
+                return new Materials(material);
+            }
+        } catch (InvalidMaterialException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private final FloatBuffer ambient = BufferUtils.createFloatBuffer(4);
     private final FloatBuffer diffuse = BufferUtils.createFloatBuffer(4);
