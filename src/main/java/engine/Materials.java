@@ -10,6 +10,7 @@ import java.nio.FloatBuffer;
 public class Materials {
     private static Materials goldMaterialInstance;
     private static Materials bronzeMaterialInstance;
+    private static Materials silverMaterialInstance;
 
     public static Materials getMaterial(String material) {
         try {
@@ -25,6 +26,13 @@ public class Materials {
                 }
                 return bronzeMaterialInstance;
             }
+            if (material.equalsIgnoreCase("SILVER")) {
+                if (silverMaterialInstance == null) {
+                    silverMaterialInstance = new Materials("silver");
+                }
+                return silverMaterialInstance;
+            }
+
             return new Materials(material);
         } catch (InvalidMaterialException e) {
             throw new RuntimeException(e);
