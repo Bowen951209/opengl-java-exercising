@@ -138,7 +138,7 @@ public class Main extends App {
                 clippingPlaneProgram.getUniformLoc("light.specular"),
                 clippingPlaneProgram.getUniformLoc("light.position")
         );
-        Materials.getMaterial("bronze").putToUniforms( // TODO: 2023/7/15 change material to silver
+        Materials.getMaterial("silver").putToUniforms(
                 clippingPlaneProgram.getUniformLoc("material.ambient"),
                 clippingPlaneProgram.getUniformLoc("material.diffuse"),
                 clippingPlaneProgram.getUniformLoc("material.specular"),
