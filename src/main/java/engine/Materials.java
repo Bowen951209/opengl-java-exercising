@@ -18,14 +18,14 @@ public class Materials {
                     goldMaterialInstance = new Materials("gold");
                 }
                 return goldMaterialInstance;
-            } else if (material.equalsIgnoreCase("BRONZE")) {
+            }
+            if (material.equalsIgnoreCase("BRONZE")) {
                 if (bronzeMaterialInstance == null) {
                     bronzeMaterialInstance = new Materials("bronze");
                 }
                 return bronzeMaterialInstance;
-            } else {
-                return new Materials(material);
             }
+            return new Materials(material);
         } catch (InvalidMaterialException e) {
             throw new RuntimeException(e);
         }
