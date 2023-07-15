@@ -28,7 +28,7 @@ public class Main extends App {
                 "assets/shaders/transparency/vert.glsl",
                 "assets/shaders/transparency/frag.glsl"
         );
-        clippingPlaneProgram  = new ShaderProgram(
+        clippingPlaneProgram = new ShaderProgram(
                 "assets/shaders/clippingPlane/vert.glsl",
                 "assets/shaders/clippingPlane/frag.glsl"
         );
@@ -38,7 +38,7 @@ public class Main extends App {
                 "assets/textures/imageTextures/greenMountain.jpg",
                 "assets/textures/heightMaps/greenMountain.jpg",
                 new Vector3f(0f, -.9f, 0f)
-                );
+        );
         grid.setDrawMode(GL_FILL);
 
         // light
@@ -55,13 +55,12 @@ public class Main extends App {
             @Override
             protected void drawFrame() {
                 ImGui.newFrame(); // start frame
-                ImGui.begin("Description"); // window
+                ImGui.begin("Description"); // description window
                 ImGui.text("This is a all in one program in chapter14.");
                 ImGui.text("1 - fog");
                 ImGui.text("2 - transparency");
                 ImGui.text("3 - user-defined clipping planes");
                 ImGui.end();
-                ImGui.render(); // end frame
             }
         };
     }
@@ -79,7 +78,7 @@ public class Main extends App {
         glBlendEquation(GL_FUNC_ADD);
 
         transparencyProgram.use();
-            // torus
+        // torus
         light.putToUniforms(
                 transparencyProgram.getUniformLoc("globalAmbient"),
                 transparencyProgram.getUniformLoc("light.ambient"),
