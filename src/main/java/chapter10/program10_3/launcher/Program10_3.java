@@ -2,6 +2,7 @@ package chapter10.program10_3.launcher;
 
 import chapter10.program10_2.launcher.Program10_2;
 import engine.gui.GUI;
+import engine.sceneComponents.Texture2D;
 import imgui.ImGui;
 import imgui.type.ImBoolean;
 import org.lwjgl.glfw.GLFW;
@@ -10,7 +11,6 @@ import engine.callbacks.DefaultCallbacks;
 import engine.exceptions.InvalidMaterialException;
 import engine.models.Sphere;
 import engine.sceneComponents.PositionalLight;
-import engine.sceneComponents.Texture;
 
 import java.nio.file.Path;
 
@@ -26,7 +26,7 @@ public class Program10_3 extends Program10_2 {
     private int globalAmbientLoc, mv_matrixLoc, proj_matrixLoc, norm_matrixLoc, materialShininessLoc,
             lightAmbientLoc, lightDiffuseLoc, lightSpecularLoc, lightPosition, materialAmbientLoc,
             materialDiffuseLoc, materialSpecularLoc, isUsingNormalMapLoc, isUsingImageTextureLoc;
-    private Texture imageTexture, normalMapTexture;
+    private Texture2D imageTexture, normalMapTexture;
     private GUI gui;
     private ImBoolean isUsingNormalMap, isUsingImageTexture;
 
@@ -35,7 +35,7 @@ public class Program10_3 extends Program10_2 {
     }
 
     public static void main(String[] args) {
-        new Program10_3("Texture + Normal Mapping");
+        new Program10_3("Texture2D + Normal Mapping");
     }
 
     @Override
@@ -72,8 +72,8 @@ public class Program10_3 extends Program10_2 {
             throw new RuntimeException(e);
         }
 
-        normalMapTexture = new Texture(0, "assets/textures/normalMaps/moonNORMAL.jpg");
-        imageTexture = new Texture(1, "assets/textures/imageTextures/moon.jpg");
+        normalMapTexture = new Texture2D(0, "assets/textures/normalMaps/moonNORMAL.jpg");
+        imageTexture = new Texture2D(1, "assets/textures/imageTextures/moon.jpg");
 
         // ImGUI
 

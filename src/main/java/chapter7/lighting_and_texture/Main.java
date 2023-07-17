@@ -63,7 +63,7 @@ public class Main {
 
     private static void init() {
         final int windowCreatedW = 800, windowCreatedH = 600;
-        GLFWWindow glfwWindow = new GLFWWindow(windowCreatedW, windowCreatedH, "Texture + Light");
+        GLFWWindow glfwWindow = new GLFWWindow(windowCreatedW, windowCreatedH, "Texture2D + Light");
         windowHandle = glfwWindow.getID();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
         createProjMat(windowCreatedW, windowCreatedH);

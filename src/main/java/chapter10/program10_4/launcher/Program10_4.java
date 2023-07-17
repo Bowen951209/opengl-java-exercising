@@ -2,6 +2,7 @@ package chapter10.program10_4.launcher;
 
 import chapter10.program10_3.launcher.Program10_3;
 import engine.gui.GUI;
+import engine.sceneComponents.Texture2D;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.type.ImInt;
@@ -9,7 +10,6 @@ import org.joml.Vector3f;
 import engine.*;
 import engine.callbacks.DefaultCallbacks;
 import engine.models.RawGrid;
-import engine.sceneComponents.Texture;
 
 import java.nio.file.Path;
 import java.util.Objects;
@@ -18,7 +18,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL43.*;
 
 public class Program10_4 extends Program10_3 {
-    private Texture imageTexture, heightMap;
+    private Texture2D imageTexture, heightMap;
     private RawGrid grid;
     private GUI gui;
 
@@ -52,8 +52,8 @@ public class Program10_4 extends Program10_3 {
         glUseProgram(program);
 
         // Textures
-        imageTexture = new Texture(0, "assets/textures/imageTextures/heightTexture.jpg");
-        heightMap = new Texture(1, "assets/textures/heightMaps/height.jpg");
+        imageTexture = new Texture2D(0, "assets/textures/imageTextures/heightTexture.jpg");
+        heightMap = new Texture2D(1, "assets/textures/heightMaps/height.jpg");
 
         // Models
         grid = new RawGrid(new Vector3f(0f, -.1f, 4f));

@@ -9,7 +9,7 @@ import engine.callbacks.DefaultCallbacks;
 import engine.exceptions.InvalidMaterialException;
 import engine.models.Sphere;
 import engine.sceneComponents.PositionalLight;
-import engine.sceneComponents.Texture;
+import engine.sceneComponents.Texture2D;
 
 import java.nio.file.Path;
 
@@ -60,7 +60,7 @@ public class Program10_2 extends Program10_1 {
         } catch (InvalidMaterialException e) {
             throw new RuntimeException(e);
         }
-        Texture normalMapTexture = new Texture(0, "assets/textures/normalMaps/castleroofNORMAL.jpg");
+        Texture2D normalMapTexture = new Texture2D(0, "assets/textures/normalMaps/castleroofNORMAL.jpg");
         normalMapTexture.bind();
 
         System.out.println("Hint: You can press F1 to look around.");

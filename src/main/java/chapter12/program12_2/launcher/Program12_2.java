@@ -1,11 +1,11 @@
 package chapter12.program12_2.launcher;
 
 import engine.gui.GUI;
+import engine.sceneComponents.Texture2D;
 import imgui.ImGui;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import engine.*;
-import engine.sceneComponents.Texture;
 
 import static org.lwjgl.opengl.GL43.*;
 
@@ -35,7 +35,7 @@ public class Program12_2 extends App {
         glBindVertexArray(vaoID);
 
         // Textures
-        Texture texture = new Texture(0, "assets/textures/imageTextures/tiles.jpg");
+        Texture2D texture = new Texture2D(0, "assets/textures/imageTextures/tiles.jpg");
         texture.bind();
 
         // GUI

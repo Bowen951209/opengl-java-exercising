@@ -3,7 +3,7 @@ package engine.models;
 import engine.ShaderProgram;
 import engine.ValuesContainer;
 import engine.sceneComponents.Camera;
-import engine.sceneComponents.Texture;
+import engine.sceneComponents.Texture2D;
 import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL43.*;
@@ -13,7 +13,7 @@ public class TessGrid extends Model {
     public static void useTessProgram() {
         tessRenderProgram.use();
     }
-    private final Texture imageTexture, heightMap;
+    private final Texture2D imageTexture, heightMap;
     private int drawMode = GL_FILL;
 
 
@@ -23,8 +23,8 @@ public class TessGrid extends Model {
 
     public TessGrid(String imageTexturePath, String heightMapPath, Vector3f position) {
         super(position, false, true, false);
-        imageTexture = new Texture(0, imageTexturePath);
-        heightMap = new Texture(1, heightMapPath);
+        imageTexture = new Texture2D(0, imageTexturePath);
+        heightMap = new Texture2D(1, heightMapPath);
         if (tessRenderProgram == null) {
             tessRenderProgram = new ShaderProgram(
                     "assets/shaders/tessGrid/vert.glsl",

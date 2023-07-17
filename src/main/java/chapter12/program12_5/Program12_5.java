@@ -2,10 +2,10 @@ package chapter12.program12_5;
 
 import chapter12.program12_4.launcher.Program12_4;
 import engine.gui.GUI;
+import engine.sceneComponents.Texture2D;
 import imgui.ImGui;
 import engine.*;
 import engine.exceptions.InvalidMaterialException;
-import engine.sceneComponents.Texture;
 
 import static org.lwjgl.opengl.GL40.*;
 
@@ -33,10 +33,10 @@ public class Program12_5 extends Program12_4 {
         int vaoID = glGenVertexArrays();
         glBindVertexArray(vaoID);
 
-        // Texture
-        imageTexture = new Texture(0, "assets/textures/imageTextures/squareMoonMap.jpg");
-        heightMap = new Texture(1, "assets/textures/heightMaps/squareMoonBump.jpg");
-        normalMap = new Texture(2, "assets/textures/normalMaps/squareMoonNormal.jpg");
+        // Texture2D
+        imageTexture = new Texture2D(0, "assets/textures/imageTextures/squareMoonMap.jpg");
+        heightMap = new Texture2D(1, "assets/textures/heightMaps/squareMoonBump.jpg");
+        normalMap = new Texture2D(2, "assets/textures/normalMaps/squareMoonNormal.jpg");
 
         // Model's material
         try {

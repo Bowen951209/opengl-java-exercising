@@ -10,10 +10,10 @@ import java.nio.FloatBuffer;
 import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT;
 import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT;
 import static org.lwjgl.opengl.GL43.*;
-public class Texture extends TextureReader {
+public class Texture2D extends TextureReader {
     private final int usingUnit;
 
-    public Texture(int usingUnit, String filepath) {
+    public Texture2D(int usingUnit, String filepath) {
         super(filepath);
         this.usingUnit = usingUnit;
         config(GL_LINEAR_MIPMAP_LINEAR);
@@ -47,7 +47,7 @@ public class Texture extends TextureReader {
         shout("enabled anisotropic.");
     }
     private void shout(String message) {
-        System.out.println("Texture on unit " + usingUnit + "(id: " + getTexID() + ") " + message);
+        System.out.println("Texture2D on unit " + usingUnit + "(id: " + getTexID() + ") " + message);
     }
 
     public void bind() {

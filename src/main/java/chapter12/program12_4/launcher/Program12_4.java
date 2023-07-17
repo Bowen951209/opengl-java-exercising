@@ -1,18 +1,18 @@
 package chapter12.program12_4.launcher;
 
 import engine.gui.GUI;
+import engine.sceneComponents.Texture2D;
 import imgui.ImGui;
 import org.joml.Matrix4f;
 import engine.*;
 import engine.exceptions.InvalidMaterialException;
 import engine.sceneComponents.PositionalLight;
-import engine.sceneComponents.Texture;
 
 import static org.lwjgl.opengl.GL43.*;
 
 public class Program12_4 extends App {
     protected ShaderProgram shaderProgram;
-    protected Texture imageTexture, heightMap, normalMap;
+    protected Texture2D imageTexture, heightMap, normalMap;
     protected final PositionalLight light = new PositionalLight().setPosition(0f, .1f, .2f);
     protected Materials material;
 
@@ -36,10 +36,10 @@ public class Program12_4 extends App {
         int vaoID = glGenVertexArrays();
         glBindVertexArray(vaoID);
 
-        // Texture
-        imageTexture = new Texture(0, "assets/textures/imageTextures/squareMoonMap.jpg");
-        heightMap = new Texture(1, "assets/textures/heightMaps/squareMoonBump.jpg");
-        normalMap = new Texture(2, "assets/textures/normalMaps/squareMoonNormal.jpg");
+        // Texture2D
+        imageTexture = new Texture2D(0, "assets/textures/imageTextures/squareMoonMap.jpg");
+        heightMap = new Texture2D(1, "assets/textures/heightMaps/squareMoonBump.jpg");
+        normalMap = new Texture2D(2, "assets/textures/normalMaps/squareMoonNormal.jpg");
 
         // Model's material
         try {

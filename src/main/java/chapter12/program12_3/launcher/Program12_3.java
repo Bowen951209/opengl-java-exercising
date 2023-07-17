@@ -1,16 +1,16 @@
 package chapter12.program12_3.launcher;
 
 import engine.gui.GUI;
+import engine.sceneComponents.Texture2D;
 import imgui.ImGui;
 import org.joml.Matrix4f;
 import engine.*;
-import engine.sceneComponents.Texture;
 
 import static org.lwjgl.opengl.GL43.*;
 
 public class Program12_3 extends App {
     private ShaderProgram shaderProgram;
-    private Texture texture;
+    private Texture2D texture;
 
     @Override
     protected void init() {
@@ -28,8 +28,8 @@ public class Program12_3 extends App {
         int vaoID = glGenVertexArrays();
         glBindVertexArray(vaoID);
 
-        // Texture
-        texture = new Texture(0, "assets/textures/imageTextures/moon.jpg");
+        // Texture2D
+        texture = new Texture2D(0, "assets/textures/imageTextures/moon.jpg");
 
         // GUI
         gui = new GUI(glfwWindow, 3f) {
