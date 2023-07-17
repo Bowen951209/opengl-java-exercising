@@ -11,11 +11,11 @@ import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_AN
 import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT;
 import static org.lwjgl.opengl.GL43.*;
 public class Texture extends TextureReader {
-    private final int USING_UNIT;
+    private final int usingUnit;
 
     public Texture(int usingUnit, String filepath) {
         super(filepath);
-        this.USING_UNIT = usingUnit;
+        this.usingUnit = usingUnit;
         config(GL_LINEAR_MIPMAP_LINEAR);
         glActiveTexture(GL_TEXTURE0 + usingUnit);
     }
@@ -47,11 +47,11 @@ public class Texture extends TextureReader {
         shout("enabled anisotropic.");
     }
     private void shout(String message) {
-        System.out.println("Texture on unit " + USING_UNIT + "(id: " + getTexID() + ") " + message);
+        System.out.println("Texture on unit " + usingUnit + "(id: " + getTexID() + ") " + message);
     }
 
     public void bind() {
-        glActiveTexture(GL_TEXTURE0 + USING_UNIT);
+        glActiveTexture(GL_TEXTURE0 + usingUnit);
         glBindTexture(GL_TEXTURE_2D, getTexID());
     }
 }
