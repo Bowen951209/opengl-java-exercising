@@ -1,5 +1,7 @@
 package engine;
 
+import engine.gui.GUI;
+
 import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.*;

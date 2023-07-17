@@ -1,6 +1,7 @@
 package chapter10.program10_3.launcher;
 
 import chapter10.program10_2.launcher.Program10_2;
+import engine.gui.GUI;
 import imgui.ImGui;
 import imgui.type.ImBoolean;
 import org.lwjgl.glfw.GLFW;

@@ -1,6 +1,7 @@
 package chapter12.program12_5;
 
 import chapter12.program12_4.launcher.Program12_4;
+import engine.gui.GUI;
 import imgui.ImGui;
 import engine.*;
 import engine.exceptions.InvalidMaterialException;

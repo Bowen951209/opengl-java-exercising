@@ -1,5 +1,6 @@
 package engine;
 
+import engine.gui.GUI;
 import org.lwjgl.glfw.GLFW;
 import engine.callbacks.DefaultCallbacks;
 import engine.sceneComponents.Camera;

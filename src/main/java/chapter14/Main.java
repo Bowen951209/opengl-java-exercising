@@ -1,12 +1,11 @@
 package chapter14;
 
 import engine.*;
+import engine.gui.*;
 import engine.models.FileModel;
 import engine.models.TessGrid;
 import engine.models.Torus;
 import engine.sceneComponents.PositionalLight;
-import imgui.ImGui;
-import imgui.type.ImBoolean;
 import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL43.*;
@@ -17,6 +16,7 @@ public class Main extends App {
     private FileModel pyramid;
     private PositionalLight light;
     private ShaderProgram transparencyProgram, clippingPlaneProgram;
+
     @Override
     protected void init() {
         // p.s most are copied from Program12_4.
@@ -52,35 +52,27 @@ public class Main extends App {
 
 
         // GUI
-        gui = new GUI(glfwWindow, 3f) {
-            private final ImBoolean planeControl = new ImBoolean();
-            @Override
-            protected void drawFrame() {
-                ImGui.newFrame(); // start frame
-                ImGui.begin("Description"); // description window
-                ImGui.text("This is a all in one program in chapter14.");
-                ImGui.text("1 - fog");
-                ImGui.text("2 - transparency");
-                ImGui.text("3 - user-defined clipping planes");
-                if (!planeControl.get())
-                    planeControl.set(ImGui.button("plane control"));
-                ImGui.end();
-                if (planeControl.get()) {
-                    ImGui.begin("Plane Control Panel", planeControl);
-                    ImGui.text("ax + by + cz + d = 0                ");
-                    ImGui.sliderFloat4("a / b / c / d", (float[]) getElementStates().get("planeEquation"), -10f, 10f);
-                    ImGui.end();
-                }
+        gui = new GUI(glfwWindow, 3f);
+        gui.getElementStates().put("planeEquation", new float[] {0f, 0f, 1f, 0f});
 
-                ImGui.render();
-            }
+        GuiWindow planeControlPanel = new GuiWindow("Plane Control Panel", true)
+                .addChild(new Text("ax + by + cz + d = 0                "))
+                .addChild(new SliderFloat4("a / b / c / d", (float[]) gui.getElementStates().get("planeEquation"), -10f, 10f));
 
-            @Override
-            protected void initElementStates() {
-                getElementStates().put("planeEquation", new float[] {0f, 0f, -1f, 0f});
-            }
-        };
+        GuiWindow descriptionWindow =  new GuiWindow("Description", false)
+                .addChild(new Text(
+                        """
+                                This is a all in one program in chapter14.
+                                1 - fog
+                                2 - transparency
+                                3 - user-defined clipping planes
+                                """))
+                .addChild(new WindowCallerButton("plane control", planeControlPanel));
+
+        gui.addComponents(descriptionWindow)
+                .addComponents(planeControlPanel);
     }
+
     @Override
     protected void drawScene() {
         // ------------------- Grid ( Fog ) --------------------
@@ -147,7 +139,7 @@ public class Main extends App {
         // -----------------About clipping planes-----------------------
         glEnable(GL_CLIP_DISTANCE0);
         clippingPlaneProgram.use();
-        clippingPlaneProgram.putUniform4f("clipPlane", (float[])gui.getElementStates().get("planeEquation"));
+        clippingPlaneProgram.putUniform4f("clipPlane", (float[]) gui.getElementStates().get("planeEquation"));
         light.putToUniforms(
                 clippingPlaneProgram.getUniformLoc("globalAmbient"),
                 clippingPlaneProgram.getUniformLoc("light.ambient"),
