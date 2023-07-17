@@ -6,6 +6,7 @@ import engine.models.TessGrid;
 import engine.models.Torus;
 import engine.sceneComponents.PositionalLight;
 import imgui.ImGui;
+import imgui.type.ImBoolean;
 import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL43.*;
@@ -52,6 +53,7 @@ public class Main extends App {
 
         // GUI
         gui = new GUI(glfwWindow, 3f) {
+            private final ImBoolean planeControl = new ImBoolean();
             @Override
             protected void drawFrame() {
                 ImGui.newFrame(); // start frame
@@ -60,18 +62,33 @@ public class Main extends App {
                 ImGui.text("1 - fog");
                 ImGui.text("2 - transparency");
                 ImGui.text("3 - user-defined clipping planes");
+                if (!planeControl.get())
+                    planeControl.set(ImGui.button("plane control"));
                 ImGui.end();
+                if (planeControl.get()) {
+                    ImGui.begin("Plane Control Panel", planeControl);
+                    ImGui.text("ax + by + cz + d = 0                ");
+                    ImGui.sliderFloat4("a / b / c / d", (float[]) getElementStates().get("planeEquation"), -10f, 10f);
+                    ImGui.end();
+                }
+
+                ImGui.render();
+            }
+
+            @Override
+            protected void initElementStates() {
+                getElementStates().put("planeEquation", new float[] {0f, 0f, -1f, 0f});
             }
         };
     }
     @Override
     protected void drawScene() {
-        // Grid
+        // ------------------- Grid ( Fog ) --------------------
         TessGrid.useTessProgram();
         grid.updateState(camera);
         grid.draw(0);
 
-        // Transparency
+        // ------------------ Transparency ---------------------
         glEnable(GL_BLEND);
         glEnable(GL_CULL_FACE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -127,9 +144,10 @@ public class Main extends App {
 
         glDisable(GL_BLEND);
 
-        // About clipping planes
+        // -----------------About clipping planes-----------------------
         glEnable(GL_CLIP_DISTANCE0);
         clippingPlaneProgram.use();
+        clippingPlaneProgram.putUniform4f("clipPlane", (float[])gui.getElementStates().get("planeEquation"));
         light.putToUniforms(
                 clippingPlaneProgram.getUniformLoc("globalAmbient"),
                 clippingPlaneProgram.getUniformLoc("light.ambient"),

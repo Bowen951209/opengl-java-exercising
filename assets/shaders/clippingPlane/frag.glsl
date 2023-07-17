@@ -22,6 +22,7 @@ uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
 
 uniform float flipNormal;
+uniform vec4 clipPlane;
 
 void main(void) {
 	vec3 L = normalize(vLightDir);

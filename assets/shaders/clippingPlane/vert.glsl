@@ -22,7 +22,7 @@ uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
 
 uniform float flipNormal;
-vec4 clipPlane = vec4(0.0, 0.0, -1.0, 0.0);
+uniform vec4 clipPlane;
 
 void main(void) {
 	gl_ClipDistance[0] = dot(clipPlane.xyz, vertPos) - clipPlane.w;

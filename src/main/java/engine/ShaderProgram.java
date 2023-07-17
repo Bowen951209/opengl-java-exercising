@@ -48,6 +48,9 @@ public class ShaderProgram {
     public void putUniform1f(String uniformName, float value) {
         glUniform1f(getUniformLoc(uniformName), value);
     }
+    public void putUniform4f(String uniformName, float[] value) {
+        glUniform4fv(getUniformLoc(uniformName), value);
+    }
 
     // Only vertex & fragment
     public ShaderProgram(Path vertexShaderPath, Path fragmentShaderPath) {
