@@ -3,10 +3,10 @@ package chapter12.program12_1.launcher;
 import chapter10.program10_4.launcher.Program10_4;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import engine.Color;
+import engine.util.Color;
 import engine.GLFWWindow;
 import engine.ShaderProgram;
-import engine.ValuesContainer;
+import engine.util.ValuesContainer;
 import engine.callbacks.DefaultCallbacks;
 
 import java.util.Objects;

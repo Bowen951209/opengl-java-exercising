@@ -7,7 +7,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
-import engine.Color;
+import engine.util.Color;
 import engine.GLFWWindow;
 import engine.ShaderProgram;
 import engine.models.Sphere;

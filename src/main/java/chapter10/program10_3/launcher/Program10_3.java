@@ -3,6 +3,8 @@ package chapter10.program10_3.launcher;
 import chapter10.program10_2.launcher.Program10_2;
 import engine.gui.GUI;
 import engine.sceneComponents.Texture2D;
+import engine.util.Color;
+import engine.util.Materials;
 import imgui.ImGui;
 import imgui.type.ImBoolean;
 import org.lwjgl.glfw.GLFW;
@@ -15,7 +17,7 @@ import engine.sceneComponents.PositionalLight;
 import java.nio.file.Path;
 
 import static org.lwjgl.opengl.GL20.*;
-import static engine.ValuesContainer.VALS_OF_16;
+import static engine.util.ValuesContainer.VALS_OF_16;
 
 public class Program10_3 extends Program10_2 {
     protected int program;

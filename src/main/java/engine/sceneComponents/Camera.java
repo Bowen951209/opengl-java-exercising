@@ -3,7 +3,7 @@ package engine.sceneComponents;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import static engine.ValuesContainer.VEC3_FOR_UTILS;
+import static engine.util.ValuesContainer.VEC3_FOR_UTILS;
 
 public class Camera {
     private static final Vector3f Y = new Vector3f(0f, 1f, 0f);

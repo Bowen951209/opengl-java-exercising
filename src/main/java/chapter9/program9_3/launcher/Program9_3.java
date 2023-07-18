@@ -6,7 +6,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import engine.ShaderProgram;
 import engine.sceneComponents.Camera;
-import engine.Color;
+import engine.util.Color;
 import engine.GLFWWindow;
 import chapter9.program9_3.callbacks.P9_3Callbacks;
 import engine.models.Torus;
@@ -19,7 +19,7 @@ import java.nio.file.Path;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL43.*;
-import static engine.ValuesContainer.VALS_OF_16;
+import static engine.util.ValuesContainer.VALS_OF_16;
 
 public class Program9_3 {
 

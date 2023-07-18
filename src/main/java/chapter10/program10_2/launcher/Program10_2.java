@@ -1,9 +1,9 @@
 package chapter10.program10_2.launcher;
 
 import chapter10.program10_1.launcher.Program10_1;
-import engine.Color;
+import engine.util.Color;
 import engine.GLFWWindow;
-import engine.Materials;
+import engine.util.Materials;
 import engine.ShaderProgram;
 import engine.callbacks.DefaultCallbacks;
 import engine.exceptions.InvalidMaterialException;
@@ -16,7 +16,7 @@ import java.nio.file.Path;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL43.*;
-import static engine.ValuesContainer.VALS_OF_16;
+import static engine.util.ValuesContainer.VALS_OF_16;
 
 /*Normal Mapping*/
 public class Program10_2 extends Program10_1 {

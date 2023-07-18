@@ -1,7 +1,7 @@
 package engine.sceneComponents;
 
 import static org.lwjgl.opengl.GL43.*;
-import static engine.ValuesContainer.VALS_OF_16;
+import static engine.util.ValuesContainer.VALS_OF_16;
 
 public class Skybox {
     private final int PROGRAM, SKY_VMAT_LOC, SKY_PMAT_LOC;

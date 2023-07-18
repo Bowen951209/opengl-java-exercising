@@ -6,6 +6,10 @@ import engine.models.FileModel;
 import engine.models.TessGrid;
 import engine.models.Torus;
 import engine.sceneComponents.PositionalLight;
+import engine.sceneComponents.Texture3D;
+import engine.util.Destroyer;
+import engine.util.Materials;
+import engine.util.ValuesContainer;
 import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL43.*;
@@ -15,11 +19,15 @@ public class Main extends App {
     private Torus torus0, torus1;
     private FileModel pyramid;
     private PositionalLight light;
-    private ShaderProgram transparencyProgram, clippingPlaneProgram;
+    private ShaderProgram transparencyProgram, clippingPlaneProgram, texture3DProgram;
+    private Texture3D texture3D;
+    private FileModel dragon;
 
     @Override
     protected void init() {
-        // p.s most are copied from Program12_4.
+        // 3D texture I want to load it first for multi-threading
+        texture3D = new Texture3D(0);
+        texture3D.start();
 
         // Window
         glfwWindow = new GLFWWindow(1500, 1000, "Chapter14");
@@ -33,6 +41,10 @@ public class Main extends App {
                 "assets/shaders/clippingPlane/vert.glsl",
                 "assets/shaders/clippingPlane/frag.glsl"
         );
+        texture3DProgram = new ShaderProgram(
+                "assets/shaders/3DTextureShader/vert.glsl",
+                "assets/shaders/3DTextureShader/frag.glsl"
+        );
 
         // Models
         grid = new TessGrid(
@@ -42,13 +54,19 @@ public class Main extends App {
         );
         grid.setDrawMode(GL_FILL);
 
-        // light
-        light = new PositionalLight().brightLight();
-
-        // Models
         torus0 = new Torus(.5f, .2f, 48, true, new Vector3f(2f, 0.4f, -2f));
         torus1 = new Torus(.5f, .2f, 48, true, new Vector3f(-2f, 0.4f, 0f));
-        pyramid = new FileModel("assets/models/pyr.obj", new Vector3f(0f, 0.6f, 0f));
+        pyramid = new FileModel("assets/models/pyr.obj", true);
+        dragon  = new FileModel("assets/models/stanford-dragon.obj" , new Vector3f(0f, 1.5f, 0f), false) {
+            @Override
+            protected void updateMMat() {
+                super.updateMMat();
+                mMat.rotateZ(1.57f).rotateX(-0.523f).scale(10f);
+            }
+        };
+
+        // light
+        light = new PositionalLight().brightLight();
 
 
         // GUI
@@ -71,6 +89,8 @@ public class Main extends App {
 
         gui.addComponents(descriptionWindow)
                 .addComponents(planeControlPanel);
+
+        texture3D.end();
     }
 
     @Override
@@ -165,6 +185,13 @@ public class Main extends App {
         glFrontFace(GL_CW);
         clippingPlaneProgram.putUniform1f("flipNormal", -1f);
         torus1.draw(GL_TRIANGLES);
+
+        texture3DProgram.use();
+        texture3DProgram.putUniformMatrix4f("mv_matrix", dragon.getMvMat().get(ValuesContainer.VALS_OF_16));
+        texture3DProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
+        texture3D.bind();
+        dragon.updateState(camera);
+        dragon.draw(GL_TRIANGLES);
 
         glDisable(GL_CULL_FACE);
     }

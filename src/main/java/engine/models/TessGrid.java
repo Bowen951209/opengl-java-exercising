@@ -1,7 +1,7 @@
 package engine.models;
 
 import engine.ShaderProgram;
-import engine.ValuesContainer;
+import engine.util.ValuesContainer;
 import engine.sceneComponents.Camera;
 import engine.sceneComponents.Texture2D;
 import org.joml.Vector3f;

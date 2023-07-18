@@ -3,7 +3,7 @@ package engine.sceneComponents;
 import org.joml.Vector3f;
 import static org.lwjgl.opengl.GL43.*;
 import org.lwjgl.BufferUtils;
-import engine.ValuesContainer;
+import engine.util.ValuesContainer;
 
 import java.nio.FloatBuffer;
 

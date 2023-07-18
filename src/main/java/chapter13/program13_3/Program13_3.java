@@ -3,9 +3,9 @@ package chapter13.program13_3;
 import chapter13.program13_2.Program13_2;
 import org.joml.Vector3f;
 import engine.GLFWWindow;
-import engine.Materials;
+import engine.util.Materials;
 import engine.ShaderProgram;
-import engine.ValuesContainer;
+import engine.util.ValuesContainer;
 import engine.exceptions.InvalidMaterialException;
 import engine.models.Torus;
 

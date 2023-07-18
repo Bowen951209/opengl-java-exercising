@@ -1,6 +1,7 @@
 package chapter10.program10_1.launcher;
 
 
+import engine.util.Color;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import engine.*;
@@ -15,7 +16,7 @@ import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL43.*;
-import static engine.ValuesContainer.VALS_OF_16;
+import static engine.util.ValuesContainer.VALS_OF_16;
 
 public class Program10_1 {
 

@@ -1,6 +1,7 @@
 package chapter6;
 
 
+import engine.util.Color;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;

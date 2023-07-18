@@ -36,6 +36,7 @@ public abstract class Model {
     protected FloatBuffer tcInBuf;
     protected FloatBuffer tangentsInBuf;
     protected IntBuffer indicesInBuffer;
+    // TODO: 2023/7/18 add a timer
 
     protected Model(Vector3f position, boolean isUsingEBO, boolean isUsingTTextureCoordinate, boolean isUsingTangents) {
         this.position = position;

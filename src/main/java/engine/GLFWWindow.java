@@ -1,5 +1,6 @@
 package engine;
 
+import engine.util.Color;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;

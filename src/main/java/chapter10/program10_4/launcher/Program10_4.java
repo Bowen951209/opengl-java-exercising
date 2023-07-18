@@ -3,6 +3,8 @@ package chapter10.program10_4.launcher;
 import chapter10.program10_3.launcher.Program10_3;
 import engine.gui.GUI;
 import engine.sceneComponents.Texture2D;
+import engine.util.Color;
+import engine.util.ValuesContainer;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.type.ImInt;

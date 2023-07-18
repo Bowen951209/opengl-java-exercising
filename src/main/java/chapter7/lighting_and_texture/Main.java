@@ -1,6 +1,8 @@
 package chapter7.lighting_and_texture;
 
 
+import engine.util.Color;
+import engine.util.Materials;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
