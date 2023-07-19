@@ -17,33 +17,34 @@ import static org.lwjgl.opengl.GL43.*;
 public class Main extends App {
     private TessGrid grid;
     private Torus torus0, torus1;
-    private FileModel pyramid;
     private PositionalLight light;
     private ShaderProgram transparencyProgram, clippingPlaneProgram, texture3DProgram;
-    private Texture3D texture3D;
-    private FileModel dragon;
+    private Texture3D stripe3D, noise3D;
+    private FileModel dragon,cube, pyramid;
 
     @Override
     protected void init() {
-
-
         // Window
         glfwWindow = new GLFWWindow(1500, 1000, "Chapter14");
 
         // Thread pre-prepare
-        texture3D = new Texture3D(0);
-        texture3D.start();
+        stripe3D = new Texture3D(0, "STRIPE");
+        stripe3D.start();
+
+        noise3D = new Texture3D(0, "NOISE");
+        noise3D.setZoom(8);
+        noise3D.start();
 
         torus0 = new Torus(.5f, .2f, 48, true, new Vector3f(2f, 0.4f, -2f));
         torus1 = new Torus(.5f, .2f, 48, true, new Vector3f(-2f, 0.4f, 0f));
 
         // model file
         pyramid = new FileModel("assets/models/pyr.obj", true);
-        dragon  = new FileModel("assets/models/stanford-dragon.obj" , new Vector3f(0f, 1.5f, 0f), false) {
+        cube = new FileModel("assets/models/cube.obj", new Vector3f(1f, -0.7f, 1f),false);
+        dragon  = new FileModel("assets/models/simplify-scaled-stanford-dragon.obj" , new Vector3f(0f, 1.5f, 0f), false) {
             @Override
             protected void updateMMat() {
                 super.updateMMat();
-                mMat.rotateZ(1.57f).rotateX(-0.523f).scale(10f);
             }
         };
 
@@ -96,9 +97,11 @@ public class Main extends App {
         gui.addComponents(descriptionWindow)
                 .addComponents(planeControlPanel);
 
-        texture3D.end();
+        stripe3D.end();
+        noise3D.end();
         dragon.end();
         pyramid.end();
+        cube.end();
     }
 
     @Override
@@ -194,12 +197,19 @@ public class Main extends App {
         clippingPlaneProgram.putUniform1f("flipNormal", -1f);
         torus1.draw(GL_TRIANGLES);
 
+        glFrontFace(GL_CCW);
         texture3DProgram.use();
+        dragon.updateState(camera);
         texture3DProgram.putUniformMatrix4f("mv_matrix", dragon.getMvMat().get(ValuesContainer.VALS_OF_16));
         texture3DProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
-        texture3D.bind();
-        dragon.updateState(camera);
+        stripe3D.bind();
         dragon.draw(GL_TRIANGLES);
+
+        cube.updateState(camera);
+        texture3DProgram.putUniformMatrix4f("mv_matrix", cube.getMvMat().get(ValuesContainer.VALS_OF_16));
+        texture3DProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
+        noise3D.bind();
+        cube.draw(GL_TRIANGLES);
 
         glDisable(GL_CULL_FACE);
     }
