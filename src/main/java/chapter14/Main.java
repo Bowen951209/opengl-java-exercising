@@ -25,12 +25,35 @@ public class Main extends App {
 
     @Override
     protected void init() {
-        // 3D texture I want to load it first for multi-threading
-        texture3D = new Texture3D(0);
-        texture3D.start();
+
 
         // Window
         glfwWindow = new GLFWWindow(1500, 1000, "Chapter14");
+
+        // Thread pre-prepare
+        texture3D = new Texture3D(0);
+        texture3D.start();
+
+        torus0 = new Torus(.5f, .2f, 48, true, new Vector3f(2f, 0.4f, -2f));
+        torus1 = new Torus(.5f, .2f, 48, true, new Vector3f(-2f, 0.4f, 0f));
+
+        // model file
+        pyramid = new FileModel("assets/models/pyr.obj", true);
+        dragon  = new FileModel("assets/models/stanford-dragon.obj" , new Vector3f(0f, 1.5f, 0f), false) {
+            @Override
+            protected void updateMMat() {
+                super.updateMMat();
+                mMat.rotateZ(1.57f).rotateX(-0.523f).scale(10f);
+            }
+        };
+
+        grid = new TessGrid(
+                "assets/textures/imageTextures/greenMountain.jpg",
+                "assets/textures/heightMaps/greenMountain.jpg",
+                new Vector3f(0f, -.9f, 0f)
+        );
+        grid.setDrawMode(GL_FILL);
+
 
         // Shader Programs
         transparencyProgram = new ShaderProgram(
@@ -47,23 +70,6 @@ public class Main extends App {
         );
 
         // Models
-        grid = new TessGrid(
-                "assets/textures/imageTextures/greenMountain.jpg",
-                "assets/textures/heightMaps/greenMountain.jpg",
-                new Vector3f(0f, -.9f, 0f)
-        );
-        grid.setDrawMode(GL_FILL);
-
-        torus0 = new Torus(.5f, .2f, 48, true, new Vector3f(2f, 0.4f, -2f));
-        torus1 = new Torus(.5f, .2f, 48, true, new Vector3f(-2f, 0.4f, 0f));
-        pyramid = new FileModel("assets/models/pyr.obj", true);
-        dragon  = new FileModel("assets/models/stanford-dragon.obj" , new Vector3f(0f, 1.5f, 0f), false) {
-            @Override
-            protected void updateMMat() {
-                super.updateMMat();
-                mMat.rotateZ(1.57f).rotateX(-0.523f).scale(10f);
-            }
-        };
 
         // light
         light = new PositionalLight().brightLight();
@@ -91,6 +97,8 @@ public class Main extends App {
                 .addComponents(planeControlPanel);
 
         texture3D.end();
+        dragon.end();
+        pyramid.end();
     }
 
     @Override

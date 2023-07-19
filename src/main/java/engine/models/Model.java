@@ -1,15 +1,15 @@
 package engine.models;
 
+import engine.sceneComponents.Camera;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import engine.sceneComponents.Camera;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL43.*;
 
-public abstract class Model {
+public abstract class Model extends Thread {
     protected final Matrix4f mMat = new Matrix4f();
 
     public Matrix4f getMMat() {
@@ -36,7 +36,6 @@ public abstract class Model {
     protected FloatBuffer tcInBuf;
     protected FloatBuffer tangentsInBuf;
     protected IntBuffer indicesInBuffer;
-    // TODO: 2023/7/18 add a timer
 
     protected Model(Vector3f position, boolean isUsingEBO, boolean isUsingTTextureCoordinate, boolean isUsingTangents) {
         this.position = position;

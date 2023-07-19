@@ -9,7 +9,7 @@ public class Timer {
     public void end(String frontWord) {
         long endTime = System.nanoTime();
         long passTime = endTime - startTime;
-        System.out.println(frontWord + ": " + nanoToMillisecond(passTime) + " millisecond");
+        System.out.println(frontWord + nanoToMillisecond(passTime) + " millisecond");
     }
 
     private static float nanoToMillisecond(long nanoSecond) {
