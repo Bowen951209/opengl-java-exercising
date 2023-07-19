@@ -9,6 +9,6 @@ layout(binding = 0) uniform sampler3D sampler;
 
 
 void main(void) {
-	originalPosition = mat3(mv_matrix) * vertPos;
+	originalPosition = vertPos;
 	gl_Position = proj_matrix * mv_matrix * vec4(vertPos,1.0);
 }
