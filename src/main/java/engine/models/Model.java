@@ -34,8 +34,6 @@ public abstract class Model extends Thread {
     protected FloatBuffer verticesInBuf;
     protected FloatBuffer normalsInBuf;
     protected FloatBuffer tcInBuf;
-    protected FloatBuffer tangentsInBuf;
-    protected IntBuffer indicesInBuffer;
 
     protected Model(Vector3f position, boolean isUsingEBO, boolean isUsingTTextureCoordinate, boolean isUsingTangents) {
         this.position = position;
