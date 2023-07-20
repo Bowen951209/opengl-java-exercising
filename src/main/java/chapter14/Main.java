@@ -31,7 +31,7 @@ public class Main extends App {
         stripe3D = new Texture3D(0, "STRIPE");
         stripe3D.start();
 
-        noise3D = new Texture3D(0, "NOISE");
+        noise3D = new Texture3D(0, "SMOOTH");
         noise3D.setZoom(8);
         noise3D.start();
 
