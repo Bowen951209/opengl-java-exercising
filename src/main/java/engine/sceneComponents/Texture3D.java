@@ -96,7 +96,7 @@ public class Texture3D extends Thread {
             }
         }
         data.flip();
-        timer.end("Fill data in array for 3D texture takes: ");
+        timer.end("\"" + pattern + "\" fills data in array takes: ");
     }
 
 
