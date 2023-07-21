@@ -148,7 +148,6 @@ public class Texture3D extends Thread {
     }
 
     private void fillSmoothNoise(float x, float y, float z) {
-        // TODO: 2023/7/20 go to float
         float mappedValue = smoothNoise(x / zoom, y / zoom, z / zoom);
 
         data.put((byte) (mappedValue * 255)); // r
