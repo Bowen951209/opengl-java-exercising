@@ -33,7 +33,7 @@ public class Texture3D extends Thread {
     public void run() {
         switch (pattern.toUpperCase()) {
             case "STRIPE" -> generateStripe();
-            case "NOISE", "SMOOTH" -> generateNoise();
+            case "NOISE", "SMOOTH", "MIX-SMOOTH" -> generateNoise();
             default -> throw new InvalidPatternException("Unsupported pattern passed in");
         }
         fillDataArray(); // This take quite long.
@@ -76,8 +76,6 @@ public class Texture3D extends Thread {
     // -----------------------------------------------------------------------------------------------------
 
 
-
-
     // TODO: 2023/7/20 convert to static
     private void fillDataArray() {
         Timer timer = new Timer();
@@ -91,6 +89,7 @@ public class Texture3D extends Thread {
                         case "STRIPE" -> fillStripe(x, y, z);
                         case "NOISE" -> fillNoise(x, y, z);
                         case "SMOOTH" -> fillSmoothNoise(x, y, z);
+                        case "MIX-SMOOTH" -> fillMixedLevelsSmoothNoise(x, y, z);
                     }
                 }
             }
@@ -135,6 +134,16 @@ public class Texture3D extends Thread {
         data.put((byte) 255); // a
     }
 
+    private void fillMixedLevelsSmoothNoise(float x, float y, float z) {
+        int maxZoom = 32;
+        float mappedValue = mixedZoomLevels(x, y, z, maxZoom);
+
+        data.put((byte) (mappedValue * 255)); // r
+        data.put((byte) (mappedValue * 255)); // g
+        data.put((byte) (mappedValue * 255));// b
+        data.put((byte) 255); // a
+    }
+
     // -----------------This will use the texture3DPattern and calculate to smooth pattern------------------
     private float smoothNoise(float x1, float y1, float z1) {
         //get fractional part of x, y, and z
@@ -144,11 +153,11 @@ public class Texture3D extends Thread {
 
         //neighbor values
         float x2 = x1 - 1;
-        if (x2 < 0) x2 = (float) (Math.round(textureWidth / (float)zoom) - 1.0);
+        if (x2 < 0) x2 = (float) (Math.round(textureWidth / (float) zoom) - 1.0);
         float y2 = y1 - 1;
-        if (y2 < 0) y2 = (float) (Math.round(textureHeight / (float)zoom) - 1.0);
+        if (y2 < 0) y2 = (float) (Math.round(textureHeight / (float) zoom) - 1.0);
         float z2 = z1 - 1;
-        if (z2 < 0) z2 = (float) (Math.round(textureDepth / (float)zoom) - 1.0);
+        if (z2 < 0) z2 = (float) (Math.round(textureDepth / (float) zoom) - 1.0);
 
         //smooth the noise by interpolating
         float value = 0.0f;
@@ -163,6 +172,17 @@ public class Texture3D extends Thread {
         value += (1.0 - fractX) * (1.0 - fractY) * (1.0 - fractZ) * texture3DPattern[(int) x2][(int) y2][(int) z2];
 
         return value;
+    }
+
+    private float mixedZoomLevels(float x, float y, float z, float maxZoom) {
+        float sum = 0f;
+        float zoom = maxZoom;
+        for (float i = maxZoom; i > this.zoom; i /= 2) {
+            sum += smoothNoise(x / zoom, y / zoom, z / zoom) ;
+            zoom /= 2f;
+        }
+        sum = 128f * sum / maxZoom; // make sure sum < 256 when maxZoom >= 64
+        return sum;
     }
 
     private void loadToTexture() {
