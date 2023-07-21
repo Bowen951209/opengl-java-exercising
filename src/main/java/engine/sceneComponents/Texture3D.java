@@ -117,7 +117,7 @@ public class Texture3D extends Thread {
         }
     }
 
-    public void fillNoise(int x, int y, int z) {
+    private void fillNoise(int x, int y, int z) {
         float mappedValue = texture3DPattern[x / zoom][y / zoom][z / zoom];
 
         data.put((byte) (mappedValue * 255)); // r
@@ -136,7 +136,7 @@ public class Texture3D extends Thread {
     }
 
     // -----------------This will use the texture3DPattern and calculate to smooth pattern------------------
-    public float smoothNoise(float x1, float y1, float z1) {
+    private float smoothNoise(float x1, float y1, float z1) {
         //get fractional part of x, y, and z
         float fractX = x1 - (int) x1;
         float fractY = y1 - (int) y1;
