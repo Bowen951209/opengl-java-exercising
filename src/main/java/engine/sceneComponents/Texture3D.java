@@ -75,34 +75,8 @@ public class Texture3D extends Thread {
     }
     // -----------------------------------------------------------------------------------------------------
 
-    public float smoothNoise(float x1, float y1, float z1) {
-        //get fractional part of x, y, and z
-        float fractX = x1 - (int) x1;
-        float fractY = y1 - (int) y1;
-        float fractZ = z1 - (int) z1;
 
-        //neighbor values
-        float x2 = x1 - 1;
-        if (x2 < 0) x2 = (float) (Math.round(textureWidth / (float)zoom) - 1.0);
-        float y2 = y1 - 1;
-        if (y2 < 0) y2 = (float) (Math.round(textureHeight / (float)zoom) - 1.0);
-        float z2 = z1 - 1;
-        if (z2 < 0) z2 = (float) (Math.round(textureDepth / (float)zoom) - 1.0);
 
-        //smooth the noise by interpolating
-        float value = 0.0f;
-        value += fractX * fractY * fractZ * texture3DPattern[(int) x1][(int) y1][(int) z1];
-        value += (1.0 - fractX) * fractY * fractZ * texture3DPattern[(int) x2][(int) y1][(int) z1];
-        value += fractX * (1.0 - fractY) * fractZ * texture3DPattern[(int) x1][(int) y2][(int) z1];
-        value += (1.0 - fractX) * (1.0 - fractY) * fractZ * texture3DPattern[(int) x2][(int) y2][(int) z1];
-
-        value += fractX * fractY * (1.0 - fractZ) * texture3DPattern[(int) x1][(int) y1][(int) z2];
-        value += (1.0 - fractX) * fractY * (1.0 - fractZ) * texture3DPattern[(int) x2][(int) y1][(int) z2];
-        value += fractX * (1.0 - fractY) * (1.0 - fractZ) * texture3DPattern[(int) x1][(int) y2][(int) z2];
-        value += (1.0 - fractX) * (1.0 - fractY) * (1.0 - fractZ) * texture3DPattern[(int) x2][(int) y2][(int) z2];
-
-        return value;
-    }
 
     // TODO: 2023/7/20 convert to static
     private void fillDataArray() {
@@ -125,6 +99,8 @@ public class Texture3D extends Thread {
         timer.end("Fill data in array for 3D texture takes: ");
     }
 
+
+    // --------------Convert texture3DPattern to 1D buffer---------------
     private void fillStripe(int x, int y, int z) {
         if (texture3DPattern[x][y][z] == 1.0) {
             // yellow
@@ -157,6 +133,36 @@ public class Texture3D extends Thread {
         data.put((byte) (mappedValue * 255)); // g
         data.put((byte) (mappedValue * 255));// b
         data.put((byte) 255); // a
+    }
+
+    // -----------------This will use the texture3DPattern and calculate to smooth pattern------------------
+    public float smoothNoise(float x1, float y1, float z1) {
+        //get fractional part of x, y, and z
+        float fractX = x1 - (int) x1;
+        float fractY = y1 - (int) y1;
+        float fractZ = z1 - (int) z1;
+
+        //neighbor values
+        float x2 = x1 - 1;
+        if (x2 < 0) x2 = (float) (Math.round(textureWidth / (float)zoom) - 1.0);
+        float y2 = y1 - 1;
+        if (y2 < 0) y2 = (float) (Math.round(textureHeight / (float)zoom) - 1.0);
+        float z2 = z1 - 1;
+        if (z2 < 0) z2 = (float) (Math.round(textureDepth / (float)zoom) - 1.0);
+
+        //smooth the noise by interpolating
+        float value = 0.0f;
+        value += fractX * fractY * fractZ * texture3DPattern[(int) x1][(int) y1][(int) z1];
+        value += (1.0 - fractX) * fractY * fractZ * texture3DPattern[(int) x2][(int) y1][(int) z1];
+        value += fractX * (1.0 - fractY) * fractZ * texture3DPattern[(int) x1][(int) y2][(int) z1];
+        value += (1.0 - fractX) * (1.0 - fractY) * fractZ * texture3DPattern[(int) x2][(int) y2][(int) z1];
+
+        value += fractX * fractY * (1.0 - fractZ) * texture3DPattern[(int) x1][(int) y1][(int) z2];
+        value += (1.0 - fractX) * fractY * (1.0 - fractZ) * texture3DPattern[(int) x2][(int) y1][(int) z2];
+        value += fractX * (1.0 - fractY) * (1.0 - fractZ) * texture3DPattern[(int) x1][(int) y2][(int) z2];
+        value += (1.0 - fractX) * (1.0 - fractY) * (1.0 - fractZ) * texture3DPattern[(int) x2][(int) y2][(int) z2];
+
+        return value;
     }
 
     private void loadToTexture() {
