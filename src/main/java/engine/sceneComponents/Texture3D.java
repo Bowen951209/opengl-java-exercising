@@ -72,23 +72,22 @@ public class Texture3D extends Thread {
         }
     }
 
-    public double smoothNoise(double x1, double y1, double z1) {
-        // TODO: 2023/7/20 go to float
+    public float smoothNoise(float x1, float y1, float z1) {
         //get fractional part of x, y, and z
-        double fractX = x1 - (int) x1;
-        double fractY = y1 - (int) y1;
-        double fractZ = z1 - (int) z1;
+        float fractX = x1 - (int) x1;
+        float fractY = y1 - (int) y1;
+        float fractZ = z1 - (int) z1;
 
         //neighbor values
-        double x2 = x1 - 1;
-        if (x2 < 0) x2 = Math.round(textureWidth / (float)zoom) - 1.0;
-        double y2 = y1 - 1;
-        if (y2 < 0) y2 = Math.round(textureHeight / (float)zoom) - 1.0;
-        double z2 = z1 - 1;
-        if (z2 < 0) z2 = Math.round(textureDepth / (float)zoom) - 1.0;
+        float x2 = x1 - 1;
+        if (x2 < 0) x2 = (float) (Math.round(textureWidth / (float)zoom) - 1.0);
+        float y2 = y1 - 1;
+        if (y2 < 0) y2 = (float) (Math.round(textureHeight / (float)zoom) - 1.0);
+        float z2 = z1 - 1;
+        if (z2 < 0) z2 = (float) (Math.round(textureDepth / (float)zoom) - 1.0);
 
         //smooth the noise by interpolating
-        double value = 0.0;
+        float value = 0.0f;
         value += fractX * fractY * fractZ * texture3DPattern[(int) x1][(int) y1][(int) z1];
         value += (1.0 - fractX) * fractY * fractZ * texture3DPattern[(int) x2][(int) y1][(int) z1];
         value += fractX * (1.0 - fractY) * fractZ * texture3DPattern[(int) x1][(int) y2][(int) z1];
@@ -148,9 +147,9 @@ public class Texture3D extends Thread {
         data.put((byte) 255); // a
     }
 
-    private void fillSmoothNoise(double x, double y, double z) {
+    private void fillSmoothNoise(float x, float y, float z) {
         // TODO: 2023/7/20 go to float
-        double mappedValue = smoothNoise(x / zoom, y / zoom, z / zoom);
+        float mappedValue = smoothNoise(x / zoom, y / zoom, z / zoom);
 
         data.put((byte) (mappedValue * 255)); // r
         data.put((byte) (mappedValue * 255)); // g
