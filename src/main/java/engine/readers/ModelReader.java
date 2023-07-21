@@ -42,7 +42,7 @@ public class ModelReader {
         AIScene scene = Assimp.aiImportFile(filepath, Assimp.aiProcess_Triangulate);
 
         assert scene != null;
-        System.out.println(FILE_NAME + " has " + scene.mNumMeshes() + " meshes");
+//        System.out.println(FILE_NAME + " has " + scene.mNumMeshes() + " meshes");
         PointerBuffer buffer = scene.mMeshes();
 
         if (buffer != null) {
