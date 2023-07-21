@@ -49,6 +49,8 @@ public class Texture3D extends Thread {
         loadToTexture();
     }
 
+
+    // -------------------These generate methods generate data to pattern----------------------------------
     private void generateStripe() {
         for (int x = 0; x < textureWidth; x++) {
             for (int y = 0; y < textureHeight; y++) {
@@ -71,6 +73,7 @@ public class Texture3D extends Thread {
             }
         }
     }
+    // -----------------------------------------------------------------------------------------------------
 
     public float smoothNoise(float x1, float y1, float z1) {
         //get fractional part of x, y, and z
