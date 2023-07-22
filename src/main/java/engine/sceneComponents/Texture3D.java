@@ -85,6 +85,7 @@ public class Texture3D extends Thread {
     }
 
 
+    // This is for multi-level mixed;
     private void fillSmoothNoise(float x, float y, float z, int zoom) {
         float mappedValue = (float) noiseGenerator.noise(x / zoom, y / zoom, z / zoom, zoom);
 
@@ -94,6 +95,7 @@ public class Texture3D extends Thread {
         data.put((byte) 255); // a
     }
 
+    // This is for no multi-level mixed.
     private void fillSmoothNoise(float x, float y, float z) {
         float mappedValue = (float) noiseGenerator.noise(x / zoom, y / zoom, z / zoom, 1);
 
