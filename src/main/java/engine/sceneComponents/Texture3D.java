@@ -52,57 +52,69 @@ public class Texture3D extends Thread {
         timer.start();
         data = BufferUtils.createByteBuffer(textureWidth * textureHeight * textureDepth * 4);
 
-        for (int x = 0; x < textureWidth; x++) {
-            for (int y = 0; y < textureHeight; y++) {
-                for (int z = 0; z < textureDepth; z++) {
-                    switch (pattern.toUpperCase()) {
-                        case "STRIPE" -> fillStripe(y);
-                        case "SMOOTH" -> fillSmoothNoise(x, y, z);
-                        case "MIX-SMOOTH" -> fillSmoothNoise(x, y, z, zoom); // With levels mixed
-                        default -> throw new InvalidPatternException();
-                    }
-                }
-            }
+        switch (pattern.toUpperCase()) {
+            case "STRIPE"-> fillStripe();
+            case "SMOOTH"-> fillSmoothNoiseLevelMixed(this.zoom);
+            case "MIX-SMOOTH" -> fillSmoothNoise(this.zoom);
+            default -> throw new InvalidPatternException();
         }
         data.flip();
         timer.end("\"" + pattern + "\" fills data in array takes: ");
     }
 
-    private void fillStripe(int y) {
-        if ((y / 10) % 2 == 0) {
-            // yellow
-            data.put((byte) 255); // r
-            data.put((byte) 255); // g
-            data.put((byte) 0);// b
-            data.put((byte) 255); // a
-        } else {
-            // blue
-            data.put((byte) 0); // r
-            data.put((byte) 0); // g
-            data.put((byte) 255);// b
-            data.put((byte) 255); // a
+    private void fillStripe() {
+        for (int x = 0; x < textureWidth; x++) {
+            for (int y = 0; y < textureHeight; y++) {
+                for (int z = 0; z < textureDepth; z++) {
+                    if ((y / 10) % 2 == 0) {
+                        // yellow
+                        data.put((byte) 255); // r
+                        data.put((byte) 255); // g
+                        data.put((byte) 0);// b
+                        data.put((byte) 255); // a
+                    } else {
+                        // blue
+                        data.put((byte) 0); // r
+                        data.put((byte) 0); // g
+                        data.put((byte) 255);// b
+                        data.put((byte) 255); // a
+                    }
+                }
+            }
         }
     }
 
 
     // This is for multi-level mixed;
-    private void fillSmoothNoise(float x, float y, float z, int zoom) {
-        float mappedValue = (float) noiseGenerator.noise(x / zoom, y / zoom, z / zoom, zoom);
+    private void fillSmoothNoiseLevelMixed(int zoom) {
+        for (double x = 0; x < textureWidth; x++) {
+            for (double y = 0; y < textureHeight; y++) {
+                for (double z = 0; z < textureDepth; z++) {
+                    float mappedValue = (float) noiseGenerator.noise(x / zoom, y / zoom, z / zoom, zoom);
 
-        data.put((byte) (mappedValue * 255)); // r
-        data.put((byte) (mappedValue * 255)); // g
-        data.put((byte) (mappedValue * 255));// b
-        data.put((byte) 255); // a
+                    data.put((byte) (mappedValue * 255)); // r
+                    data.put((byte) (mappedValue * 255)); // g
+                    data.put((byte) (mappedValue * 255));// b
+                    data.put((byte) 255); // a
+                }
+            }
+        }
     }
 
     // This is for no multi-level mixed.
-    private void fillSmoothNoise(float x, float y, float z) {
-        float mappedValue = (float) noiseGenerator.noise(x / zoom, y / zoom, z / zoom, 1);
+    private void fillSmoothNoise(int zoom) {
+        for (double x = 0; x < textureWidth; x++) {
+            for (double y = 0; y < textureHeight; y++) {
+                for (double z = 0; z < textureDepth; z++) {
+                    float mappedValue = (float) noiseGenerator.noise(x / zoom, y / zoom, z / zoom, 1);
 
-        data.put((byte) (mappedValue * 255)); // r
-        data.put((byte) (mappedValue * 255)); // g
-        data.put((byte) (mappedValue * 255));// b
-        data.put((byte) 255); // a
+                    data.put((byte) (mappedValue * 255)); // r
+                    data.put((byte) (mappedValue * 255)); // g
+                    data.put((byte) (mappedValue * 255));// b
+                    data.put((byte) 255); // a
+                }
+            }
+        }
     }
 
 
