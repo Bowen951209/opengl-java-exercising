@@ -10,7 +10,7 @@ import static org.lwjgl.opengl.GL43.*;
 
 public class FileModel extends Model {
     private ModelReader file;
-    private final String filepath;
+    private final String filepath, fileName;
     private final boolean isUsingTexture;
 
     public FileModel(String filePath, boolean isUsingTexture) {
@@ -20,6 +20,7 @@ public class FileModel extends Model {
     public FileModel( String filePath, Vector3f position, boolean isUsingTexture) {
         super(position, false, isUsingTexture, false);
         this.filepath = filePath;
+        this.fileName = Path.of(filePath).getFileName().toString();
         this.isUsingTexture = isUsingTexture;
 
         start();
@@ -27,10 +28,11 @@ public class FileModel extends Model {
 
     @Override
     public void run() {
+        System.out.println(fileName + "'s thread start.");
         Timer timer = new Timer();
         timer.start();
         file = new ModelReader(filepath);
-        timer.end(Path.of(filepath).getFileName() + " built in: ");
+        timer.end(fileName + "'s thread end in: ");
     }
 
     public void end() {
