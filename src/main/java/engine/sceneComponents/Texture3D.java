@@ -86,7 +86,7 @@ public class Texture3D extends Thread {
 
 
     private void fillSmoothNoise(float x, float y, float z, int zoom) {
-        float mappedValue = (float) noiseGenerator.noise(x, y, z, zoom);
+        float mappedValue = (float) noiseGenerator.noise(x / zoom, y / zoom, z / zoom, zoom);
 
         data.put((byte) (mappedValue * 255)); // r
         data.put((byte) (mappedValue * 255)); // g
