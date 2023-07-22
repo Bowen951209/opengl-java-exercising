@@ -31,8 +31,9 @@ public class Main extends App {
         stripe3D = new Texture3D(0, "STRIPE");
         stripe3D.start();
 
+//        noise3D = new Texture3D(0, "SMOOTH");
         noise3D = new Texture3D(0, "MIX-SMOOTH");
-        noise3D.setZoom(8);
+        noise3D.setZoom(32);
         noise3D.start();
 
         torus0 = new Torus(.5f, .2f, 48, true, new Vector3f(2f, 0.4f, -2f));
