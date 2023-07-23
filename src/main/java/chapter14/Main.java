@@ -92,6 +92,7 @@ public class Main extends App {
                                 1 - fog
                                 2 - transparency
                                 3 - user-defined clipping planes
+                                4 - 3D textures(stripe and marble)
                                 """))
                 .addChild(new WindowCallerButton("plane control", planeControlPanel));
 
