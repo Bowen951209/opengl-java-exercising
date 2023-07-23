@@ -54,8 +54,8 @@ public class Texture3D extends Thread {
 
         switch (pattern.toUpperCase()) {
             case "STRIPE"-> fillStripe();
-            case "SMOOTH"-> fillSmoothNoiseLevelMixed(this.zoom);
-            case "MIX-SMOOTH" -> fillSmoothNoise(this.zoom);
+            case "SMOOTH"-> fillSmoothNoise(this.zoom);
+            case "MIX-SMOOTH" -> fillSmoothNoiseLevelMixed(this.zoom);
             default -> throw new InvalidPatternException();
         }
         data.flip();
