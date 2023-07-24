@@ -34,6 +34,7 @@ public class Texture3D extends Thread {
 
     @Override
     public void run() {
+        System.out.println("\"" + pattern + "\" thread start.");
         fillDataArray(); // This take quite long.
     }
 
