@@ -41,13 +41,16 @@ public class Main extends App {
 
         // model file
         pyramid = new FileModel("assets/models/pyr.obj", true);
+        pyramid.start();
         cube = new FileModel("assets/models/cube.obj", new Vector3f(1f, -0.7f, 1f),false);
+        cube.start();
         dragon  = new FileModel("assets/models/simplify-scaled-stanford-dragon.obj" , new Vector3f(0f, 1.5f, 0f), false) {
             @Override
             protected void updateMMat() {
                 super.updateMMat();
             }
         };
+        dragon.start();
 
         grid = new TessGrid(
                 "assets/textures/imageTextures/greenMountain.jpg",

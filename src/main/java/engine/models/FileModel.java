@@ -22,8 +22,6 @@ public class FileModel extends Model {
         this.filepath = filePath;
         this.fileName = Path.of(filePath).getFileName().toString();
         this.isUsingTexture = isUsingTexture;
-
-        start();
     }
 
     @Override
