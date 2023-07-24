@@ -26,11 +26,11 @@ public class FileModel extends Model {
 
     @Override
     public void run() {
-        System.out.println(fileName + "'s thread start.");
+        System.out.println("\"" + fileName + "\" thread start.");
         Timer timer = new Timer();
         timer.start();
         file = new ModelReader(filepath);
-        timer.end(fileName + "'s thread end in: ");
+        timer.end("\"" + fileName + "\" thread end in: ");
     }
 
     public void end() {
