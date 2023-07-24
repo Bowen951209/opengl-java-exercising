@@ -1,5 +1,8 @@
 package engine.util;
 
+import org.lwjgl.BufferUtils;
+
+import java.nio.ByteBuffer;
 import java.util.Random;
 
 /*
@@ -69,6 +72,13 @@ public class NoiseGenerator {
 
         return value / initialSize;
     }
+
+    // TODO: 2023/7/24 rewrite the "noise(double x, double y, double z, int size)" method
+
+    // for each single size scale, create a thread.
+    // in the thread, add the mapped noise value at buffer's index: x*y*z in the 3 levels xyz for loop
+    // finish writing buffer, and flip it.
+
 
     public double noise(double x, double y, double z) {
         double value = 0.0;
