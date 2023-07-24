@@ -61,17 +61,17 @@ public class NoiseGenerator {
         return this.seed;
     }
 
-    public double noise(double x, double y, double z, int size) {
-        double value = 0.0;
-        double initialSize = size;
-
-        while (size >= 1) {
-            value += smoothNoise((x / size), (y / size), (z / size)) * size;
-            size /= 2.0;
-        }
-
-        return value / initialSize;
-    }
+//    public double noise(double x, double y, double z, int size) {
+//        double value = 0.0;
+//        double initialSize = size;
+//
+//        while (size >= 1) {
+//            value += smoothNoise((x / size), (y / size), (z / size)) * size;
+//            size /= 2.0;
+//        }
+//
+//        return value / initialSize;
+//    }
 
     // TODO: 2023/7/24 rewrite the "noise(double x, double y, double z, int size)" method
 
