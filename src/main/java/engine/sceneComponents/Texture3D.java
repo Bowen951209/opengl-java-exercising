@@ -5,6 +5,7 @@ import engine.util.NoiseGenerator;
 import engine.util.Timer;
 import org.lwjgl.BufferUtils;
 
+import java.awt.*;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL43.*;
@@ -56,7 +57,7 @@ public class Texture3D extends Thread {
             case "STRIPE" -> fillStripe();
             case "SMOOTH" -> fillSmoothNoise(this.zoom);
             case "MIX-SMOOTH" -> fillSmoothNoiseLevelMixed(this.zoom);
-//            case "MARBLE" -> fillMarble();
+            case "MARBLE" -> fillMarble();
             default -> throw new InvalidPatternException();
         }
         data.flip();
@@ -96,32 +97,41 @@ public class Texture3D extends Thread {
         noiseGenerator.levelMixedNoise(data, textureWidth, textureHeight, textureDepth, zoom, zoom);
     }
 
-//    private void fillMarble() {
-//        final double veinFrequency = 10.0;
-//        final double turbPower = 15.0;
-//        final int maxZoom = 32;
-//
-//        for (double x = 0; x < textureWidth; x++) {
-//            for (double y = 0; y < textureHeight; y++) {
-//                for (double z = 0; z < textureDepth; z++) {
-//                    double xyzValue = (float) x / textureWidth + (float) y / textureHeight + (float) z / textureDepth
-//                            + turbPower * noiseGenerator.levelMixedNoise(x, y, z, maxZoom) / 256.0;
-//
-//                    double sineValue = logistic(Math.abs(Math.sin(xyzValue * 3.14159 * veinFrequency)));
-//                    sineValue = Math.max(-1.0, Math.min(sineValue * 1.25 - 0.20, 1.0));
-//
-//                    Color c = new Color((float) sineValue,
-//                            (float) Math.min(sineValue * 1.5 - 0.25, 1.0),
-//                            (float) sineValue);
-//
-//                    data.put((byte) (c.getRed())); // r
-//                    data.put((byte) (c.getGreen())); // g
-//                    data.put((byte) (c.getBlue()));// b
-//                    data.put((byte) 255); // a
-//                }
-//            }
-//        }
-//    }
+    private void fillMarble() {
+        final double veinFrequency = 2.0;
+        final double turbPower = 1.5;
+
+        // generate data into buffer for coming up usage.
+        noiseGenerator.levelMixedNoise(data, textureWidth, textureHeight, textureDepth, zoom, 1);
+
+        int index = 0;
+        for (double x = 0; x < textureWidth; x++) {
+            for (double y = 0; y < textureHeight; y++) {
+                for (double z = 0; z < textureDepth; z++) {
+                    byte noiseValue = data.get(index);
+
+                    double xyzValue = x / textureWidth + y / textureHeight + z / textureDepth
+                            + turbPower * noiseValue / 256.0;
+
+                    double sineValue = logistic(Math.abs(Math.sin(xyzValue * 3.14159 * veinFrequency)));
+                    sineValue = Math.max(-1.0, Math.min(sineValue * 1.25 - 0.20, 1.0));
+
+                    Color c = new Color((float) sineValue,
+                            (float) Math.min(sineValue * 1.5 - 0.25, 1.0),
+                            (float) sineValue);
+
+                    data.put((byte) (c.getRed())); // r
+                    data.put((byte) (c.getGreen())); // g
+                    data.put((byte) (c.getBlue()));// b
+                    data.put((byte) 255); // a
+
+                    index += 4;
+                }
+            }
+        }
+
+        data.flip();
+    }
 
     private double logistic(double x) {
         double k = 3.0;
