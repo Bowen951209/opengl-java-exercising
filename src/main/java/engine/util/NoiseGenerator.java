@@ -1,6 +1,5 @@
 package engine.util;
 
-import org.lwjgl.BufferUtils;
 
 import java.nio.ByteBuffer;
 import java.util.Random;
@@ -82,8 +81,6 @@ public class NoiseGenerator {
     // finish writing buffer, and flip it.
 
     public void noise(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, int size) {
-//        byte[][][] array = new byte[textureWidth][textureHeight][textureDepth];
-
         // store computed data into the passed in buffer
         final int initialSize = size;
         int sizeCounts = 0;
@@ -103,7 +100,7 @@ public class NoiseGenerator {
             threads[i] = new Thread(() -> {
                 System.out.println("Processing size #" + currentSize);
 
-                int index = 0;
+                int currentIndex = 0;
                 for (double x = 0; x < textureWidth; x++) {
                     for (double y = 0; y < textureHeight; y++) {
                         for (double z = 0; z < textureDepth; z++) {
@@ -111,20 +108,15 @@ public class NoiseGenerator {
                             noiseValue /= initialSize;
 
 
-                            byte lastValue = buffer.get((int) (x * y * z));
+                            byte lastValue = buffer.get(currentIndex);
                             byte newValue = (byte) (lastValue + noiseValue * 255);
 
-                            buffer.put(index, newValue);
-                            buffer.put(index + 1, newValue);
-                            buffer.put(index + 2, newValue);
-                            buffer.put(index + 3, newValue);
+                            buffer.put(currentIndex, newValue);            //r
+                            buffer.put(currentIndex + 1, newValue); //g
+                            buffer.put(currentIndex + 2, newValue); //b
+                            buffer.put(currentIndex + 3, (byte) 255);//a
 
-                            index += 4;
-
-//                            byte lastValue = array[(int) x][(int) y][(int) z];
-//                            byte newValue = (byte) (noiseValue * 255 + lastValue);
-//                            array[(int) x][(int) y][(int) z] = newValue;
-
+                            currentIndex += 4;
                         }
                     }
                 }
@@ -142,23 +134,6 @@ public class NoiseGenerator {
                 throw new RuntimeException(e);
             }
         }
-
-//        int index = 0;
-//        for (int x = 0; x < textureWidth; x++) {
-//            for (int y = 0; y < textureHeight; y++) {
-//                for (int z = 0; z < textureDepth; z++) {
-//                    System.out.print("Buffer's position: " + buffer.position() + "; ");
-//                    System.out.println("Calculated position: " + index);
-//
-//                    buffer.put(array[x][y][z]);
-//                    buffer.put(array[x][y][z]);
-//                    buffer.put(array[x][y][z]);
-//                    buffer.put((byte) 255);
-//
-//                    index += 4;
-//                }
-//            }
-//        }
 
         buffer.flip();
     }
