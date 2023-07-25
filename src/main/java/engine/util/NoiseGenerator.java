@@ -73,7 +73,7 @@ public class NoiseGenerator {
             final int currentSize = maxSize;
 
             threads[i] = new Thread(() -> {
-                System.out.println("Processing size #" + currentSize);
+//                System.out.println("Processing size #" + currentSize);
 
                 int currentIndex = 0;
                 for (double x = 0; x < textureWidth; x++) {
@@ -110,7 +110,6 @@ public class NoiseGenerator {
             }
         }
 
-        buffer.flip();
     }
 
     public double smoothNoise(double x, double y, double z) {
