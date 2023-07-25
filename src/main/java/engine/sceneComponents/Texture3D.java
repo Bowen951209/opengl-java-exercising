@@ -58,7 +58,7 @@ public class Texture3D extends Thread {
             case "STRIPE" -> fillStripe();
             case "SMOOTH" -> fillSmoothNoise(this.zoom);
             case "MIX-SMOOTH" -> fillSmoothNoiseLevelMixed(this.zoom);
-            case "MARBLE" -> fillMarble();
+//            case "MARBLE" -> fillMarble();
             default -> throw new InvalidPatternException();
         }
         data.flip();
@@ -90,62 +90,41 @@ public class Texture3D extends Thread {
 
     // This is for multi-level mixed;
     private void fillSmoothNoiseLevelMixed(int zoom) {
-        for (double x = 0; x < textureWidth; x++) {
-            for (double y = 0; y < textureHeight; y++) {
-                for (double z = 0; z < textureDepth; z++) {
-                    float mappedValue = (float) noiseGenerator.noise(x / zoom, y / zoom, z / zoom, zoom);
-
-                    data.put((byte) (mappedValue * 255)); // r
-                    data.put((byte) (mappedValue * 255)); // g
-                    data.put((byte) (mappedValue * 255));// b
-                    data.put((byte) 255); // a
-                }
-            }
-        }
+        noiseGenerator.noise(data, textureWidth, textureHeight, textureDepth, zoom);
     }
 
     // This is for no multi-level mixed.
     private void fillSmoothNoise(int zoom) {
-        for (double x = 0; x < textureWidth; x++) {
-            for (double y = 0; y < textureHeight; y++) {
-                for (double z = 0; z < textureDepth; z++) {
-                    float mappedValue = (float) noiseGenerator.noise(x / zoom, y / zoom, z / zoom, 1);
-
-                    data.put((byte) (mappedValue * 255)); // r
-                    data.put((byte) (mappedValue * 255)); // g
-                    data.put((byte) (mappedValue * 255));// b
-                    data.put((byte) 255); // a
-                }
-            }
-        }
+        // TODO: 2023/7/24 let the zoom work
+        noiseGenerator.noise(data, textureWidth, textureHeight, textureDepth, 1);
     }
 
-    private void fillMarble() {
-        final double veinFrequency = 10.0;
-        final double turbPower = 15.0;
-        final int maxZoom = 32;
-
-        for (double x = 0; x < textureWidth; x++) {
-            for (double y = 0; y < textureHeight; y++) {
-                for (double z = 0; z < textureDepth; z++) {
-                    double xyzValue = (float) x / textureWidth + (float) y / textureHeight + (float) z / textureDepth
-                            + turbPower * noiseGenerator.noise(x, y, z, maxZoom) / 256.0;
-
-                    double sineValue = logistic(Math.abs(Math.sin(xyzValue * 3.14159 * veinFrequency)));
-                    sineValue = Math.max(-1.0, Math.min(sineValue * 1.25 - 0.20, 1.0));
-
-                    Color c = new Color((float) sineValue,
-                            (float) Math.min(sineValue * 1.5 - 0.25, 1.0),
-                            (float) sineValue);
-
-                    data.put((byte) (c.getRed())); // r
-                    data.put((byte) (c.getGreen())); // g
-                    data.put((byte) (c.getBlue()));// b
-                    data.put((byte) 255); // a
-                }
-            }
-        }
-    }
+//    private void fillMarble() {
+//        final double veinFrequency = 10.0;
+//        final double turbPower = 15.0;
+//        final int maxZoom = 32;
+//
+//        for (double x = 0; x < textureWidth; x++) {
+//            for (double y = 0; y < textureHeight; y++) {
+//                for (double z = 0; z < textureDepth; z++) {
+//                    double xyzValue = (float) x / textureWidth + (float) y / textureHeight + (float) z / textureDepth
+//                            + turbPower * noiseGenerator.noise(x, y, z, maxZoom) / 256.0;
+//
+//                    double sineValue = logistic(Math.abs(Math.sin(xyzValue * 3.14159 * veinFrequency)));
+//                    sineValue = Math.max(-1.0, Math.min(sineValue * 1.25 - 0.20, 1.0));
+//
+//                    Color c = new Color((float) sineValue,
+//                            (float) Math.min(sineValue * 1.5 - 0.25, 1.0),
+//                            (float) sineValue);
+//
+//                    data.put((byte) (c.getRed())); // r
+//                    data.put((byte) (c.getGreen())); // g
+//                    data.put((byte) (c.getBlue()));// b
+//                    data.put((byte) 255); // a
+//                }
+//            }
+//        }
+//    }
 
     private double logistic(double x) {
         double k = 3.0;

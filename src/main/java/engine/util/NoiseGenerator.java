@@ -6,8 +6,8 @@ import java.nio.ByteBuffer;
 import java.util.Random;
 
 /*
-* The code is copied from Mr. @alksily on GitHub gist
-* */
+ * The code is copied from Mr. @alksily on GitHub gist
+ * */
 public class NoiseGenerator {
     private double seed;
     private long default_size;
@@ -19,12 +19,14 @@ public class NoiseGenerator {
         init();
     }
 
-    public NoiseGenerator() {this(new Random().nextGaussian() * 255);}
+    public NoiseGenerator() {
+        this(new Random().nextGaussian() * 255);
+    }
 
     private void init() {
         // Initialize the permutation array.
         this.p = new int[512];
-        this.permutation = new int[] { 151, 160, 137, 91, 90, 15, 131, 13, 201,
+        this.permutation = new int[]{151, 160, 137, 91, 90, 15, 131, 13, 201,
                 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142, 8, 99,
                 37, 240, 21, 10, 23, 190, 6, 148, 247, 120, 234, 75, 0, 26,
                 197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33, 88,
@@ -43,7 +45,7 @@ public class NoiseGenerator {
                 249, 14, 239, 107, 49, 192, 214, 31, 181, 199, 106, 157, 184,
                 84, 204, 176, 115, 121, 50, 45, 127, 4, 150, 254, 138, 236,
                 205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66,
-                215, 61, 156, 180 };
+                215, 61, 156, 180};
         this.default_size = 35;
 
         // Populate it
@@ -74,11 +76,84 @@ public class NoiseGenerator {
 //    }
 
     // TODO: 2023/7/24 rewrite the "noise(double x, double y, double z, int size)" method
-
+    // IDEA:
     // for each single size scale, create a thread.
     // in the thread, add the mapped noise value at buffer's index: x*y*z in the 3 levels xyz for loop
     // finish writing buffer, and flip it.
 
+    public void noise(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, int size) {
+        byte[][][] array = new byte[textureWidth][textureHeight][textureDepth];
+
+        // store computed data into the passed in buffer
+        final int initialSize = size;
+        int sizeCounts = 0;
+        while (size >= 1) {
+            sizeCounts++;
+            size /= 2.0;
+        }
+        size = initialSize;
+        System.out.println("You have " + sizeCounts + " size counts");
+
+
+        // TODO: 2023/7/24 If sizeCounts > cpu core counts, than distribute.
+        Thread[] threads = new Thread[sizeCounts];
+        for (int i = 0; i < sizeCounts; i++) {
+            final int currentSize = size;
+
+            threads[i] = new Thread(() -> {
+                System.out.println("Processing size #" + currentSize);
+
+                for (double x = 0; x < textureWidth; x++) {
+                    for (double y = 0; y < textureHeight; y++) {
+                        for (double z = 0; z < textureDepth; z++) {
+                            double noiseValue = smoothNoise(x / currentSize, y / currentSize, z / currentSize) * currentSize;
+                            noiseValue /= initialSize;
+
+                            byte lastValue = array[(int) x][(int) y][(int) z];
+                            byte newValue = (byte) (noiseValue * 255 + lastValue);
+//                            byte lastValue = buffer.get((int) (x * y * z));
+//                            byte newValue = (byte) (lastValue + noiseValue * 255);
+//
+//                            int index = (int) (textureHeight * x + textureDepth * y + z) * 4;
+//
+//                            buffer.put(index, newValue);
+//                            buffer.put(index + 1, newValue);
+//                            buffer.put(index + 2, newValue);
+//                            buffer.put(index + 3, newValue);
+
+                            array[(int) x][(int) y][(int) z] = newValue;
+
+                        }
+                    }
+                }
+            });
+
+            threads[i].start();
+
+            size /= 2;
+        }
+
+        for (int i = 0; i < sizeCounts; i++) {
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        for (int x = 0; x < textureWidth; x++) {
+            for (int y = 0; y < textureHeight; y++) {
+                for (int z = 0; z < textureDepth; z++) {
+                    buffer.put(array[x][y][z]);
+                    buffer.put(array[x][y][z]);
+                    buffer.put(array[x][y][z]);
+                    buffer.put((byte) 255);
+                }
+            }
+        }
+
+        buffer.flip();
+    }
 
     public double noise(double x, double y, double z) {
         double value = 0.0;
@@ -144,14 +219,14 @@ public class NoiseGenerator {
         int BA = p[B] + Z;
         int BB = p[B + 1] + Z; // THE 8 CUBE CORNERS,
 
-        return lerp(w, lerp(v, lerp(u, grad(p[AA], 		x, 		y, 		z		), 	// AND ADD
-                                grad(p[BA],		x - 1, 	y, 		z		)), // BLENDED
-                        lerp(u, grad(p[AB], 	x, 		y - 1, 	z		), 	// RESULTS
-                                grad(p[BB], 	x - 1, 	y - 1, 	z		))),// FROM 8
-                lerp(v, lerp(u, grad(p[AA + 1], x, 		y, 		z - 1	), 	// CORNERS
-                                grad(p[BA + 1], x - 1, 	y, 		z - 1	)), // OF CUBE
-                        lerp(u, grad(p[AB + 1], x, 		y - 1,	z - 1	),
-                                grad(p[BB + 1], x - 1, 	y - 1, 	z - 1	))));
+        return lerp(w, lerp(v, lerp(u, grad(p[AA], x, y, z),    // AND ADD
+                                grad(p[BA], x - 1, y, z)), // BLENDED
+                        lerp(u, grad(p[AB], x, y - 1, z),    // RESULTS
+                                grad(p[BB], x - 1, y - 1, z))),// FROM 8
+                lerp(v, lerp(u, grad(p[AA + 1], x, y, z - 1),    // CORNERS
+                                grad(p[BA + 1], x - 1, y, z - 1)), // OF CUBE
+                        lerp(u, grad(p[AB + 1], x, y - 1, z - 1),
+                                grad(p[BB + 1], x - 1, y - 1, z - 1))));
     }
 
     private double fade(double t) {
