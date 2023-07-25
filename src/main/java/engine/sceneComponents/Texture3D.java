@@ -5,7 +5,6 @@ import engine.util.NoiseGenerator;
 import engine.util.Timer;
 import org.lwjgl.BufferUtils;
 
-import java.awt.*;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL43.*;
@@ -48,7 +47,6 @@ public class Texture3D extends Thread {
         loadToTexture();
     }
 
-    // TODO: 2023/7/20 convert to static
     private void fillDataArray() {
         Timer timer = new Timer();
         timer.start();
@@ -90,13 +88,12 @@ public class Texture3D extends Thread {
 
     // This is for multi-level mixed;
     private void fillSmoothNoiseLevelMixed(int zoom) {
-        noiseGenerator.noise(data, textureWidth, textureHeight, textureDepth, zoom);
+        noiseGenerator.levelMixedNoise(data, textureWidth, textureHeight, textureDepth, zoom, 1);
     }
 
     // This is for no multi-level mixed.
     private void fillSmoothNoise(int zoom) {
-        // TODO: 2023/7/24 let the zoom work
-        noiseGenerator.noise(data, textureWidth, textureHeight, textureDepth, 1);
+        noiseGenerator.levelMixedNoise(data, textureWidth, textureHeight, textureDepth, zoom, zoom);
     }
 
 //    private void fillMarble() {
@@ -108,7 +105,7 @@ public class Texture3D extends Thread {
 //            for (double y = 0; y < textureHeight; y++) {
 //                for (double z = 0; z < textureDepth; z++) {
 //                    double xyzValue = (float) x / textureWidth + (float) y / textureHeight + (float) z / textureDepth
-//                            + turbPower * noiseGenerator.noise(x, y, z, maxZoom) / 256.0;
+//                            + turbPower * noiseGenerator.levelMixedNoise(x, y, z, maxZoom) / 256.0;
 //
 //                    double sineValue = logistic(Math.abs(Math.sin(xyzValue * 3.14159 * veinFrequency)));
 //                    sineValue = Math.max(-1.0, Math.min(sineValue * 1.25 - 0.20, 1.0));

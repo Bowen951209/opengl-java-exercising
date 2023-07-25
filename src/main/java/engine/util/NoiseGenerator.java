@@ -56,21 +56,21 @@ public class NoiseGenerator {
     // in the thread, add the mapped noise value at buffer's index in the for loop
     // finish writing buffer, and flip it.
 
-    public void noise(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, int size) {
-        final int initialSize = size;
+    public void levelMixedNoise(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, int maxSize, int minSize) {
+        final int initialSize = maxSize;
         int sizeCounts = 0;
-        while (size >= 1) {
+        while (maxSize >= minSize) {
             sizeCounts++;
-            size /= 2.0;
+            maxSize /= 2.0;
         }
-        size = initialSize;
+        maxSize = initialSize;
 //        System.out.println("You have " + sizeCounts + " size counts");
 
 
         // I don't allocate thread here because I think too large size scale is meaningless
         Thread[] threads = new Thread[sizeCounts];
         for (int i = 0; i < sizeCounts; i++) {
-            final int currentSize = size;
+            final int currentSize = maxSize;
 
             threads[i] = new Thread(() -> {
                 System.out.println("Processing size #" + currentSize);
@@ -99,7 +99,7 @@ public class NoiseGenerator {
 
             threads[i].start();
 
-            size /= 2;
+            maxSize /= 2;
         }
 
         for (int i = 0; i < sizeCounts; i++) {
