@@ -210,6 +210,7 @@ public class Main extends App {
         dragon.draw(GL_TRIANGLES);
 
         // Displaying marble 3D texture
+        // TODO: 2023/7/25 Add lighting to cube
         cube.updateState(camera);
         texture3DProgram.putUniformMatrix4f("mv_matrix", cube.getMvMat().get(ValuesContainer.VALS_OF_16));
         texture3DProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
