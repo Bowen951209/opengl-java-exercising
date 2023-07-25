@@ -147,4 +147,8 @@ public class Materials {
         glUniform4fv(specLoc, this.specular);
         glUniform1fv(shineLoc, shininess);
     }
+
+    public void putToUniforms(int shineLoc) {
+        glUniform4fv(shineLoc, shininess);
+    }
 }

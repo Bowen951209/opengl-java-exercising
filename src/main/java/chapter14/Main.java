@@ -204,14 +204,28 @@ public class Main extends App {
         glFrontFace(GL_CCW);
         texture3DProgram.use();
         dragon.updateState(camera);
+        light.putToUniforms(
+                texture3DProgram.getUniformLoc("globalAmbient"),
+                texture3DProgram.getUniformLoc("light.ambient"),
+                texture3DProgram.getUniformLoc("light.diffuse"),
+                texture3DProgram.getUniformLoc("light.specular"),
+                texture3DProgram.getUniformLoc("light.position")
+        );
+        Materials.getMaterial("GOLD").putToUniforms(
+                texture3DProgram.getUniformLoc("material.ambient"),
+                texture3DProgram.getUniformLoc("material.diffuse"),
+                texture3DProgram.getUniformLoc("material.specular"),
+                texture3DProgram.getUniformLoc("material.shininess")
+        );
+        texture3DProgram.putUniformMatrix4f("norm_matrix", dragon.getInvTrMat().get(ValuesContainer.VALS_OF_16));
         texture3DProgram.putUniformMatrix4f("mv_matrix", dragon.getMvMat().get(ValuesContainer.VALS_OF_16));
         texture3DProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
         stripe3D.bind();
         dragon.draw(GL_TRIANGLES);
 
         // Displaying marble 3D texture
-        // TODO: 2023/7/25 Add lighting to cube
         cube.updateState(camera);
+        texture3DProgram.putUniformMatrix4f("norm_matrix", cube.getInvTrMat().get(ValuesContainer.VALS_OF_16));
         texture3DProgram.putUniformMatrix4f("mv_matrix", cube.getMvMat().get(ValuesContainer.VALS_OF_16));
         texture3DProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
         noise3D.bind();
