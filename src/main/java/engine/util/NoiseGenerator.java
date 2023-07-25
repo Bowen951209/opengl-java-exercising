@@ -8,10 +8,8 @@ import java.util.Random;
  * The code is copied from Mr. @alksily on GitHub gist
  * */
 public class NoiseGenerator {
-    private double seed;
-    private long default_size;
+    private final double seed;
     private int[] p;
-    private int[] permutation;
 
     public NoiseGenerator(double seed) {
         this.seed = seed;
@@ -25,7 +23,7 @@ public class NoiseGenerator {
     private void init() {
         // Initialize the permutation array.
         this.p = new int[512];
-        this.permutation = new int[]{151, 160, 137, 91, 90, 15, 131, 13, 201,
+        int[] permutation = new int[]{151, 160, 137, 91, 90, 15, 131, 13, 201,
                 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142, 8, 99,
                 37, 240, 21, 10, 23, 190, 6, 148, 247, 120, 234, 75, 0, 26,
                 197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33, 88,
@@ -45,7 +43,6 @@ public class NoiseGenerator {
                 84, 204, 176, 115, 121, 50, 45, 127, 4, 150, 254, 138, 236,
                 205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66,
                 215, 61, 156, 180};
-        this.default_size = 35;
 
         // Populate it
         for (int i = 0; i < 256; i++) {
@@ -54,34 +51,12 @@ public class NoiseGenerator {
 
     }
 
-    public void setSeed(double seed) {
-        this.seed = seed;
-    }
-
-    public double getSeed() {
-        return this.seed;
-    }
-
-//    public double noise(double x, double y, double z, int size) {
-//        double value = 0.0;
-//        double initialSize = size;
-//
-//        while (size >= 1) {
-//            value += smoothNoise((x / size), (y / size), (z / size)) * size;
-//            size /= 2.0;
-//        }
-//
-//        return value / initialSize;
-//    }
-
-    // TODO: 2023/7/24 rewrite the "noise(double x, double y, double z, int size)" method
     // IDEA:
     // for each single size scale, create a thread.
-    // in the thread, add the mapped noise value at buffer's index: x*y*z in the 3 levels xyz for loop
+    // in the thread, add the mapped noise value at buffer's index in the for loop
     // finish writing buffer, and flip it.
 
     public void noise(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, int size) {
-        // store computed data into the passed in buffer
         final int initialSize = size;
         int sizeCounts = 0;
         while (size >= 1) {
@@ -89,10 +64,10 @@ public class NoiseGenerator {
             size /= 2.0;
         }
         size = initialSize;
-        System.out.println("You have " + sizeCounts + " size counts");
+//        System.out.println("You have " + sizeCounts + " size counts");
 
 
-        // TODO: 2023/7/24 If sizeCounts > cpu core counts, than distribute.
+        // I don't allocate thread here because I think too large size scale is meaningless
         Thread[] threads = new Thread[sizeCounts];
         for (int i = 0; i < sizeCounts; i++) {
             final int currentSize = size;
@@ -136,45 +111,6 @@ public class NoiseGenerator {
         }
 
         buffer.flip();
-    }
-
-    public double noise(double x, double y, double z) {
-        double value = 0.0;
-        double size = default_size;
-        double initialSize = size;
-
-        while (size >= 1) {
-            value += smoothNoise((x / size), (y / size), (z / size)) * size;
-            size /= 2.0;
-        }
-
-        return value / initialSize;
-    }
-
-    public double noise(double x, double y) {
-        double value = 0.0;
-        double size = default_size;
-        double initialSize = size;
-
-        while (size >= 1) {
-            value += smoothNoise((x / size), (y / size), (0f / size)) * size;
-            size /= 2.0;
-        }
-
-        return value / initialSize;
-    }
-
-    public double noise(double x) {
-        double value = 0.0;
-        double size = default_size;
-        double initialSize = size;
-
-        while (size >= 1) {
-            value += smoothNoise((x / size), (0f / size), (0f / size)) * size;
-            size /= 2.0;
-        }
-
-        return value / initialSize;
     }
 
     public double smoothNoise(double x, double y, double z) {
