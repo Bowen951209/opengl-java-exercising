@@ -3,7 +3,7 @@ package chapter10.program10_2.launcher;
 import chapter10.program10_1.launcher.Program10_1;
 import engine.util.Color;
 import engine.GLFWWindow;
-import engine.util.Materials;
+import engine.util.Material;
 import engine.ShaderProgram;
 import engine.callbacks.DefaultCallbacks;
 import engine.exceptions.InvalidMaterialException;
@@ -26,7 +26,7 @@ public class Program10_2 extends Program10_1 {
     private PositionalLight positionalLight;
     private Sphere sphere;
     private int defaultProgram;
-    private Materials material;
+    private Material material;
 
     public Program10_2(String title) {
         super(title);
@@ -56,7 +56,7 @@ public class Program10_2 extends Program10_1 {
         sphere = new Sphere();
         positionalLight = new PositionalLight();
         try {
-            material = new Materials("gold");
+            material = new Material("gold");
         } catch (InvalidMaterialException e) {
             throw new RuntimeException(e);
         }

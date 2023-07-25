@@ -4,7 +4,7 @@ import chapter10.program10_2.launcher.Program10_2;
 import engine.gui.GUI;
 import engine.sceneComponents.Texture2D;
 import engine.util.Color;
-import engine.util.Materials;
+import engine.util.Material;
 import imgui.ImGui;
 import imgui.type.ImBoolean;
 import org.lwjgl.glfw.GLFW;
@@ -23,7 +23,7 @@ public class Program10_3 extends Program10_2 {
     protected int program;
     private Sphere sphere;
     private PositionalLight positionalLight;
-    private Materials material;
+    private Material material;
 
     private int globalAmbientLoc, mv_matrixLoc, proj_matrixLoc, norm_matrixLoc, materialShininessLoc,
             lightAmbientLoc, lightDiffuseLoc, lightSpecularLoc, lightPosition, materialAmbientLoc,
@@ -69,7 +69,7 @@ public class Program10_3 extends Program10_2 {
         };
         positionalLight = new PositionalLight();
         try {
-            material = new Materials("gold");
+            material = new Material("gold");
         } catch (InvalidMaterialException e) {
             throw new RuntimeException(e);
         }

@@ -7,33 +7,46 @@ import engine.exceptions.InvalidMaterialException;
 
 import java.nio.FloatBuffer;
 
-public class Materials {
-    private static Materials goldMaterialInstance;
-    private static Materials bronzeMaterialInstance;
-    private static Materials silverMaterialInstance;
 
-    public static Materials getMaterial(String material) {
+/*
+ * ADS value can be find in https://barradeau.com/nicoptere/dump/materials.html
+ * */
+public class Material {
+    private static Material goldMaterialInstance;
+    private static Material bronzeMaterialInstance;
+    private static Material silverMaterialInstance;
+    private static Material jadeMaterialInstance;
+
+    public static Material getMaterial(String material) {
         try {
-            if (material.equalsIgnoreCase("GOLD")) {
-                if (goldMaterialInstance == null) {
-                    goldMaterialInstance = new Materials("gold");
+            switch (material.toUpperCase()) {
+                case "GOLD" -> {
+                    if (goldMaterialInstance == null) {
+                        goldMaterialInstance = new Material("gold");
+                    }
+                    return goldMaterialInstance;
                 }
-                return goldMaterialInstance;
-            }
-            if (material.equalsIgnoreCase("BRONZE")) {
-                if (bronzeMaterialInstance == null) {
-                    bronzeMaterialInstance = new Materials("bronze");
+                case "BRONZE" -> {
+                    if (bronzeMaterialInstance == null) {
+                        bronzeMaterialInstance = new Material("bronze");
+                    }
+                    return bronzeMaterialInstance;
                 }
-                return bronzeMaterialInstance;
-            }
-            if (material.equalsIgnoreCase("SILVER")) {
-                if (silverMaterialInstance == null) {
-                    silverMaterialInstance = new Materials("silver");
+                case "SILVER" -> {
+                    if (silverMaterialInstance == null) {
+                        silverMaterialInstance = new Material("silver");
+                    }
+                    return silverMaterialInstance;
                 }
-                return silverMaterialInstance;
+                case "JADE" -> {
+                    if (jadeMaterialInstance == null) {
+                        jadeMaterialInstance = new Material("jade");
+                    }
+                    return jadeMaterialInstance;
+                }
             }
 
-            return new Materials(material);
+            return new Material(material);
         } catch (InvalidMaterialException e) {
             throw new RuntimeException(e);
         }
@@ -60,25 +73,31 @@ public class Materials {
         return shininess;
     }
 
-    public Materials(String material) throws InvalidMaterialException {
-        switch (material) {
-            case "gold" -> {
+    public Material(String material) throws InvalidMaterialException {
+        switch (material.toUpperCase()) {
+            case "GOLD" -> {
                 ambient.put(goldAmbient());
                 diffuse.put(goldDiffuse());
                 specular.put(goldSpecular());
                 shininess.put(goldShininess());
             }
-            case "bronze" -> {
+            case "BRONZE" -> {
                 ambient.put(bronzeAmbient());
                 diffuse.put(bronzeDiffuse());
                 specular.put(bronzeSpecular());
                 shininess.put(bronzeShininess());
             }
-            case "silver" -> {
+            case "SILVER" -> {
                 ambient.put(silverAmbient());
                 diffuse.put(silverDiffuse());
                 specular.put(silverSpecular());
                 shininess.put(silverShininess());
+            }
+            case "JADE" -> {
+                ambient.put(jadeAmbient());
+                diffuse.put(jadeDiffuse());
+                specular.put(jadeSpecular());
+                shininess.put(jadeShininess());
             }
             default -> throw new InvalidMaterialException("Undefined material is passed in.");
         }
@@ -132,6 +151,22 @@ public class Materials {
 
     public static float silverShininess() {
         return 51.2f;
+    }
+
+    public static float[] jadeAmbient() {
+        return new float[]{0.135f, 0.2225f, 0.1575f, 0.95f};
+    }
+
+    public static float[] jadeDiffuse() {
+        return new float[]{0.54f, 0.89f, 0.63f, 0.95f};
+    }
+
+    public static float[] jadeSpecular() {
+        return new float[]{0.316228f, 0.316228f, 0.316228f, 0.95f};
+    }
+
+    public static float jadeShininess() {
+        return 12.8f;
     }
 
     public void flipAll() {

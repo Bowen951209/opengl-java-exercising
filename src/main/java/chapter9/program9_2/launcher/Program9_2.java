@@ -9,7 +9,7 @@ import chapter9.program9_2.callbacks.P9_2CursorCB;
 import chapter9.program9_2.callbacks.P9_2FrameBufferResizeCB;
 import chapter9.program9_2.callbacks.P9_2KeyCB;
 import engine.util.Color;
-import engine.util.Materials;
+import engine.util.Material;
 import engine.util.ShadowFrameBuffer;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -276,7 +276,7 @@ public class Program9_2 {
         glUniform1i(p2FrameBufferHeightLoc, frameBufferSize[1]);
 
         // 繪製torus
-        setupLights(Materials.goldAmbient(), Materials.goldDiffuse(), Materials.goldSpecular(), Materials.goldShininess());
+        setupLights(Material.goldAmbient(), Material.goldDiffuse(), Material.goldSpecular(), Material.goldShininess());
         Matrix4f mvMat = new Matrix4f(CAMERA.getVMat()).mul(torusMMat);
         Matrix4f invTrMat = new Matrix4f(mvMat).invert().transpose();
         Matrix4f shadowMVP2 = new Matrix4f(B).mul(lightPMat).mul(lightVMat).mul(torusMMat);
@@ -295,7 +295,7 @@ public class Program9_2 {
 
 
         // 繪製pyramid
-        setupLights(Materials.bronzeAmbient(), Materials.bronzeDiffuse(), Materials.bronzeSpecular(), Materials.bronzeShininess());
+        setupLights(Material.bronzeAmbient(), Material.bronzeDiffuse(), Material.bronzeSpecular(), Material.bronzeShininess());
         mvMat = new Matrix4f(CAMERA.getVMat()).mul(pyramidMMat);
         invTrMat = new Matrix4f(mvMat).invert().transpose();
         shadowMVP2 = new Matrix4f(B).mul(lightPMat).mul(lightVMat).mul(pyramidMMat);
@@ -312,7 +312,7 @@ public class Program9_2 {
         glDrawArrays(GL_TRIANGLES, 0, pyramid.getNumOfVertices());
 
         // 繪製grid
-        setupLights(Materials.silverAmbient(), Materials.silverDiffuse(), Materials.silverSpecular(), Materials.silverShininess());
+        setupLights(Material.silverAmbient(), Material.silverDiffuse(), Material.silverSpecular(), Material.silverShininess());
         mvMat = new Matrix4f(CAMERA.getVMat()).mul(gridMMat);
         invTrMat = new Matrix4f(mvMat).invert().transpose();
         shadowMVP2 = new Matrix4f(B).mul(lightPMat).mul(lightVMat).mul(gridMMat);

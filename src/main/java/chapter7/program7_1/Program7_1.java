@@ -3,7 +3,7 @@ package chapter7.program7_1;
 
 import engine.models.Torus;
 import engine.util.Color;
-import engine.util.Materials;
+import engine.util.Material;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -48,10 +48,10 @@ public class Program7_1 {
     private static final float[] lightSpecular = {1.0f, 1.0f, 1.0f, 1.0f};
 
     // 黃金材質特性
-    private static final float[] matAmb = Materials.goldAmbient();
-    private static final float[] matDif = Materials.goldDiffuse();
-    private static final float[] matSpe = Materials.goldSpecular();
-    private static final float matShi = Materials.goldShininess();
+    private static final float[] matAmb = Material.goldAmbient();
+    private static final float[] matDif = Material.goldDiffuse();
+    private static final float[] matSpe = Material.goldSpecular();
+    private static final float matShi = Material.goldShininess();
 
     private static final float[] lightPos = new float[3];
     private static Torus myTorus;

@@ -3,7 +3,7 @@ package chapter13.program13_4;
 import chapter13.program13_2.Program13_2;
 import org.joml.Vector3f;
 import engine.GLFWWindow;
-import engine.util.Materials;
+import engine.util.Material;
 import engine.ShaderProgram;
 import engine.util.ValuesContainer;
 import engine.exceptions.InvalidMaterialException;
@@ -29,7 +29,7 @@ public class Program13_4 extends Program13_2 {
         shaderProgram.use();
         torus = new Torus(.5f, .2f, 48, true, new Vector3f());
         try {
-            material = new Materials("gold");
+            material = new Material("gold");
         } catch (InvalidMaterialException e) {
             throw new RuntimeException(e);
         }

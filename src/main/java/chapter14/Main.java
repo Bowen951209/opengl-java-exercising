@@ -8,7 +8,7 @@ import engine.models.Torus;
 import engine.sceneComponents.PositionalLight;
 import engine.sceneComponents.Texture3D;
 import engine.util.Destroyer;
-import engine.util.Materials;
+import engine.util.Material;
 import engine.util.ValuesContainer;
 import org.joml.Vector3f;
 
@@ -130,7 +130,7 @@ public class Main extends App {
                 transparencyProgram.getUniformLoc("light.specular"),
                 transparencyProgram.getUniformLoc("light.position")
         );
-        Materials.getMaterial("bronze").putToUniforms(
+        Material.getMaterial("bronze").putToUniforms(
                 transparencyProgram.getUniformLoc("material.ambient"),
                 transparencyProgram.getUniformLoc("material.diffuse"),
                 transparencyProgram.getUniformLoc("material.specular"),
@@ -146,7 +146,7 @@ public class Main extends App {
         torus0.draw(GL_TRIANGLES);
 
         // pyramid
-        Materials.getMaterial("gold").putToUniforms(
+        Material.getMaterial("gold").putToUniforms(
                 transparencyProgram.getUniformLoc("material.ambient"),
                 transparencyProgram.getUniformLoc("material.diffuse"),
                 transparencyProgram.getUniformLoc("material.specular"),
@@ -182,7 +182,7 @@ public class Main extends App {
                 clippingPlaneProgram.getUniformLoc("light.specular"),
                 clippingPlaneProgram.getUniformLoc("light.position")
         );
-        Materials.getMaterial("silver").putToUniforms(
+        Material.getMaterial("silver").putToUniforms(
                 clippingPlaneProgram.getUniformLoc("material.ambient"),
                 clippingPlaneProgram.getUniformLoc("material.diffuse"),
                 clippingPlaneProgram.getUniformLoc("material.specular"),
@@ -216,7 +216,7 @@ public class Main extends App {
                 texture3DProgram.getUniformLoc("light.specular"),
                 texture3DProgram.getUniformLoc("light.position")
         );
-        Materials.getMaterial("GOLD").putToUniforms(
+        Material.getMaterial("GOLD").putToUniforms(
                 texture3DProgram.getUniformLoc("material.shininess")
         );
         texture3DProgram.putUniformMatrix4f("norm_matrix", dragon.getInvTrMat().get(ValuesContainer.VALS_OF_16));
@@ -227,6 +227,9 @@ public class Main extends App {
 
         // Displaying marble 3D texture
         cube.updateState(camera);
+        Material.getMaterial("GOLD").putToUniforms(
+                texture3DProgram.getUniformLoc("material.shininess")
+        );
         texture3DProgram.putUniformMatrix4f("norm_matrix", cube.getInvTrMat().get(ValuesContainer.VALS_OF_16));
         texture3DProgram.putUniformMatrix4f("mv_matrix", cube.getMvMat().get(ValuesContainer.VALS_OF_16));
         texture3DProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));

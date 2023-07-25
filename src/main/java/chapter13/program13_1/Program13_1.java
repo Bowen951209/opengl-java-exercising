@@ -1,7 +1,7 @@
 package chapter13.program13_1;
 
 import engine.util.Destroyer;
-import engine.util.Materials;
+import engine.util.Material;
 import engine.util.ValuesContainer;
 import org.joml.Vector3f;
 import engine.*;
@@ -17,7 +17,7 @@ public class Program13_1 extends App {
     protected final PositionalLight light = new PositionalLight()
             .setGlobalAmbient(new float[]{.5f, .5f, .5f, 1f})
             .setLightAmbient(new float[]{.9f, .9f, .9f, 1f});
-    protected Materials material;
+    protected Material material;
     protected float inflateValue, inflateOffSet = 0.05f;
 
     @Override
@@ -32,7 +32,7 @@ public class Program13_1 extends App {
         shaderProgram.use();
         torus = new Torus(.5f, .2f, 48, true, new Vector3f());
         try {
-            material = new Materials("gold");
+            material = new Material("gold");
         } catch (InvalidMaterialException e) {
             throw new RuntimeException(e);
         }

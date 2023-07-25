@@ -3,7 +3,7 @@ package chapter12.program12_4.launcher;
 import engine.gui.GUI;
 import engine.sceneComponents.Texture2D;
 import engine.util.Destroyer;
-import engine.util.Materials;
+import engine.util.Material;
 import engine.util.ValuesContainer;
 import imgui.ImGui;
 import org.joml.Matrix4f;
@@ -17,7 +17,7 @@ public class Program12_4 extends App {
     protected ShaderProgram shaderProgram;
     protected Texture2D imageTexture, heightMap, normalMap;
     protected final PositionalLight light = new PositionalLight().setPosition(0f, .1f, .2f);
-    protected Materials material;
+    protected Material material;
 
 
     @Override
@@ -46,7 +46,7 @@ public class Program12_4 extends App {
 
         // Model's material
         try {
-            material = new Materials("silver");
+            material = new Material("silver");
         } catch (InvalidMaterialException e) {
             throw new RuntimeException(e);
         }

@@ -2,7 +2,7 @@ package chapter7.lighting_and_texture;
 
 
 import engine.util.Color;
-import engine.util.Materials;
+import engine.util.Material;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -46,7 +46,7 @@ public class Main {
     private static final float[] lightDiffuse = {1.0f, 1.0f, 1.0f, 1.0f};
     private static final float[] lightSpecular = {1.0f, 1.0f, 1.0f, 1.0f};
 
-    private static final float matShi = Materials.goldShininess();
+    private static final float matShi = Material.goldShininess();
 
     private static final FloatBuffer lightPos = BufferUtils.createFloatBuffer(3);
 
