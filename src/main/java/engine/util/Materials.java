@@ -149,6 +149,6 @@ public class Materials {
     }
 
     public void putToUniforms(int shineLoc) {
-        glUniform4fv(shineLoc, shininess);
+        glUniform1fv(shineLoc, shininess);
     }
 }

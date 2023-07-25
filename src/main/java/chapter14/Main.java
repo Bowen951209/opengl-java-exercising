@@ -202,6 +202,11 @@ public class Main extends App {
         torus1.draw(GL_TRIANGLES);
 
         glFrontFace(GL_CCW);
+
+
+
+
+        // --------------3D Texture-------------------
         texture3DProgram.use();
         dragon.updateState(camera);
         light.putToUniforms(
@@ -212,9 +217,6 @@ public class Main extends App {
                 texture3DProgram.getUniformLoc("light.position")
         );
         Materials.getMaterial("GOLD").putToUniforms(
-                texture3DProgram.getUniformLoc("material.ambient"),
-                texture3DProgram.getUniformLoc("material.diffuse"),
-                texture3DProgram.getUniformLoc("material.specular"),
                 texture3DProgram.getUniformLoc("material.shininess")
         );
         texture3DProgram.putUniformMatrix4f("norm_matrix", dragon.getInvTrMat().get(ValuesContainer.VALS_OF_16));
