@@ -57,7 +57,7 @@ public class Texture3D extends Thread {
             case "STRIPE" -> fillStripe();
             case "SMOOTH" -> fillSmoothNoise(this.zoom);
             case "MIX-SMOOTH" -> fillSmoothNoiseLevelMixed(this.zoom);
-            case "MARBLE" -> fillMarble();
+            case "MARBLE" -> fillMarble(2.0, 1.5);
             default -> throw new InvalidPatternException();
         }
         data.flip();
@@ -97,10 +97,7 @@ public class Texture3D extends Thread {
         noiseGenerator.levelMixedNoise(data, textureWidth, textureHeight, textureDepth, zoom, zoom);
     }
 
-    private void fillMarble() {
-        final double veinFrequency = 2.0;
-        final double turbPower = 1.5;
-
+    private void fillMarble(double veinFrequency, double turbPower) {
         // generate data into buffer for coming up usage.
         noiseGenerator.levelMixedNoise(data, textureWidth, textureHeight, textureDepth, zoom, 1);
 
