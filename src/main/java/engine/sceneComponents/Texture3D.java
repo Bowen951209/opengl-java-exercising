@@ -29,10 +29,10 @@ public abstract class Texture3D extends Thread {
     @Override
     public void run() {
         timer.start();
-        System.out.println("\"" + this.getClass() + "\" thread start.");
+        System.out.println("\"" + this.getClass().getSimpleName() + "\" thread start.");
         data = BufferUtils.createByteBuffer(textureWidth * textureHeight * textureDepth * 4);
         fillDataArray(); // This take quite long.
-        timer.end("\"" + this.getClass() + "\" fills data in array takes: ");
+        timer.end("\"" + this.getClass().getSimpleName() + "\" fills data in array takes: ");
     }
 
     public void end() {
