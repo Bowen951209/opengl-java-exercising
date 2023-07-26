@@ -5,7 +5,9 @@ import engine.gui.*;
 import engine.models.FileModel;
 import engine.models.TessGrid;
 import engine.models.Torus;
+import engine.sceneComponents.MarbleTexture;
 import engine.sceneComponents.PositionalLight;
+import engine.sceneComponents.StripeTexture;
 import engine.sceneComponents.Texture3D;
 import engine.util.Destroyer;
 import engine.util.Material;
@@ -19,7 +21,7 @@ public class Main extends App {
     private Torus torus0, torus1;
     private PositionalLight light;
     private ShaderProgram transparencyProgram, clippingPlaneProgram, texture3DProgram;
-    private Texture3D stripe3D, noise3D;
+    private Texture3D stripe3D, marble3D;
     private FileModel dragon,cube, pyramid;
 
     @Override
@@ -28,12 +30,12 @@ public class Main extends App {
         glfwWindow = new GLFWWindow(1500, 1000, "Chapter14");
 
         // Thread pre-prepare
-        stripe3D = new Texture3D(0, "STRIPE");
+        stripe3D = new StripeTexture(0);
         stripe3D.start();
 
-        noise3D = new Texture3D(0, "MARBLE");
-        noise3D.setZoom(64);
-        noise3D.start();
+        marble3D = new MarbleTexture(0);
+        marble3D.setZoom(64);
+        marble3D.start();
 
         torus0 = new Torus(.5f, .2f, 48, true, new Vector3f(2f, 0.4f, -2f));
         torus1 = new Torus(.5f, .2f, 48, true, new Vector3f(-2f, 0.4f, 0f));
@@ -102,7 +104,7 @@ public class Main extends App {
                 .addComponents(planeControlPanel);
 
         stripe3D.end();
-        noise3D.end();
+        marble3D.end();
         dragon.end();
         pyramid.end();
         cube.end();
@@ -233,7 +235,7 @@ public class Main extends App {
         texture3DProgram.putUniformMatrix4f("norm_matrix", cube.getInvTrMat().get(ValuesContainer.VALS_OF_16));
         texture3DProgram.putUniformMatrix4f("mv_matrix", cube.getMvMat().get(ValuesContainer.VALS_OF_16));
         texture3DProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
-        noise3D.bind();
+        marble3D.bind();
         cube.draw(GL_TRIANGLES);
 
         glDisable(GL_CULL_FACE);

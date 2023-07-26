@@ -1,41 +1,38 @@
 package engine.sceneComponents;
 
-import engine.exceptions.InvalidPatternException;
-import engine.util.NoiseGenerator;
 import engine.util.Timer;
 import org.lwjgl.BufferUtils;
 
-import java.awt.*;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL43.*;
 
-public class Texture3D extends Thread {
+public abstract class Texture3D extends Thread {
+    private final Timer timer = new Timer();
     private int textureID;
     private final int usingUnit;
-    private final int textureWidth = 256;
-    private final int textureHeight = 256;
-    private final int textureDepth = 256;
-    private int zoom = 1;
+    protected final int textureWidth = 256;
+    protected final int textureHeight = 256;
+    protected final int textureDepth = 256;
+    protected int zoom = 1;
 
     public void setZoom(int zoom) {
         this.zoom = zoom;
     }
 
-    private ByteBuffer data;
-    private final String pattern;
+    protected ByteBuffer data;
 
-    private final NoiseGenerator noiseGenerator = new NoiseGenerator();  // This would be random seed.
-
-    public Texture3D(int usingUnit, String pattern) {
+    public Texture3D(int usingUnit) {
         this.usingUnit = usingUnit;
-        this.pattern = pattern;
     }
 
     @Override
     public void run() {
-        System.out.println("\"" + pattern + "\" thread start.");
+        timer.start();
+        System.out.println("\"" + this.getClass() + "\" thread start.");
+        data = BufferUtils.createByteBuffer(textureWidth * textureHeight * textureDepth * 4);
         fillDataArray(); // This take quite long.
+        timer.end("\"" + this.getClass() + "\" fills data in array takes: ");
     }
 
     public void end() {
@@ -48,93 +45,7 @@ public class Texture3D extends Thread {
         loadToTexture();
     }
 
-    private void fillDataArray() {
-        Timer timer = new Timer();
-        timer.start();
-        data = BufferUtils.createByteBuffer(textureWidth * textureHeight * textureDepth * 4);
-
-        switch (pattern.toUpperCase()) {
-            case "STRIPE" -> fillStripe();
-            case "SMOOTH" -> fillSmoothNoise(this.zoom);
-            case "MIX-SMOOTH" -> fillSmoothNoiseLevelMixed(this.zoom);
-            case "MARBLE" -> fillMarble(2.0, 1.5);
-            default -> throw new InvalidPatternException();
-        }
-        data.flip();
-        timer.end("\"" + pattern + "\" fills data in array takes: ");
-    }
-
-    private void fillStripe() {
-        for (int x = 0; x < textureWidth; x++) {
-            for (int y = 0; y < textureHeight; y++) {
-                for (int z = 0; z < textureDepth; z++) {
-                    if ((y / 10) % 2 == 0) {
-                        // yellow
-                        data.put((byte) 255); // r
-                        data.put((byte) 255); // g
-                        data.put((byte) 0);// b
-                        data.put((byte) 255); // a
-                    } else {
-                        // blue
-                        data.put((byte) 0); // r
-                        data.put((byte) 0); // g
-                        data.put((byte) 255);// b
-                        data.put((byte) 255); // a
-                    }
-                }
-            }
-        }
-    }
-
-
-    // This is for multi-level mixed;
-    private void fillSmoothNoiseLevelMixed(int zoom) {
-        noiseGenerator.levelMixedNoise(data, textureWidth, textureHeight, textureDepth, zoom, 1);
-    }
-
-    // This is for no multi-level mixed.
-    private void fillSmoothNoise(int zoom) {
-        noiseGenerator.levelMixedNoise(data, textureWidth, textureHeight, textureDepth, zoom, zoom);
-    }
-
-    private void fillMarble(double veinFrequency, double turbPower) {
-        // generate data into buffer for coming up usage.
-        noiseGenerator.levelMixedNoise(data, textureWidth, textureHeight, textureDepth, zoom, 1);
-
-        int index = 0;
-        for (double x = 0; x < textureWidth; x++) {
-            for (double y = 0; y < textureHeight; y++) {
-                for (double z = 0; z < textureDepth; z++) {
-                    byte noiseValue = data.get(index);
-
-                    double xyzValue = x / textureWidth + y / textureHeight + z / textureDepth
-                            + turbPower * noiseValue / 256.0;
-
-                    double sineValue = logistic(Math.abs(Math.sin(xyzValue * 3.14159 * veinFrequency)));
-                    sineValue = Math.max(-1.0, Math.min(sineValue * 1.25 - 0.20, 1.0));
-
-                    Color c = new Color((float) sineValue,
-                            (float) Math.min(sineValue * 1.5 - 0.25, 1.0),
-                            (float) sineValue);
-
-                    data.put((byte) (c.getRed())); // r
-                    data.put((byte) (c.getGreen())); // g
-                    data.put((byte) (c.getBlue()));// b
-                    data.put((byte) 255); // a
-
-                    index += 4;
-                }
-            }
-        }
-
-        data.flip();
-    }
-
-    private double logistic(double x) {
-        double k = 3.0;
-        return (1.0 / (1.0 + Math.pow(2.718, -k * x)));
-    }
-
+    protected abstract void fillDataArray();
 
     private void loadToTexture() {
         textureID = glGenTextures();
