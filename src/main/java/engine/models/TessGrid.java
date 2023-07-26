@@ -3,7 +3,7 @@ package engine.models;
 import engine.ShaderProgram;
 import engine.util.ValuesContainer;
 import engine.sceneComponents.Camera;
-import engine.sceneComponents.Texture2D;
+import engine.sceneComponents.textures.Texture2D;
 import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL43.*;

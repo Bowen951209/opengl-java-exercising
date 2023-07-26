@@ -1,7 +1,7 @@
 package chapter12.program12_4.launcher;
 
 import engine.gui.GUI;
-import engine.sceneComponents.Texture2D;
+import engine.sceneComponents.textures.Texture2D;
 import engine.util.Destroyer;
 import engine.util.Material;
 import engine.util.ValuesContainer;

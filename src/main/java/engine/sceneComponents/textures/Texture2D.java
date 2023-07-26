@@ -1,4 +1,4 @@
-package engine.sceneComponents;
+package engine.sceneComponents.textures;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;

@@ -1,4 +1,4 @@
-package engine.sceneComponents;
+package engine.sceneComponents.textures;
 
 public class StripeTexture extends Texture3D {
     public StripeTexture(int usingUnit) {

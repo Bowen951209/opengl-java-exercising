@@ -9,7 +9,7 @@ import engine.callbacks.DefaultCallbacks;
 import engine.exceptions.InvalidMaterialException;
 import engine.models.Sphere;
 import engine.sceneComponents.PositionalLight;
-import engine.sceneComponents.Texture2D;
+import engine.sceneComponents.textures.Texture2D;
 
 import java.nio.file.Path;
 

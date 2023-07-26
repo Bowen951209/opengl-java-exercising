@@ -2,7 +2,7 @@ package chapter10.program10_3.launcher;
 
 import chapter10.program10_2.launcher.Program10_2;
 import engine.gui.GUI;
-import engine.sceneComponents.Texture2D;
+import engine.sceneComponents.textures.Texture2D;
 import engine.util.Color;
 import engine.util.Material;
 import imgui.ImGui;

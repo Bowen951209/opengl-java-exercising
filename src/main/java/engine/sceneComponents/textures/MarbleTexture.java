@@ -1,4 +1,4 @@
-package engine.sceneComponents;
+package engine.sceneComponents.textures;
 
 import engine.util.NoiseGenerator;
 
