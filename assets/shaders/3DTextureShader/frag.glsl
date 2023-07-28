@@ -30,7 +30,7 @@ void main(void) {
     vec3 H = normalize(vHalfVec);
     float cosTheta = max(dot(L, N), 0.0);
 
-    vec4 texturedColor = texture(sampler, originalPosition / 2.0 + 0.5);// [0, 1] -> [-1, 1]
+    vec4 texturedColor = texture(sampler, originalPosition / 2.0 + 0.25);
 
     fragColor = 0.7 * texturedColor * (globalAmbient + light.ambient + light.diffuse * cosTheta)
     + 0.5 * light.specular * pow(cosTheta, material.shininess);
