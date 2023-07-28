@@ -1,14 +1,17 @@
 package chapter14;
 
-import engine.*;
+import engine.App;
+import engine.GLFWWindow;
+import engine.ShaderProgram;
 import engine.gui.*;
 import engine.models.FileModel;
 import engine.models.TessGrid;
 import engine.models.Torus;
-import engine.sceneComponents.textures.MarbleTexture;
 import engine.sceneComponents.PositionalLight;
+import engine.sceneComponents.textures.MarbleTexture;
 import engine.sceneComponents.textures.StripeTexture;
 import engine.sceneComponents.textures.Texture3D;
+import engine.sceneComponents.textures.WoodTexture;
 import engine.util.Destroyer;
 import engine.util.Material;
 import engine.util.ValuesContainer;
@@ -21,8 +24,8 @@ public class Main extends App {
     private Torus torus0, torus1;
     private PositionalLight light;
     private ShaderProgram transparencyProgram, clippingPlaneProgram, texture3DProgram;
-    private Texture3D stripe3D, marble3D;
-    private FileModel dragon,cube, pyramid;
+    private Texture3D stripe3D, marble3D, wood3D;
+    private FileModel dragon, cube0, cube1, pyramid;
 
     @Override
     protected void init() {
@@ -37,15 +40,21 @@ public class Main extends App {
         marble3D.setZoom(64);
         marble3D.start();
 
+        wood3D = new WoodTexture(0);
+        wood3D.setZoom(64);
+        wood3D.start();
+
         torus0 = new Torus(.5f, .2f, 48, true, new Vector3f(2f, 0.4f, -2f));
         torus1 = new Torus(.5f, .2f, 48, true, new Vector3f(-2f, 0.4f, 0f));
 
         // model file
         pyramid = new FileModel("assets/models/pyr.obj", true);
         pyramid.start();
-        cube = new FileModel("assets/models/cube.obj", new Vector3f(1f, -0.7f, 1f),false);
-        cube.start();
-        dragon  = new FileModel("assets/models/simplify-scaled-stanford-dragon.obj" , new Vector3f(0f, 1.5f, 0f), false) {
+        cube0 = new FileModel("assets/models/cube.obj", new Vector3f(1f, -0.7f, 1f), false);
+        cube0.start();
+        cube1 = new FileModel("assets/models/cube.obj", new Vector3f(2.5f, -0.7f, 1f), false);
+        cube1.start();
+        dragon = new FileModel("assets/models/simplify-scaled-stanford-dragon.obj", new Vector3f(0f, 1.5f, 0f), false) {
             @Override
             protected void updateMMat() {
                 super.updateMMat();
@@ -83,13 +92,13 @@ public class Main extends App {
 
         // GUI
         gui = new GUI(glfwWindow, 3f);
-        gui.getElementStates().put("planeEquation", new float[] {0f, 0f, 1f, 0f});
+        gui.getElementStates().put("planeEquation", new float[]{0f, 0f, 1f, 0f});
 
         GuiWindow planeControlPanel = new GuiWindow("Plane Control Panel", true)
                 .addChild(new Text("ax + by + cz + d = 0                "))
                 .addChild(new SliderFloat4("a / b / c / d", (float[]) gui.getElementStates().get("planeEquation"), -10f, 10f));
 
-        GuiWindow descriptionWindow =  new GuiWindow("Description", false)
+        GuiWindow descriptionWindow = new GuiWindow("Description", false)
                 .addChild(new Text(
                         """
                                 This is a all in one program in chapter14.
@@ -105,9 +114,11 @@ public class Main extends App {
 
         stripe3D.end();
         marble3D.end();
+        wood3D.end();
         dragon.end();
         pyramid.end();
-        cube.end();
+        cube0.end();
+        cube1.end();
     }
 
     @Override
@@ -206,8 +217,6 @@ public class Main extends App {
         glFrontFace(GL_CCW);
 
 
-
-
         // --------------3D Texture-------------------
         texture3DProgram.use();
         dragon.updateState(camera);
@@ -228,15 +237,25 @@ public class Main extends App {
         dragon.draw(GL_TRIANGLES);
 
         // Displaying marble 3D texture
-        cube.updateState(camera);
+        cube0.updateState(camera);
         Material.getMaterial("GOLD").putToUniforms(
                 texture3DProgram.getUniformLoc("material.shininess")
         );
-        texture3DProgram.putUniformMatrix4f("norm_matrix", cube.getInvTrMat().get(ValuesContainer.VALS_OF_16));
-        texture3DProgram.putUniformMatrix4f("mv_matrix", cube.getMvMat().get(ValuesContainer.VALS_OF_16));
+        texture3DProgram.putUniformMatrix4f("norm_matrix", cube0.getInvTrMat().get(ValuesContainer.VALS_OF_16));
+        texture3DProgram.putUniformMatrix4f("mv_matrix", cube0.getMvMat().get(ValuesContainer.VALS_OF_16));
         texture3DProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
         marble3D.bind();
-        cube.draw(GL_TRIANGLES);
+        cube0.draw(GL_TRIANGLES);
+
+        cube1.updateState(camera);
+        Material.getMaterial("GOLD").putToUniforms(
+                texture3DProgram.getUniformLoc("material.shininess")
+        );
+        texture3DProgram.putUniformMatrix4f("norm_matrix", cube1.getInvTrMat().get(ValuesContainer.VALS_OF_16));
+        texture3DProgram.putUniformMatrix4f("mv_matrix", cube1.getMvMat().get(ValuesContainer.VALS_OF_16));
+        texture3DProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
+        wood3D.bind();
+        cube1.draw(GL_TRIANGLES);
 
         glDisable(GL_CULL_FACE);
     }
