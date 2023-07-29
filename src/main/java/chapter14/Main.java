@@ -34,33 +34,33 @@ public class Main extends App {
 
         // Thread pre-prepare
         stripe3D = new StripeTexture(0);
-        stripe3D.start();
-
         marble3D = new MarbleTexture(0);
         marble3D.setZoom(64);
-        marble3D.start();
-
         wood3D = new WoodTexture(0);
         wood3D.setZoom(64);
-        wood3D.start();
+
+        texture3DList.add(stripe3D);
+        texture3DList.add(marble3D);
+        texture3DList.add(wood3D);
+
 
         torus0 = new Torus(.5f, .2f, 48, true, new Vector3f(2f, 0.4f, -2f));
         torus1 = new Torus(.5f, .2f, 48, true, new Vector3f(-2f, 0.4f, 0f));
 
         // model file
         pyramid = new FileModel("assets/models/pyr.obj", true);
-        pyramid.start();
         cube0 = new FileModel("assets/models/cube.obj", new Vector3f(1f, -0.7f, 1f), false);
-        cube0.start();
         cube1 = new FileModel("assets/models/cube.obj", new Vector3f(2.5f, -0.7f, 1f), false);
-        cube1.start();
         dragon = new FileModel("assets/models/simplify-scaled-stanford-dragon.obj", new Vector3f(0f, 1.5f, 0f), false) {
             @Override
             protected void updateMMat() {
                 super.updateMMat();
             }
         };
-        dragon.start();
+        fileModelList.add(pyramid);
+        fileModelList.add(cube0);
+        fileModelList.add(cube1);
+        fileModelList.add(dragon);
 
         grid = new TessGrid(
                 "assets/textures/imageTextures/greenMountain.jpg",
@@ -111,14 +111,6 @@ public class Main extends App {
 
         gui.addComponents(descriptionWindow)
                 .addComponents(planeControlPanel);
-
-        stripe3D.end();
-        marble3D.end();
-        wood3D.end();
-        dragon.end();
-        pyramid.end();
-        cube0.end();
-        cube1.end();
     }
 
     @Override

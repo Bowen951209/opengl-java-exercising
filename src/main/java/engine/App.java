@@ -1,9 +1,14 @@
 package engine;
 
 import engine.gui.GUI;
+import engine.models.FileModel;
+import engine.sceneComponents.textures.Texture3D;
 import org.lwjgl.glfw.GLFW;
 import engine.callbacks.DefaultCallbacks;
 import engine.sceneComponents.Camera;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
@@ -14,6 +19,8 @@ public abstract class App {
     protected GUI gui;
     protected Camera camera;
     private boolean isWantGUI, isWantCullFace;
+    protected List<FileModel> fileModelList = new ArrayList<>();
+    protected List<Texture3D> texture3DList = new ArrayList<>();
 
     protected abstract void init();
 
@@ -51,11 +58,27 @@ public abstract class App {
         // customizable init
         init();
 
+        for (Texture3D i : texture3DList) {
+            i.start();
+        }
+        for (FileModel i : fileModelList) {
+            i.start();
+        }
+
+
         // always the same setup.
         camera = new Camera(glfwWindow.getWidth(), glfwWindow.getHeight()); // camera init.
         new DefaultCallbacks(glfwWindow.getID(), camera, isWantGUI).bindToGLFW(); // callback.
         getAllUniformLocs();
         configGL(); // In some programs, like one using tessellation, wouldn't work with face culling.
+
+
+        for (Texture3D i : texture3DList) {
+            i.end();
+        }
+        for (FileModel i : fileModelList) {
+            i.end();
+        }
 
         // loop.
         assert glfwWindow != null;
