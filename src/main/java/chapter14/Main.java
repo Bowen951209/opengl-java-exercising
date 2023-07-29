@@ -115,12 +115,22 @@ public class Main extends App {
 
     @Override
     protected void drawScene() {
-        // ------------------- Grid ( Fog ) --------------------
+        drawGrid();
+        drawTransparency();
+        glDisable(GL_BLEND);
+        drawClippingPlane();
+        glFrontFace(GL_CCW);
+        draw3DTextures();
+
+        glDisable(GL_CULL_FACE);
+    }
+
+    private void drawGrid() {
         TessGrid.useTessProgram();
         grid.updateState(camera);
         grid.draw(0);
-
-        // ------------------ Transparency ---------------------
+    }
+    private void drawTransparency() {
         glEnable(GL_BLEND);
         glEnable(GL_CULL_FACE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -173,10 +183,8 @@ public class Main extends App {
         transparencyProgram.putUniform1f("flipNormal", 1f); // flip normals to inside(back face)
         pyramid.updateState(camera);
         pyramid.draw(GL_TRIANGLES);
-
-        glDisable(GL_BLEND);
-
-        // -----------------About clipping planes-----------------------
+    }
+    private void drawClippingPlane() {
         glEnable(GL_CLIP_DISTANCE0);
         clippingPlaneProgram.use();
         clippingPlaneProgram.putUniform4f("clipPlane", (float[]) gui.getElementStates().get("planeEquation"));
@@ -205,11 +213,8 @@ public class Main extends App {
         glFrontFace(GL_CW);
         clippingPlaneProgram.putUniform1f("flipNormal", -1f);
         torus1.draw(GL_TRIANGLES);
-
-        glFrontFace(GL_CCW);
-
-
-        // --------------3D Texture-------------------
+    }
+    private void draw3DTextures() {
         texture3DProgram.use();
         dragon.updateState(camera);
         light.putToUniforms(
@@ -248,8 +253,6 @@ public class Main extends App {
         texture3DProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
         wood3D.bind();
         cube1.draw(GL_TRIANGLES);
-
-        glDisable(GL_CULL_FACE);
     }
 
     @Override
