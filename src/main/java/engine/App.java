@@ -13,20 +13,21 @@ public abstract class App {
     protected GLFWWindow glfwWindow;
     protected GUI gui;
     protected Camera camera;
+    private boolean isWantGUI, isWantCullFace;
 
     protected abstract void init();
 
-    protected void getAllUniformLocs() {}
+    protected void getAllUniformLocs() {
+    }
 
     protected abstract void drawScene();
 
     protected abstract void destroy();
 
-    private void configGL(boolean isCullFace) {
+    private void configGL() {
         // GL settings
-        if (isCullFace)
+        if (isWantCullFace)
             glEnable(GL_CULL_FACE);
-
         glFrontFace(GL_CCW);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
@@ -37,20 +38,8 @@ public abstract class App {
         camera.updateVMat();
 
         drawScene();
-
-        gui.update();
-
-        camera.handle();
-
-        glfwSwapBuffers(glfwWindow.getID());
-        glfwPollEvents();
-    }
-
-    private void noGUILoop() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        camera.updateVMat();
-
-        drawScene();
+        if (isWantGUI)
+            gui.update();
 
         camera.handle();
 
@@ -58,16 +47,15 @@ public abstract class App {
         glfwPollEvents();
     }
 
-
-    protected void run(boolean isWantCullFace) {
+    protected void run() {
         // customizable init
         init();
 
         // always the same setup.
         camera = new Camera(glfwWindow.getWidth(), glfwWindow.getHeight()); // camera init.
-        new DefaultCallbacks(glfwWindow.getID(), camera, true).bindToGLFW(); // callback.
+        new DefaultCallbacks(glfwWindow.getID(), camera, isWantGUI).bindToGLFW(); // callback.
         getAllUniformLocs();
-        configGL(isWantCullFace); // In some programs, like one using tessellation, wouldn't work with face culling.
+        configGL(); // In some programs, like one using tessellation, wouldn't work with face culling.
 
         // loop.
         assert glfwWindow != null;
@@ -78,26 +66,15 @@ public abstract class App {
         // clean up.
         destroy();
     }
+
+    public void run(boolean isWantGUI) {
+        this.isWantGUI = isWantGUI;
+        run();
+    }
+
     public void run(boolean isWantCullFace, boolean isWantGUI) {
-        if (isWantGUI)
-            run(isWantCullFace);
-        else {
-            init();
-
-            // always the same setup.
-            camera = new Camera(glfwWindow.getWidth(), glfwWindow.getHeight()); // camera init.
-            new DefaultCallbacks(glfwWindow.getID(), camera, false).bindToGLFW(); // callback.
-            getAllUniformLocs();
-            configGL(isWantCullFace); // In some programs, like one using tessellation, wouldn't work with face culling.
-
-            // loop.
-            assert glfwWindow != null;
-            while (!GLFW.glfwWindowShouldClose(glfwWindow.getID())) {
-                noGUILoop();
-            }
-
-            // clean up.
-            destroy();
-        }
+        this.isWantCullFace = isWantCullFace;
+        this.isWantGUI = isWantGUI;
+        run();
     }
 }
