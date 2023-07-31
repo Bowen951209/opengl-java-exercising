@@ -10,6 +10,15 @@ public class GuiWindow implements GuiComponents {
     private final String title;
     private final boolean isCloseable;
     private final ImBoolean isShow = new ImBoolean(false);
+    private float width, height;
+
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
 
     public ImBoolean isShow() {
         return isShow;
@@ -33,6 +42,9 @@ public class GuiWindow implements GuiComponents {
 
     @Override
     public void render() {
+        if (width != 0 || height != 0)
+            ImGui.setNextWindowSize(width, height);
+
         if (isCloseable) {
             if (isShow.get()) {
                 ImGui.begin(title, isShow);

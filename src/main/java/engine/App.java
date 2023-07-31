@@ -3,6 +3,7 @@ package engine;
 import engine.gui.GUI;
 import engine.models.FileModel;
 import engine.sceneComponents.textures.Texture3D;
+import engine.util.Timer;
 import org.lwjgl.glfw.GLFW;
 import engine.callbacks.DefaultCallbacks;
 import engine.sceneComponents.Camera;
@@ -16,11 +17,28 @@ import static org.lwjgl.opengl.GL11.*;
 
 public abstract class App {
     protected GLFWWindow glfwWindow;
+
+    public GLFWWindow getGlfwWindow() {
+        return glfwWindow;
+    }
+
     protected GUI gui;
+
+    public GUI getGui() {
+        return gui;
+    }
+
     protected Camera camera;
     private boolean isWantGUI, isWantCullFace;
     protected List<FileModel> fileModelList = new ArrayList<>();
     protected List<Texture3D> texture3DList = new ArrayList<>();
+
+    private final Timer timer = new Timer();
+    private float fps;
+
+    public float getFps() {
+        return fps;
+    }
 
     protected abstract void init();
 
@@ -41,6 +59,7 @@ public abstract class App {
     }
 
     protected void loop() {
+        timer.start();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         camera.updateVMat();
 
@@ -52,12 +71,16 @@ public abstract class App {
 
         glfwSwapBuffers(glfwWindow.getID());
         glfwPollEvents();
+        timer.end();
+        fps = timer.getFps();
     }
 
     protected void run() {
         // customizable init
         init();
 
+        // TODO: 2023/7/31 Add a fps counter
+        // TODO: 2023/7/31 Texture3D and FileModel implement same interface.
         for (Texture3D i : texture3DList) {
             i.start();
         }

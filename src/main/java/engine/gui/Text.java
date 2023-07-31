@@ -3,7 +3,11 @@ package engine.gui;
 import imgui.internal.ImGui;
 
 public class Text implements GuiComponents {
-    private final String content;
+    private String content;
+
+    public void setContent(String content) {
+        this.content = content;
+    }
 
     public Text(String content) {
         this.content = content;

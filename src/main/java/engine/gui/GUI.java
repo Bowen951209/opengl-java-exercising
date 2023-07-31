@@ -12,9 +12,14 @@ import java.util.List;
 import java.util.Map;
 
 public class GUI {
-    final ImGuiIO io;
-    final ImGuiImplGl3 imGuiImplGl3;
-    final long windowId;
+    private final ImGuiIO io;
+    private final ImGuiImplGl3 imGuiImplGl3;
+    private final long windowId;
+    private final float fontScale;
+
+    public float getFontScale() {
+        return fontScale;
+    }
 
     private final List<GuiComponents> componentsList = new ArrayList<>();
     public Map<String, Object> getElementStates() {
@@ -22,6 +27,7 @@ public class GUI {
     }
     private final Map<String, Object> elementStates = new HashMap<>();
     public GUI(int initWindowWidth, int initWindowHeight, long windowID, float fontScale) {
+        this.fontScale = fontScale;
         windowId = windowID;
 
         ImGui.createContext();

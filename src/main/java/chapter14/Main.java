@@ -84,11 +84,8 @@ public class Main extends App {
                 "assets/shaders/3DTextureShader/frag.glsl"
         );
 
-        // Models
-
         // light
         light = new PositionalLight().brightLight();
-
 
         // GUI
         gui = new GUI(glfwWindow, 3f);
@@ -110,7 +107,8 @@ public class Main extends App {
                 .addChild(new WindowCallerButton("plane control", planeControlPanel));
 
         gui.addComponents(descriptionWindow)
-                .addComponents(planeControlPanel);
+                .addComponents(planeControlPanel)
+                .addComponents(new FpsDisplay(this));
     }
 
     @Override
