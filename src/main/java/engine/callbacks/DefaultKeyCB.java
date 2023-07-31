@@ -7,8 +7,14 @@ import java.util.HashMap;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-class DefaultKeyCB extends GLFWKeyCallback {
+public class DefaultKeyCB extends GLFWKeyCallback {
     private final HashMap<Integer, Runnable> pressKeymap = new HashMap<>(), releaseKeymap = new HashMap<>();
+    public void addKeybindingPress(int key, Runnable callback) {
+        pressKeymap.put(key, callback);
+    }
+//    public void addKeybindingRelease(int key, Runnable callback) {
+//        releaseKeymap.put(key, callback);
+//    }
 
     public DefaultKeyCB(Camera camera, DefaultCursorCB cursorCB) {
         pressKeymap.put(GLFW_KEY_W, camera::forward);

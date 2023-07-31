@@ -17,6 +17,11 @@ import static org.lwjgl.opengl.GL11.*;
 
 public abstract class App {
     protected GLFWWindow glfwWindow;
+    private DefaultCallbacks defaultCallbacks;
+
+    public DefaultCallbacks getDefaultCallbacks() {
+        return defaultCallbacks;
+    }
 
     public GLFWWindow getGlfwWindow() {
         return glfwWindow;
@@ -79,7 +84,6 @@ public abstract class App {
         // customizable init
         init();
 
-        // TODO: 2023/7/31 Add a fps counter
         // TODO: 2023/7/31 Texture3D and FileModel implement same interface.
         for (Texture3D i : texture3DList) {
             i.start();
@@ -91,10 +95,12 @@ public abstract class App {
 
         // always the same setup.
         camera = new Camera(glfwWindow.getWidth(), glfwWindow.getHeight()); // camera init.
-        new DefaultCallbacks(glfwWindow.getID(), camera, isWantGUI).bindToGLFW(); // callback.
+        defaultCallbacks = new DefaultCallbacks(glfwWindow.getID(), camera, isWantGUI); // callback.
+        defaultCallbacks.bindToGLFW();
         getAllUniformLocs();
         configGL(); // In some programs, like one using tessellation, wouldn't work with face culling.
-
+        if (isWantGUI)
+            initGUI();
 
         for (Texture3D i : texture3DList) {
             i.end();
@@ -112,6 +118,8 @@ public abstract class App {
         // clean up.
         destroy();
     }
+
+    protected void initGUI() {}
 
     public void run(boolean isWantGUI) {
         this.isWantGUI = isWantGUI;

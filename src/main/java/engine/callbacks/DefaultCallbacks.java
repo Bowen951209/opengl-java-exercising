@@ -16,6 +16,11 @@ public class DefaultCallbacks {
     private final DefaultCursorCB defaultCursorCB;
     private final DefaultFrameBufferResizeCB defaultFrameBufferResizeCB;
     private final DefaultKeyCB defaultKeyCB;
+
+    public DefaultKeyCB getDefaultKeyCB() {
+        return defaultKeyCB;
+    }
+
     private final long windowID;
 
     public DefaultCallbacks(long windowID, Camera camera) {

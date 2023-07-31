@@ -8,10 +8,7 @@ import engine.models.FileModel;
 import engine.models.TessGrid;
 import engine.models.Torus;
 import engine.sceneComponents.PositionalLight;
-import engine.sceneComponents.textures.MarbleTexture;
-import engine.sceneComponents.textures.StripeTexture;
-import engine.sceneComponents.textures.Texture3D;
-import engine.sceneComponents.textures.WoodTexture;
+import engine.sceneComponents.textures.*;
 import engine.util.Destroyer;
 import engine.util.Material;
 import engine.util.ValuesContainer;
@@ -24,8 +21,9 @@ public class Main extends App {
     private Torus torus0, torus1;
     private PositionalLight light;
     private ShaderProgram transparencyProgram, clippingPlaneProgram, texture3DProgram;
-    private Texture3D stripe3D, marble3D, wood3D;
+    private Texture3D stripe3D, marble3D, wood3D, cloud3D;
     private FileModel dragon, cube0, cube1, pyramid;
+    private Skydome skydome;
 
     @Override
     protected void init() {
@@ -38,10 +36,13 @@ public class Main extends App {
         marble3D.setZoom(64);
         wood3D = new WoodTexture(0);
         wood3D.setZoom(64);
+        cloud3D = new CloudTexture(0);
+        cloud3D.setZoom(16);
 
         texture3DList.add(stripe3D);
         texture3DList.add(marble3D);
         texture3DList.add(wood3D);
+        texture3DList.add(cloud3D);
 
 
         torus0 = new Torus(.5f, .2f, 48, true, new Vector3f(2f, 0.4f, -2f));
@@ -69,6 +70,7 @@ public class Main extends App {
         );
         grid.setDrawMode(GL_FILL);
 
+        skydome = new Skydome(cloud3D);
 
         // Shader Programs
         transparencyProgram = new ShaderProgram(
@@ -86,8 +88,10 @@ public class Main extends App {
 
         // light
         light = new PositionalLight().brightLight();
+    }
 
-        // GUI
+    @Override
+    protected void initGUI() {
         gui = new GUI(glfwWindow, 3f);
         gui.getElementStates().put("planeEquation", new float[]{0f, 0f, 1f, 0f});
 
@@ -119,6 +123,7 @@ public class Main extends App {
         drawClippingPlane();
         glFrontFace(GL_CCW);
         draw3DTextures();
+        drawCloudSkydome();
 
         glDisable(GL_CULL_FACE);
     }
@@ -128,6 +133,7 @@ public class Main extends App {
         grid.updateState(camera);
         grid.draw(0);
     }
+
     private void drawTransparency() {
         glEnable(GL_BLEND);
         glEnable(GL_CULL_FACE);
@@ -182,6 +188,7 @@ public class Main extends App {
         pyramid.updateState(camera);
         pyramid.draw(GL_TRIANGLES);
     }
+
     private void drawClippingPlane() {
         glEnable(GL_CLIP_DISTANCE0);
         clippingPlaneProgram.use();
@@ -212,6 +219,7 @@ public class Main extends App {
         clippingPlaneProgram.putUniform1f("flipNormal", -1f);
         torus1.draw(GL_TRIANGLES);
     }
+
     private void draw3DTextures() {
         texture3DProgram.use();
         dragon.updateState(camera);
@@ -251,6 +259,12 @@ public class Main extends App {
         texture3DProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
         wood3D.bind();
         cube1.draw(GL_TRIANGLES);
+    }
+
+    private void drawCloudSkydome() {
+        skydome.updateState(camera);
+
+        skydome.draw(GL_TRIANGLES);
     }
 
     @Override
