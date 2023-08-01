@@ -35,8 +35,20 @@ public abstract class App {
 
     protected Camera camera;
     private boolean isWantGUI, isWantCullFace;
-    protected List<FileModel> fileModelList = new ArrayList<>();
-    protected List<Texture3D> texture3DList = new ArrayList<>();
+    protected List<FileModel> fileModelList = new ArrayList<>() {
+        @Override
+        public boolean add(FileModel fileModel) {
+            fileModel.start();
+            return super.add(fileModel);
+        }
+    };
+    protected List<Texture3D> texture3DList = new ArrayList<>() {
+        @Override
+        public boolean add(Texture3D texture3D) {
+            texture3D.start();
+            return super.add(texture3D);
+        }
+    };
 
     private final Timer timer = new Timer();
     private float fps;
@@ -85,9 +97,6 @@ public abstract class App {
         init();
 
         // TODO: 2023/7/31 Texture3D and FileModel implement same interface.
-        texture3DList.forEach(Thread::start);
-        fileModelList.forEach(Thread::start);
-
 
         // always the same setup.
         camera = new Camera(glfwWindow.getWidth(), glfwWindow.getHeight()); // camera init.
