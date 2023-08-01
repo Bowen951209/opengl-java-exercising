@@ -16,7 +16,7 @@ public class Program12_5 extends Program12_4 {
         new Program12_5().run(false);
     }
     @Override
-    protected void init() {
+    protected void customizedInit() {
         // p.s most are copied from Program12_4.
 
         // Window

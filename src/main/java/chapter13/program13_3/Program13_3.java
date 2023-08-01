@@ -14,7 +14,7 @@ import static org.lwjgl.opengl.GL20.*;
 
 public class Program13_3 extends Program13_2 {
     @Override
-    protected void init() {
+    protected void customizedInit() {
         glfwWindow = new GLFWWindow(1500, 1000, "Prog13.3 Adding Primitives");
 
         shaderProgram = new ShaderProgram(

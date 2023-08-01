@@ -18,7 +18,7 @@ public class Program13_4 extends Program13_2 {
     }
 
     @Override
-    protected void init() {
+    protected void customizedInit() {
         glfwWindow = new GLFWWindow(1500, 1000, "Prog13.4 Changing Primitive type");
 
         shaderProgram = new ShaderProgram(

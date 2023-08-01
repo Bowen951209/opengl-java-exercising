@@ -21,12 +21,14 @@ public class Main extends App {
     private Torus torus0, torus1;
     private PositionalLight light;
     private ShaderProgram transparencyProgram, clippingPlaneProgram, texture3DProgram;
-    private Texture3D stripe3D, marble3D, wood3D, cloud3D;
+    private Texture3D stripe3D;
+    private Texture3D marble3D;
+    private Texture3D wood3D;
     private FileModel dragon, cube0, cube1, pyramid;
     private Skydome skydome;
 
     @Override
-    protected void init() {
+    protected void customizedInit() {
         // Window
         glfwWindow = new GLFWWindow(1500, 1000, "Chapter14");
 
@@ -36,7 +38,7 @@ public class Main extends App {
         marble3D.setZoom(64);
         wood3D = new WoodTexture(0);
         wood3D.setZoom(64);
-        cloud3D = new CloudTexture(0);
+        Texture3D cloud3D = new CloudTexture(0);
         cloud3D.setZoom(16);
 
         texture3DList.add(stripe3D);
@@ -70,7 +72,7 @@ public class Main extends App {
         );
         grid.setDrawMode(GL_FILL);
 
-        skydome = new Skydome(cloud3D);
+        skydome = new Skydome(cloud3D, camera);
 
         // Shader Programs
         transparencyProgram = new ShaderProgram(

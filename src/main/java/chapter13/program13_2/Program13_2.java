@@ -22,7 +22,7 @@ public class Program13_2 extends Program13_1 {
     }
 
     @Override
-    protected void init() {
+    protected void customizedInit() {
         glfwWindow = new GLFWWindow(1500, 1000, "Prog13.2 Deleting Primitives");
 
         shaderProgram = new ShaderProgram(

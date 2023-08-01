@@ -21,7 +21,7 @@ public class Program12_4 extends App {
 
 
     @Override
-    protected void init() {
+    protected void customizedInit() {
         // Window
         glfwWindow = new GLFWWindow(1500, 1000, "Prog12.4");
 

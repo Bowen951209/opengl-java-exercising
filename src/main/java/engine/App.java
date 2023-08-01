@@ -57,7 +57,7 @@ public abstract class App {
         return fps;
     }
 
-    protected abstract void init();
+    protected abstract void customizedInit();
 
     protected void getAllUniformLocs() {
     }
@@ -93,13 +93,13 @@ public abstract class App {
     }
 
     protected void run() {
-        // customizable init
-        init();
+        // customizable customizedInit
+        customizedInit();
 
         // TODO: 2023/7/31 Texture3D and FileModel implement same interface.
 
         // always the same setup.
-        camera = new Camera(glfwWindow.getWidth(), glfwWindow.getHeight()); // camera init.
+        camera = new Camera(glfwWindow.getWidth(), glfwWindow.getHeight()); // camera customizedInit.
         defaultCallbacks = new DefaultCallbacks(glfwWindow.getID(), camera, isWantGUI); // callback.
         defaultCallbacks.bindToGLFW();
         getAllUniformLocs();

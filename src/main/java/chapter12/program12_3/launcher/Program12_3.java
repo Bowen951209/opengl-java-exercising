@@ -15,7 +15,7 @@ public class Program12_3 extends App {
     private Texture2D texture;
 
     @Override
-    protected void init() {
+    protected void customizedInit() {
         glfwWindow = new GLFWWindow(1500, 1000, "Prog12.3");
 
         shaderProgram = new ShaderProgram(

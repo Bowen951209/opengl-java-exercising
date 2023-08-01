@@ -21,7 +21,7 @@ public class Program13_1 extends App {
     protected float inflateValue, inflateOffSet = 0.05f;
 
     @Override
-    protected void init() {
+    protected void customizedInit() {
         glfwWindow = new GLFWWindow(1500, 1000, "Prog13.1 Geometry shader first try");
 
         shaderProgram = new ShaderProgram(

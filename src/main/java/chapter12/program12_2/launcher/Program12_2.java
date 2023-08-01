@@ -20,7 +20,7 @@ public class Program12_2 extends App {
         // so I just disabled it.
     }
     @Override
-    protected void init() {
+    protected void customizedInit() {
         // give window.
         glfwWindow = new GLFWWindow(1500, 1000, "Prog12.2");
 
