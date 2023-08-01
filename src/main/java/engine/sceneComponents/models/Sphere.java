@@ -12,18 +12,15 @@ import static org.lwjgl.opengl.GL43.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL43.glDrawElements;
 
 public class Sphere extends Model {
-    private int numIndices;
-    private final int prec; // prec = precision
-    private int[] indices;
-    private Vector3f[] vertices, tangents;
-    private Vector2f[] texCoords;
-    private Vector3f[] normals;
-    private int numVertices;
-    private final FloatBuffer VERTICES_IN_BUF;
-    private final FloatBuffer NORMALS_IN_BUF;
-    private final FloatBuffer TC_IN_BUF;
-    private final FloatBuffer TANGENTS_IN_BUF;
-    private final IntBuffer INDICES_IN_BUFFER;
+    protected int numIndices;
+    protected int prec; // prec = precision
+    protected int[] indices;
+    protected Vector3f[] vertices, tangents;
+    protected Vector2f[] texCoords;
+    protected Vector3f[] normals;
+    protected int numVertices;
+    private final FloatBuffer tangentsInBuf;
+    protected IntBuffer indicesInBuffer;
 
     public Sphere() {
         this(100, new Vector3f());
@@ -38,45 +35,45 @@ public class Sphere extends Model {
         prec = p;
         initSphere();
 
-        VERTICES_IN_BUF = BufferUtils.createFloatBuffer(numVertices * 3);
-        NORMALS_IN_BUF = BufferUtils.createFloatBuffer(numVertices * 3);
-        TC_IN_BUF = BufferUtils.createFloatBuffer(numVertices * 2);
-        TANGENTS_IN_BUF = BufferUtils.createFloatBuffer(numVertices * 3);
+        verticesInBuf = BufferUtils.createFloatBuffer(numVertices * 3);
+        normalsInBuf = BufferUtils.createFloatBuffer(numVertices * 3);
+        tcInBuf = BufferUtils.createFloatBuffer(numVertices * 2);
+        tangentsInBuf = BufferUtils.createFloatBuffer(numVertices * 3);
 
-        INDICES_IN_BUFFER = BufferUtils.createIntBuffer(numIndices);
-        INDICES_IN_BUFFER.put(indices);
+        indicesInBuffer = BufferUtils.createIntBuffer(numIndices);
+        indicesInBuffer.put(indices);
 
         putDataIntoBuffer();
-        storeDataToVBOs(VERTICES_IN_BUF, NORMALS_IN_BUF, TC_IN_BUF, TANGENTS_IN_BUF);
-        storeIndicesToEBO(INDICES_IN_BUFFER);
+        storeDataToVBOs(verticesInBuf, normalsInBuf, tcInBuf, tangentsInBuf);
+        storeIndicesToEBO(indicesInBuffer);
     }
 
-    private void putDataIntoBuffer() {
+    protected void putDataIntoBuffer() {
         for (int i = 0; i < numVertices; i++) {
-            VERTICES_IN_BUF.put(vertices[i].x());         // vertex position
-            VERTICES_IN_BUF.put(vertices[i].y());
-            VERTICES_IN_BUF.put(vertices[i].z());
+            verticesInBuf.put(vertices[i].x());         // vertex position
+            verticesInBuf.put(vertices[i].y());
+            verticesInBuf.put(vertices[i].z());
 
-            NORMALS_IN_BUF.put(normals[i].x());         // normal vector
-            NORMALS_IN_BUF.put(normals[i].y());
-            NORMALS_IN_BUF.put(normals[i].z());
+            normalsInBuf.put(normals[i].x());         // normal vector
+            normalsInBuf.put(normals[i].y());
+            normalsInBuf.put(normals[i].z());
 
-            TC_IN_BUF.put(texCoords[i].x());            // texture coords
-            TC_IN_BUF.put(texCoords[i].y());
+            tcInBuf.put(texCoords[i].x());            // texture coords
+            tcInBuf.put(texCoords[i].y());
 
-            TANGENTS_IN_BUF.put(tangents[i].x());       // tangents
-            TANGENTS_IN_BUF.put(tangents[i].y());
-            TANGENTS_IN_BUF.put(tangents[i].z());
+            tangentsInBuf.put(tangents[i].x());       // tangents
+            tangentsInBuf.put(tangents[i].y());
+            tangentsInBuf.put(tangents[i].z());
         }
 
-        VERTICES_IN_BUF.flip(); // 此行非常必要!
-        NORMALS_IN_BUF.flip();
-        INDICES_IN_BUFFER.flip();
-        TC_IN_BUF.flip();
-        TANGENTS_IN_BUF.flip();
+        verticesInBuf.flip(); // 此行非常必要!
+        normalsInBuf.flip();
+        indicesInBuffer.flip();
+        tcInBuf.flip();
+        tangentsInBuf.flip();
     }
 
-    private void initSphere() {
+    protected void initSphere() {
         numVertices = (prec + 1) * (prec + 1);
         numIndices = prec * prec * 6;
         indices = new int[numIndices];

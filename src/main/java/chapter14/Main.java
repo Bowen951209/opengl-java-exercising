@@ -86,7 +86,6 @@ public class Main extends App {
         fileModelList.add(cube0);
         fileModelList.add(cube1);
         fileModelList.add(dragon);
-        fileModelList.add(skydome);
 
         grid = new TessGrid(
                 "assets/textures/imageTextures/greenMountain.jpg",
@@ -134,7 +133,6 @@ public class Main extends App {
         drawClippingPlane();
         glFrontFace(GL_CCW);
         draw3DTextures();
-
         glDisable(GL_CULL_FACE);
     }
 
