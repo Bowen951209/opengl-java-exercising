@@ -26,27 +26,47 @@ public class Main extends App {
     private Texture3D wood3D;
     private FileModel dragon, cube0, cube1, pyramid;
     private Skydome skydome;
+    private CloudTexture cloud3D;
 
     @Override
-    protected void customizedInit() {
-        // Window
+    protected void initGLFWWindow() {
         glfwWindow = new GLFWWindow(1500, 1000, "Chapter14");
+    }
 
+    @Override
+    protected void initShaderPrograms() {
+        transparencyProgram = new ShaderProgram(
+                "assets/shaders/transparency/vert.glsl",
+                "assets/shaders/transparency/frag.glsl"
+        );
+        clippingPlaneProgram = new ShaderProgram(
+                "assets/shaders/clippingPlane/vert.glsl",
+                "assets/shaders/clippingPlane/frag.glsl"
+        );
+        texture3DProgram = new ShaderProgram(
+                "assets/shaders/3DTextureShader/vert.glsl",
+                "assets/shaders/3DTextureShader/frag.glsl"
+        );
+    }
+
+    @Override
+    protected void initTextures() {
         // Thread pre-prepare
         stripe3D = new StripeTexture(0);
         marble3D = new MarbleTexture(0);
         marble3D.setZoom(64);
         wood3D = new WoodTexture(0);
         wood3D.setZoom(64);
-        Texture3D cloud3D = new CloudTexture(0);
-        cloud3D.setZoom(16);
+        cloud3D = new CloudTexture(0);
 
         texture3DList.add(stripe3D);
         texture3DList.add(marble3D);
         texture3DList.add(wood3D);
         texture3DList.add(cloud3D);
+    }
 
-
+    @Override
+    protected void initModels() {
         torus0 = new Torus(.5f, .2f, 48, true, new Vector3f(2f, 0.4f, -2f));
         torus1 = new Torus(.5f, .2f, 48, true, new Vector3f(-2f, 0.4f, 0f));
 
@@ -73,20 +93,6 @@ public class Main extends App {
         grid.setDrawMode(GL_FILL);
 
         skydome = new Skydome(cloud3D, camera);
-
-        // Shader Programs
-        transparencyProgram = new ShaderProgram(
-                "assets/shaders/transparency/vert.glsl",
-                "assets/shaders/transparency/frag.glsl"
-        );
-        clippingPlaneProgram = new ShaderProgram(
-                "assets/shaders/clippingPlane/vert.glsl",
-                "assets/shaders/clippingPlane/frag.glsl"
-        );
-        texture3DProgram = new ShaderProgram(
-                "assets/shaders/3DTextureShader/vert.glsl",
-                "assets/shaders/3DTextureShader/frag.glsl"
-        );
 
         // light
         light = new PositionalLight().brightLight();
@@ -119,13 +125,13 @@ public class Main extends App {
 
     @Override
     protected void drawScene() {
+        drawCloudSkydome();
         drawGrid();
         drawTransparency();
         glDisable(GL_BLEND);
         drawClippingPlane();
         glFrontFace(GL_CCW);
         draw3DTextures();
-        drawCloudSkydome();
 
         glDisable(GL_CULL_FACE);
     }

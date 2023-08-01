@@ -56,7 +56,7 @@ public class NoiseGenerator {
     // in the thread, add the mapped noise value at buffer's index in the for loop
     // finish writing buffer, and flip it.
 
-    public void levelMixedNoise(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, int maxSize, int minSize) {
+    public void levelMixedNoise(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, int maxSize, int minSize, String color) {
         final int initialSize = maxSize;
         int sizeCounts = 0;
         while (maxSize >= minSize) {
@@ -86,11 +86,17 @@ public class NoiseGenerator {
                             byte lastValue = buffer.get(currentIndex);
                             byte newValue = (byte) (lastValue + noiseValue * 255);
 
-                            buffer.put(currentIndex, newValue);            //r
-                            buffer.put(currentIndex + 1, newValue); //g
-                            buffer.put(currentIndex + 2, newValue); //b
-                            buffer.put(currentIndex + 3, (byte) 255);//a
-
+                            if (color.equalsIgnoreCase("WHITE")) {
+                                buffer.put(currentIndex, newValue);            //r
+                                buffer.put(currentIndex + 1, newValue); //g
+                                buffer.put(currentIndex + 2, newValue); //b
+                                buffer.put(currentIndex + 3, (byte) 255);//a
+                            } else if (color.equalsIgnoreCase("BLUE")) {
+                                buffer.put(currentIndex, newValue);            //r
+                                buffer.put(currentIndex + 1, newValue); //g
+                                buffer.put(currentIndex + 2, (byte) 255); //b
+                                buffer.put(currentIndex + 3, (byte) 255);//a
+                            }
                             currentIndex += 4;
                         }
                     }
@@ -110,6 +116,9 @@ public class NoiseGenerator {
             }
         }
 
+    }
+    public void levelMixedNoise(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, int maxSize, int minSize) {
+        levelMixedNoise(buffer, textureWidth, textureHeight, textureDepth, maxSize, minSize, "WHITE");
     }
 
     public double smoothNoise(double x, double y, double z) {
