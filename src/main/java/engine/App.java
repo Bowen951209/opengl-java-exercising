@@ -85,12 +85,8 @@ public abstract class App {
         init();
 
         // TODO: 2023/7/31 Texture3D and FileModel implement same interface.
-        for (Texture3D i : texture3DList) {
-            i.start();
-        }
-        for (FileModel i : fileModelList) {
-            i.start();
-        }
+        texture3DList.forEach(Thread::start);
+        fileModelList.forEach(Thread::start);
 
 
         // always the same setup.
@@ -102,12 +98,9 @@ public abstract class App {
         if (isWantGUI)
             initGUI();
 
-        for (Texture3D i : texture3DList) {
-            i.end();
-        }
-        for (FileModel i : fileModelList) {
-            i.end();
-        }
+
+        texture3DList.forEach(Texture3D::end);
+        fileModelList.forEach(FileModel::end);
 
         // loop.
         assert glfwWindow != null;
