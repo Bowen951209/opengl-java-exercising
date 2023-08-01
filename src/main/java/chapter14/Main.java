@@ -4,9 +4,9 @@ import engine.App;
 import engine.GLFWWindow;
 import engine.ShaderProgram;
 import engine.gui.*;
-import engine.models.FileModel;
-import engine.models.TessGrid;
-import engine.models.Torus;
+import engine.sceneComponents.models.FileModel;
+import engine.sceneComponents.models.TessGrid;
+import engine.sceneComponents.models.Torus;
 import engine.sceneComponents.PositionalLight;
 import engine.sceneComponents.textures.*;
 import engine.util.Destroyer;
@@ -80,10 +80,13 @@ public class Main extends App {
                 super.updateMMat();
             }
         };
+        skydome = new Skydome(cloud3D, camera);
+
         fileModelList.add(pyramid);
         fileModelList.add(cube0);
         fileModelList.add(cube1);
         fileModelList.add(dragon);
+        fileModelList.add(skydome);
 
         grid = new TessGrid(
                 "assets/textures/imageTextures/greenMountain.jpg",
@@ -92,7 +95,6 @@ public class Main extends App {
         );
         grid.setDrawMode(GL_FILL);
 
-        skydome = new Skydome(cloud3D, camera);
 
         // light
         light = new PositionalLight().brightLight();

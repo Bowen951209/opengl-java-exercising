@@ -6,7 +6,7 @@ import engine.util.ValuesContainer;
 import org.joml.Vector3f;
 import engine.*;
 import engine.exceptions.InvalidMaterialException;
-import engine.models.Torus;
+import engine.sceneComponents.models.Torus;
 import engine.sceneComponents.PositionalLight;
 
 import static org.lwjgl.opengl.GL43.*;

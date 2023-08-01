@@ -1,7 +1,7 @@
 package chapter8.program8_1.launcher;
 
 
-import engine.models.Torus;
+import engine.sceneComponents.models.Torus;
 import chapter8.program8_1.callbacks.CursorCB;
 import chapter8.program8_1.callbacks.FrameBufferResizeCB;
 import chapter8.program8_1.callbacks.KeyCB;

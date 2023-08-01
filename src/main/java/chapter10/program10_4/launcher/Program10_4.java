@@ -11,7 +11,7 @@ import imgui.type.ImInt;
 import org.joml.Vector3f;
 import engine.*;
 import engine.callbacks.DefaultCallbacks;
-import engine.models.RawGrid;
+import engine.sceneComponents.models.RawGrid;
 
 import java.nio.file.Path;
 import java.util.Objects;

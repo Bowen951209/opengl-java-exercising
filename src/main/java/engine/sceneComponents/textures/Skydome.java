@@ -1,12 +1,12 @@
 package engine.sceneComponents.textures;
 
 import engine.ShaderProgram;
-import engine.models.Sphere;
+import engine.sceneComponents.models.FileModel;
 import engine.sceneComponents.Camera;
 import engine.util.ValuesContainer;
 
 import static org.lwjgl.opengl.GL43.*;
-public class Skydome extends Sphere {
+public class Skydome extends FileModel {
     private static final ShaderProgram SHADER_PROGRAM = new ShaderProgram(
             "assets/shaders/skydome/vert.glsl",
             "assets/shaders/skydome/frag.glsl");
@@ -14,6 +14,7 @@ public class Skydome extends Sphere {
     private final Camera camera;
 
     public Skydome(Texture3D texture3D, Camera camera) {
+        super("assets/models/dome.obj", true);
         this.texture3D = texture3D;
         this.camera = camera;
     }

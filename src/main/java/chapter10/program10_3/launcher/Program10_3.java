@@ -11,7 +11,7 @@ import org.lwjgl.glfw.GLFW;
 import engine.*;
 import engine.callbacks.DefaultCallbacks;
 import engine.exceptions.InvalidMaterialException;
-import engine.models.Sphere;
+import engine.sceneComponents.models.Sphere;
 import engine.sceneComponents.PositionalLight;
 
 import java.nio.file.Path;

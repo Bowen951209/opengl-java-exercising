@@ -9,7 +9,7 @@ import engine.sceneComponents.Camera;
 import engine.util.Color;
 import engine.GLFWWindow;
 import chapter9.program9_3.callbacks.P9_3Callbacks;
-import engine.models.Torus;
+import engine.sceneComponents.models.Torus;
 import engine.readers.CubeMapReader;
 
 import java.nio.FloatBuffer;

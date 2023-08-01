@@ -10,7 +10,7 @@ import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
 import engine.util.Color;
 import engine.GLFWWindow;
 import engine.ShaderProgram;
-import engine.models.Torus;
+import engine.sceneComponents.models.Torus;
 import engine.readers.TextureReader;
 
 import java.nio.file.Path;

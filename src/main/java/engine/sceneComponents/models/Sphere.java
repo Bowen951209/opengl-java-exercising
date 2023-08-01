@@ -1,4 +1,4 @@
-package engine.models;
+package engine.sceneComponents.models;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;

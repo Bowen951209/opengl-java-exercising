@@ -6,7 +6,7 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import engine.*;
 import engine.callbacks.DefaultCallbacks;
-import engine.models.Torus;
+import engine.sceneComponents.models.Torus;
 import engine.readers.CubeMapReader;
 import engine.sceneComponents.Camera;
 import engine.sceneComponents.Skybox;

@@ -1,4 +1,4 @@
-package engine.models;
+package engine.sceneComponents.models;
 
 import engine.sceneComponents.Camera;
 import org.joml.Matrix4f;

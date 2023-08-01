@@ -1,7 +1,7 @@
 package engine;
 
 import engine.gui.GUI;
-import engine.models.FileModel;
+import engine.sceneComponents.models.FileModel;
 import engine.sceneComponents.textures.Texture3D;
 import engine.util.Timer;
 import org.lwjgl.glfw.GLFW;

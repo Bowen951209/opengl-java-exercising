@@ -7,7 +7,7 @@ import engine.util.Material;
 import engine.ShaderProgram;
 import engine.callbacks.DefaultCallbacks;
 import engine.exceptions.InvalidMaterialException;
-import engine.models.Sphere;
+import engine.sceneComponents.models.Sphere;
 import engine.sceneComponents.PositionalLight;
 import engine.sceneComponents.textures.Texture2D;
 

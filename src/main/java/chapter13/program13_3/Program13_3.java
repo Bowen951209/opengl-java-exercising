@@ -7,7 +7,7 @@ import engine.util.Material;
 import engine.ShaderProgram;
 import engine.util.ValuesContainer;
 import engine.exceptions.InvalidMaterialException;
-import engine.models.Torus;
+import engine.sceneComponents.models.Torus;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;

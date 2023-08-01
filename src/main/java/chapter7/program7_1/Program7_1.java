@@ -1,7 +1,7 @@
 package chapter7.program7_1;
 
 
-import engine.models.Torus;
+import engine.sceneComponents.models.Torus;
 import engine.util.Color;
 import engine.util.Material;
 import org.joml.Matrix4f;

@@ -1,4 +1,4 @@
-package engine.models;
+package engine.sceneComponents.models;
 
 import engine.readers.ModelReader;
 import engine.util.Timer;
