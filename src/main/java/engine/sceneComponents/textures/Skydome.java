@@ -6,6 +6,12 @@ import engine.sceneComponents.models.HalfSphere;
 import engine.util.ValuesContainer;
 
 import static org.lwjgl.opengl.GL43.*;
+/**
+ * ps. The skydome idea in the book is really not perfect, or even acceptable.
+ * There's always a flaw, either mine and the book's.
+ * So, after implementing all the book's topics, I'll probably redo this topic, but use another cloud simulating method.
+ * So that will be in the future.
+ * */
 public class Skydome extends HalfSphere {
     private static final ShaderProgram SHADER_PROGRAM = new ShaderProgram(
             "assets/shaders/skydome/vert.glsl",
