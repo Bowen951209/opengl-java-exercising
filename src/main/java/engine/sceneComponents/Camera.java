@@ -165,11 +165,11 @@ public class Camera {
             position.add(CAM_BACK);
         }
         if (left) {
-            final Vector3f CAM_LEFT = VEC3_FOR_UTILS.set(camFront).rotateY(.5f * 3.14f); // 90 DEG
+            final Vector3f CAM_LEFT = VEC3_FOR_UTILS.set(camFront).rotateY(.5f * (float) Math.PI); // 90 DEG
             position.add(CAM_LEFT);
         }
         if (right) {
-            final Vector3f CAM_RIGHT = VEC3_FOR_UTILS.set(camFront).rotateY(1.5f * 3.14f);
+            final Vector3f CAM_RIGHT = VEC3_FOR_UTILS.set(camFront).rotateY(1.5f * (float) Math.PI);
             position.add(CAM_RIGHT);
         }
         if (fly) {
