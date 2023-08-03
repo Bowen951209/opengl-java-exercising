@@ -42,11 +42,10 @@ public class GuiWindow implements GuiComponents {
 
     @Override
     public void render() {
-        if (width != 0 || height != 0)
-            ImGui.setNextWindowSize(width, height);
-
         if (isCloseable) {
             if (isShow.get()) {
+                if (width != 0 || height != 0)
+                    ImGui.setNextWindowSize(width, height);
                 ImGui.begin(title, isShow);
                 for (GuiComponents i : childComponents) {
                     i.render();

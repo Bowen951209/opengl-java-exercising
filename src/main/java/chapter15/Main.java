@@ -24,8 +24,8 @@ public class Main extends App {
         gui = new GUI(glfwWindow, 3.0f);
         GuiWindow descriptionWindow = new GuiWindow("Description", false);
         descriptionWindow.addChild(new Text("Water simulating"));
-        gui.addComponents(descriptionWindow);
         gui.addComponents(new FpsDisplay(this));
+        gui.addComponents(descriptionWindow);
     }
 
     @Override
