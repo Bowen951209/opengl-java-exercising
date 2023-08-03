@@ -19,11 +19,11 @@ public abstract class App {
     protected GLFWWindow glfwWindow;
     private DefaultCallbacks defaultCallbacks;
 
-    public DefaultCallbacks getDefaultCallbacks() {
+    public final DefaultCallbacks getDefaultCallbacks() {
         return defaultCallbacks;
     }
 
-    public GLFWWindow getGlfwWindow() {
+    public final GLFWWindow getGlfwWindow() {
         return glfwWindow;
     }
 
