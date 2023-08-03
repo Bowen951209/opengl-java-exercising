@@ -29,7 +29,7 @@ public abstract class App {
 
     protected GUI gui;
 
-    public GUI getGui() {
+    public final GUI getGui() {
         return gui;
     }
 
@@ -53,7 +53,7 @@ public abstract class App {
     private final Timer timer = new Timer();
     private float fps;
 
-    public float getFps() {
+    public final float getFps() {
         return fps;
     }
 
