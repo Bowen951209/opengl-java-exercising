@@ -116,6 +116,7 @@ public class Main extends App {
                                 2 - transparency
                                 3 - user-defined clipping planes
                                 4 - 3D textures(stripe and marble)
+                                5 - skydome (not good effect. I will remake clouds with another method in the future.)
                                 """))
                 .addChild(new WindowCallerButton("plane control", planeControlPanel));
 
