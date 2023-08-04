@@ -53,6 +53,8 @@ public class GuiWindow implements GuiComponents {
                 ImGui.end();
             }
         } else {
+            if (width != 0 || height != 0)
+                ImGui.setNextWindowSize(width, height);
             ImGui.begin(title);
             for (GuiComponents i : childComponents) {
                 i.render();
