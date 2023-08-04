@@ -10,7 +10,7 @@ import engine.util.Color;
 import engine.GLFWWindow;
 import chapter9.program9_3.callbacks.P9_3Callbacks;
 import engine.sceneComponents.models.Torus;
-import engine.readers.CubeMapReader;
+import engine.sceneComponents.textures.CubeMapTexture;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -74,7 +74,7 @@ public class Program9_3 {
                 , Path.of("src/main/java/chapter9/program9_3/shaders/skybox/SkyboxFragShader.glsl"))
                 .getID();
 
-        CubeMapReader skyboxTexture = new CubeMapReader("src/main/java/chapter9/program9_3/textures/skybox");
+        CubeMapTexture skyboxTexture = new CubeMapTexture("src/main/java/chapter9/program9_3/textures/skybox");
         skyboxTexture.bind();
 
         setupVertices();

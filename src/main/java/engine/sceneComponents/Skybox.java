@@ -1,12 +1,20 @@
 package engine.sceneComponents;
 
-import static org.lwjgl.opengl.GL43.*;
+import engine.ShaderProgram;
+import engine.sceneComponents.textures.CubeMapTexture;
+
 import static engine.util.ValuesContainer.VALS_OF_16;
+import static org.lwjgl.opengl.GL43.*;
 
 public class Skybox {
-    private final int program, skyVmatLoc, skyPmatLoc;
+    private final int programID, skyVmatLoc, skyPmatLoc;
     private final Camera camera;
     private final int VBO, VAO;
+    private CubeMapTexture texture;
+    private static final ShaderProgram SHADER_PROGRAM = new ShaderProgram(
+            "assets/shaders/skybox/vert.glsl",
+            "assets/shaders/skybox/frag.glsl"
+    );
     private static final float[] VERTICES = {-1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f,
             1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f,
             1.0f, -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f, -1.0f,
@@ -21,11 +29,28 @@ public class Skybox {
             1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f
     };
 
-    public Skybox(int program, int skyVMatLoc, int skyPMatLoc, Camera camera) {
-        this.program = program;
+    public Skybox(int programID, int skyVMatLoc, int skyPMatLoc, Camera camera) {
+        this.programID = programID;
         this.skyVmatLoc = skyVMatLoc;
         this.skyPmatLoc = skyPMatLoc;
         this.camera = camera;
+        VBO = glGenBuffers();
+        storeDataToVBO();
+
+        VAO = glGenVertexArrays();
+        glBindVertexArray(VAO);
+
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+    }
+
+    public Skybox(Camera camera, String textureFolder) {
+        this.programID = SHADER_PROGRAM.getID();
+        this.skyVmatLoc = SHADER_PROGRAM.getUniformLoc("v_matrix");
+        this.skyPmatLoc = SHADER_PROGRAM.getUniformLoc("p_matrix");
+        this.camera = camera;
+        this.texture = new CubeMapTexture(textureFolder);
+
         VBO = glGenBuffers();
         storeDataToVBO();
 
@@ -42,7 +67,10 @@ public class Skybox {
     }
 
     public void draw() {
-        glUseProgram(program);
+        glUseProgram(programID);
+        if (this.texture != null) {
+            this.texture.bind();
+        }
         glBindVertexArray(VAO);
 
         glDisable(GL_DEPTH_TEST);

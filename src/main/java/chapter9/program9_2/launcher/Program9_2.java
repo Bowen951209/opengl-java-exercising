@@ -17,7 +17,7 @@ import org.joml.Vector3fc;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import engine.*;
-import engine.readers.CubeMapReader;
+import engine.sceneComponents.textures.CubeMapTexture;
 import engine.readers.ModelReader;
 import engine.sceneComponents.Camera;
 
@@ -110,7 +110,7 @@ public class Program9_2 {
                 , Path.of("src/main/java/chapter9/program9_2/shaders/skybox/SkyboxFragShader.glsl"))
                 .getID();
 
-        CubeMapReader skyboxTexture = new CubeMapReader("src/main/java/chapter9/program9_2/skybox");
+        CubeMapTexture skyboxTexture = new CubeMapTexture("src/main/java/chapter9/program9_2/skybox");
         skyboxTexture.bind();
 
         setupVertices();

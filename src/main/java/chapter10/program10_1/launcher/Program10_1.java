@@ -7,7 +7,7 @@ import org.lwjgl.glfw.GLFW;
 import engine.*;
 import engine.callbacks.DefaultCallbacks;
 import engine.sceneComponents.models.Torus;
-import engine.readers.CubeMapReader;
+import engine.sceneComponents.textures.CubeMapTexture;
 import engine.sceneComponents.Camera;
 import engine.sceneComponents.Skybox;
 
@@ -71,7 +71,7 @@ public class Program10_1 {
                 , Path.of("src/main/java/chapter9/program9_3/shaders/skybox/SkyboxFragShader.glsl"))
                 .getID();
 
-        CubeMapReader skyboxTexture = new CubeMapReader("assets/textures/skycubes/lakesIsland");
+        CubeMapTexture skyboxTexture = new CubeMapTexture("assets/textures/skycubes/lakesIsland");
         skyboxTexture.bind();
 
         getAllUniformsLoc();

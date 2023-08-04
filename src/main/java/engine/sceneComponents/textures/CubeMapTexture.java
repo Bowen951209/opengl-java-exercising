@@ -1,4 +1,4 @@
-package engine.readers;
+package engine.sceneComponents.textures;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
@@ -8,13 +8,13 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL43.*;
 
-public class CubeMapReader {
+public class CubeMapTexture {
     private final int texID;
     public void bind() {
         glBindTexture(GL_TEXTURE_CUBE_MAP, texID);
     }
 
-    public CubeMapReader(String dirPath) {
+    public CubeMapTexture(String dirPath) {
         // The directory should have 6 files to read.
         String xp = dirPath + "/xp.jpg";
         String xn = dirPath + "/xn.jpg";
