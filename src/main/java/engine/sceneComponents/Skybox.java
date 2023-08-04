@@ -4,8 +4,8 @@ import static org.lwjgl.opengl.GL43.*;
 import static engine.util.ValuesContainer.VALS_OF_16;
 
 public class Skybox {
-    private final int PROGRAM, SKY_VMAT_LOC, SKY_PMAT_LOC;
-    private final Camera CAMERA;
+    private final int program, skyVmatLoc, skyPmatLoc;
+    private final Camera camera;
     private final int VBO, VAO;
     private static final float[] VERTICES = {-1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f,
             1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f,
@@ -22,10 +22,10 @@ public class Skybox {
     };
 
     public Skybox(int program, int skyVMatLoc, int skyPMatLoc, Camera camera) {
-        this.PROGRAM = program;
-        this.SKY_VMAT_LOC = skyVMatLoc;
-        this.SKY_PMAT_LOC = skyPMatLoc;
-        this.CAMERA = camera;
+        this.program = program;
+        this.skyVmatLoc = skyVMatLoc;
+        this.skyPmatLoc = skyPMatLoc;
+        this.camera = camera;
         VBO = glGenBuffers();
         storeDataToVBO();
 
@@ -42,12 +42,12 @@ public class Skybox {
     }
 
     public void draw() {
-        glUseProgram(PROGRAM);
+        glUseProgram(program);
         glBindVertexArray(VAO);
 
         glDisable(GL_DEPTH_TEST);
-        glUniformMatrix4fv(SKY_VMAT_LOC, false, CAMERA.getVMat().get(VALS_OF_16));
-        glUniformMatrix4fv(SKY_PMAT_LOC, false, CAMERA.getProjMat().get(VALS_OF_16));
+        glUniformMatrix4fv(skyVmatLoc, false, camera.getVMat().get(VALS_OF_16));
+        glUniformMatrix4fv(skyPmatLoc, false, camera.getProjMat().get(VALS_OF_16));
 
         glDrawArrays(GL_TRIANGLES, 0, 108);
 
