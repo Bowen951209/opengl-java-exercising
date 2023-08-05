@@ -11,7 +11,9 @@ public class Camera {
 
 
     private final Vector3f position = new Vector3f(0f, 0f, 5f);
-
+    public Vector3f getPos() {
+        return position;
+    }
     public void setPos(float x, float y, float z) {
         this.position.set(x, y, z);
     }
