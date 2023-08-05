@@ -99,6 +99,7 @@ public abstract class App {
 
         initGLFWWindow();
         initShaderPrograms();
+        initFrameBuffers();
 
         // always the same setup.
         camera = new Camera(glfwWindow.getWidth(), glfwWindow.getHeight()); // camera customizedInit.
@@ -129,6 +130,9 @@ public abstract class App {
     }
 
     protected void initShaderPrograms() {
+    }
+
+    protected void initFrameBuffers() {
     }
 
     protected void initTextures() {
