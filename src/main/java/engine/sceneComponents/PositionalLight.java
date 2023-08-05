@@ -27,7 +27,9 @@ public class PositionalLight {
         return lightPosition;
     }
     public PositionalLight setGlobalAmbient(float[] value) {
+        this.globalAmbient.clear();
         this.globalAmbient.put(value);
+        this.globalAmbient.flip();
         System.out.print("global.ambient set to: ");
         ValuesContainer.printFloatBuffer(this.globalAmbient);
         return this;
@@ -37,7 +39,9 @@ public class PositionalLight {
     }
 
     public PositionalLight setLightAmbient(float[] value) {
+        this.lightAmbient.clear();
         this.lightAmbient.put(value);
+        this.lightAmbient.flip();
         System.out.print("light.ambient set to: ");
         ValuesContainer.printFloatBuffer(this.lightAmbient);
         return this;
