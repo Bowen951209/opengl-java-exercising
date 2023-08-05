@@ -11,7 +11,7 @@ import imgui.type.ImInt;
 import org.joml.Vector3f;
 import engine.*;
 import engine.callbacks.DefaultCallbacks;
-import engine.sceneComponents.models.RawGrid;
+import engine.sceneComponents.models.RawBigTrianglesNumberGrid;
 
 import java.nio.file.Path;
 import java.util.Objects;
@@ -21,7 +21,7 @@ import static org.lwjgl.opengl.GL43.*;
 
 public class Program10_4 extends Program10_3 {
     private Texture2D imageTexture, heightMap;
-    private RawGrid grid;
+    private RawBigTrianglesNumberGrid grid;
     private GUI gui;
 
     public Program10_4(String title) {
@@ -58,7 +58,7 @@ public class Program10_4 extends Program10_3 {
         heightMap = new Texture2D(1, "assets/textures/heightMaps/height.jpg");
 
         // Models
-        grid = new RawGrid(new Vector3f(0f, -.1f, 4f));
+        grid = new RawBigTrianglesNumberGrid(new Vector3f(0f, -.1f, 4f));
 
         // GUI
         gui = new GUI(WINDOW_INIT_W, WINDOW_INIT_H, windowID, 2.5f) {

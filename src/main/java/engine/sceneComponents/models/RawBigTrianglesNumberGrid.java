@@ -6,8 +6,8 @@ import engine.readers.ModelReader;
 
 import static org.lwjgl.opengl.GL11.glDrawArrays;
 
-public class RawGrid extends Model{
-    public RawGrid(Vector3f position) {
+public class RawBigTrianglesNumberGrid extends Model{
+    public RawBigTrianglesNumberGrid(Vector3f position) {
         super(position, false, true, false);
         ModelReader grid = new ModelReader("assets/models/grid.obj");
 
