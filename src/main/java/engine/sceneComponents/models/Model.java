@@ -29,6 +29,11 @@ public abstract class Model extends Thread {
     private final Matrix4f invTrMat = new Matrix4f();
 
     protected final Vector3f position;
+
+    public Vector3f getPos() {
+        return position;
+    }
+
     private final int vao, verticesVBO, normalsVBO;
     private int ebo, tcVBO, tangentsVBO;
     protected FloatBuffer verticesInBuf;
