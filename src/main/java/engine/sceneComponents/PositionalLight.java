@@ -50,6 +50,14 @@ public class PositionalLight {
         return lightAmbient;
     }
 
+    public PositionalLight setLightDiffuse(float[] value) {
+        this.lightDiffuse.clear();
+        this.lightDiffuse.put(value);
+        this.lightDiffuse.flip();
+        System.out.print("light.diffuse set to: ");
+        ValuesContainer.printFloatBuffer(this.lightDiffuse);
+        return this;
+    }
     public FloatBuffer getLightDiffuse() {
         return lightDiffuse;
     }
