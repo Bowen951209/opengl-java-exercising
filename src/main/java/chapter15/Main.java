@@ -18,7 +18,6 @@ import static org.lwjgl.opengl.GL43.GL_TRIANGLES;
 
 /*This chapter will simulate water*/
 public class Main extends App {
-    // TODO: 2023/8/3 pool floor with ADS lighting (include checkerboard texture)
     // TODO: 2023/8/3 plane with ADS lighting (for water, no texture) if camera is higher than plane, render up face, else render bottom face.
 
     private Skybox skybox;
