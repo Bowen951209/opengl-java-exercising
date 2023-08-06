@@ -1,5 +1,5 @@
 package chapter15;
-import static org.lwjgl.opengl.GL43.*;
+
 import engine.App;
 import engine.GLFWWindow;
 import engine.ShaderProgram;
@@ -12,9 +12,10 @@ import engine.sceneComponents.Skybox;
 import engine.sceneComponents.models.Grid;
 import engine.util.Material;
 import engine.util.ValuesContainer;
+import engine.util.WaterFrameBuffers;
 import org.joml.Vector3f;
 
-import static org.lwjgl.opengl.GL43.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL43.*;
 
 /*This chapter will simulate water*/
 public class Main extends App {
@@ -22,6 +23,7 @@ public class Main extends App {
     private Grid floor, waterSurface;
     private ShaderProgram floorProgram, waterSurfaceProgram;
     private PositionalLight light;
+    private WaterFrameBuffers waterFrameBuffers;
 
     @Override
     protected void initGLFWWindow() {
@@ -39,6 +41,11 @@ public class Main extends App {
                 "assets/shaders/waterSimulate/waterSurfaceShaders/vert.glsl",
                 "assets/shaders/waterSimulate/waterSurfaceShaders/frag.glsl"
         );
+    }
+
+    @Override
+    protected void initFrameBuffers() {
+        waterFrameBuffers = new WaterFrameBuffers(glfwWindow.getWidth(), glfwWindow.getHeight());
     }
 
     @Override
@@ -63,12 +70,14 @@ public class Main extends App {
 
     @Override
     protected void drawScene() {
+
+        // default frame buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
         // skybox
         skybox.draw();
-
         // floor
         drawFloor();
-
         // water surface
         drawWaterSurface();
 
