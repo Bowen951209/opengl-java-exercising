@@ -50,7 +50,7 @@ public class Main extends App {
 
     @Override
     protected void initModels() {
-        camera.setPos(0f, 4f, 10f);
+        camera.setPos(0f, 14f, 15f);
 
         skybox = new Skybox(camera, "assets/textures/skycubes/fluffyClouds");
         floor = new Grid(new Vector3f(0f, -0.4f, 0f));
@@ -70,17 +70,35 @@ public class Main extends App {
 
     @Override
     protected void drawScene() {
+        // Render from refraction camera
+        glBindFramebuffer(GL_FRAMEBUFFER, waterFrameBuffers.getRefractionFrameBuffer());
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        renderAllComponents();
 
-        // default frame buffer
+        // Render from reflection camera
+        glBindFramebuffer(GL_FRAMEBUFFER, waterFrameBuffers.getReflectionFrameBuffer());
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // reflect camera
+        camera.reflect(waterSurface.getPos().y);
+        camera.updateVMat();
+        renderAllComponents();
+
+        // Render from default camera and to screen
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // restore camera position
+        camera.reflect(waterSurface.getPos().y);
+        camera.updateVMat();
+        renderAllComponents();
+    }
 
+    private void renderAllComponents() {
         // skybox
         skybox.draw();
         // floor
         drawFloor();
         // water surface
         drawWaterSurface();
-
     }
 
     private void drawFloor() {
