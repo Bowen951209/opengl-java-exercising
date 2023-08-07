@@ -73,7 +73,7 @@ public class Main extends App {
         // Render from refraction camera
         glBindFramebuffer(GL_FRAMEBUFFER, waterFrameBuffers.getRefractionFrameBuffer());
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        renderAllComponents();
+        drawFloor();
 
         // Render from reflection camera
         glBindFramebuffer(GL_FRAMEBUFFER, waterFrameBuffers.getReflectionFrameBuffer());
@@ -81,7 +81,7 @@ public class Main extends App {
         // reflect camera
         camera.reflect(waterSurface.getPos().y);
         camera.updateVMat();
-        renderAllComponents();
+        skybox.draw();
 
         // Render from default camera and to screen
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -89,16 +89,9 @@ public class Main extends App {
         // restore camera position
         camera.reflect(waterSurface.getPos().y);
         camera.updateVMat();
-        renderAllComponents();
-    }
-
-    private void renderAllComponents() {
-        // skybox
         skybox.draw();
-        // floor
-        drawFloor();
-        // water surface
         drawWaterSurface();
+        drawFloor();
     }
 
     private void drawFloor() {
