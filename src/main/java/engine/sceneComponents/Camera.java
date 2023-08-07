@@ -153,6 +153,15 @@ public class Camera {
         land = false;
     }
 
+    public void reflect(float referenceY) {
+        // NOTE: ONLY FOR X-Z PLANE
+        float distFromCamToRef = position.y - referenceY;
+        // 1. For position
+        setPos(position.x, position.y - 2 * distFromCamToRef, position.z);
+
+        // 2. For pitch
+        direction.reflect(Y);
+    }
 
     public void handle() {
         directionMulStep.set(direction).mul(step);
