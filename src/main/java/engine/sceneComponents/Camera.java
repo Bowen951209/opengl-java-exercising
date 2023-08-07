@@ -19,7 +19,7 @@ public class Camera {
     }
 
     private final Vector3f direction = new Vector3f(0f, 0f, -1f);
-    private float xAngleToCam = 0f;
+    private float pitch = 0f;
     private final Vector3f lookAtPoint = new Vector3f();
     private final Vector3f leftVec = new Vector3f();
     private final Vector3f directionMulStep = new Vector3f();
@@ -77,8 +77,8 @@ public class Camera {
 
     // looking direction
     public void lookUp() {
-        if (xAngleToCam < CEIL_LIMIT) {
-            xAngleToCam += sensitive;
+        if (pitch < CEIL_LIMIT) {
+            pitch += sensitive;
             // we want to rotate around camera's x-axis.
             leftVec.set(direction).cross(Y);
             direction.rotateAxis(sensitive, leftVec.x, leftVec.y, leftVec.z);
@@ -86,8 +86,8 @@ public class Camera {
     }
 
     public void lookDown() {
-        if (xAngleToCam > -CEIL_LIMIT) {
-            xAngleToCam -= sensitive;
+        if (pitch > -CEIL_LIMIT) {
+            pitch -= sensitive;
             // we want to rotate around camera's x-axis.
             leftVec.set(direction).cross(Y);
             direction.rotateAxis(-sensitive, leftVec.x, leftVec.y, leftVec.z);
