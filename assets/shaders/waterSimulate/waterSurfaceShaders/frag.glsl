@@ -4,7 +4,7 @@ in vec3 varyingNormal;
 in vec3 varyingLightDir;
 in vec3 varyingVertPos;
 in vec3 varyingHalfVector;
-in vec2 tc;
+in vec4 glp;
 
 out vec4 fragColor;
 
@@ -42,8 +42,17 @@ void main(void) {
     vec3 H = normalize(varyingHalfVector);
     float cosPhi = dot(H, N);
 
+    vec2 tcForReflection = vec2(glp.x, -glp.y) / glp.w / 2.0 + 0.5;
+    vec2 tcForRefraction = vec2(glp.x, glp.y) / glp.w / 2.0 + 0.5;
 
-    fragColor = globalAmbient
-    + vec4(0.0, 0.25, 0.5, 1.0) *(light.ambient + light.diffuse * max(cosTheta, 0.0))
-    + light.specular * pow(max(cosPhi, 0.0), material.shininess);
+    // case above water
+    vec4 reflectColor = texture(reflectionTexture, tcForReflection);
+    vec4 refractColor = texture(refractionTexture, tcForRefraction);
+    vec4 reflectRefractMix = 0.2 * refractColor + reflectColor;
+
+    vec3 ambient = ((globalAmbient) + (light.ambient)).xyz;
+    vec3 diffuse = light.diffuse.xyz * max(cosTheta,0.0);
+    vec3 specular = light.specular.xyz * pow(max(cosPhi,0.0), material.shininess);
+
+    fragColor = vec4(reflectRefractMix.xyz * (ambient + diffuse) + 0.75 * specular, 1.0);
 }

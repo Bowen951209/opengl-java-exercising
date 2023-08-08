@@ -4,6 +4,23 @@ import java.nio.ByteBuffer;
 import static org.lwjgl.opengl.GL43.*;
 public class WaterFrameBuffers {
     private final int reflectionFrameBuffer, refractionFrameBuffer;
+    private final int reflectionImageTexture, reflectionDepthTexture, refractionImageTexture, refractionDepthTexture;
+
+    public int getReflectionImageTexture() {
+        return reflectionImageTexture;
+    }
+
+    public int getReflectionDepthTexture() {
+        return reflectionDepthTexture;
+    }
+
+    public int getRefractionImageTexture() {
+        return refractionImageTexture;
+    }
+
+    public int getRefractionDepthTexture() {
+        return refractionDepthTexture;
+    }
 
     public int getReflectionFrameBuffer() {
         return reflectionFrameBuffer;
@@ -15,13 +32,13 @@ public class WaterFrameBuffers {
 
     public WaterFrameBuffers(int textureWidth, int textureHeight) {
         this.reflectionFrameBuffer = generateFramebuffer();
-        int reflectionImageTexture = createImageTextureAttachment(textureWidth, textureHeight);
-        int reflectionDepthTexture = createDepthTextureAttachment(textureWidth, textureHeight);
+        reflectionImageTexture = createImageTextureAttachment(textureWidth, textureHeight);
+        reflectionDepthTexture = createDepthTextureAttachment(textureWidth, textureHeight);
 
 
         this.refractionFrameBuffer = generateFramebuffer();
-        int refractionImageTexture = createImageTextureAttachment(textureWidth, textureHeight);
-        int refractionDepthTexture = createDepthTextureAttachment(textureWidth, textureHeight);
+        refractionImageTexture = createImageTextureAttachment(textureWidth, textureHeight);
+        refractionDepthTexture = createDepthTextureAttachment(textureWidth, textureHeight);
     }
 
     private static int generateFramebuffer() {

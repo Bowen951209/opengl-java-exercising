@@ -54,4 +54,9 @@ public class Texture2D extends TextureReader {
         glActiveTexture(GL_TEXTURE0 + usingUnit);
         glBindTexture(GL_TEXTURE_2D, getTexID());
     }
+
+    public static void putToUniform(int unit, int id) {
+        glActiveTexture(GL_TEXTURE0 + unit);
+        glBindTexture(GL_TEXTURE_2D, id);
+    }
 }

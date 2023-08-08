@@ -11,6 +11,7 @@ import engine.sceneComponents.PositionalLight;
 import engine.sceneComponents.Skybox;
 import engine.sceneComponents.models.FileModel;
 import engine.sceneComponents.models.Grid;
+import engine.sceneComponents.textures.Texture2D;
 import engine.util.Material;
 import engine.util.ValuesContainer;
 import engine.util.WaterFrameBuffers;
@@ -189,6 +190,9 @@ public class Main extends App {
         waterSurfaceProgram.putUniformMatrix4f("mv_matrix", waterSurface.getMvMat().get(ValuesContainer.VALS_OF_16));
         waterSurfaceProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
         waterSurfaceProgram.putUniformMatrix4f("norm_matrix", waterSurface.getInvTrMat().get(ValuesContainer.VALS_OF_16));
+
+        Texture2D.putToUniform(0, waterFrameBuffers.getReflectionImageTexture());
+        Texture2D.putToUniform(1, waterFrameBuffers.getRefractionImageTexture());
 
         // if camera is above -> render up surface
         // if camera is below -> render down surface
