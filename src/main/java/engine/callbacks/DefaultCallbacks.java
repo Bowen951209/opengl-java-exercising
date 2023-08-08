@@ -21,6 +21,10 @@ public class DefaultCallbacks {
         return defaultKeyCB;
     }
 
+    public DefaultFrameBufferResizeCB getDefaultFrameBufferResizeCB() {
+        return defaultFrameBufferResizeCB;
+    }
+
     private final long windowID;
 
     public DefaultCallbacks(long windowID, Camera camera) {

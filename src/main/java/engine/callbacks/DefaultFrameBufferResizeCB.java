@@ -1,20 +1,27 @@
 package engine.callbacks;
 
-import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import engine.sceneComponents.Camera;
+import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL11.glViewport;
 
-class DefaultFrameBufferResizeCB extends GLFWFramebufferSizeCallback {
-    private final Camera CAMERA;
-
-    public DefaultFrameBufferResizeCB(Camera CAMERA) {
-        this.CAMERA = CAMERA;
+public class DefaultFrameBufferResizeCB extends GLFWFramebufferSizeCallback {
+    private final Camera camera;
+    public DefaultFrameBufferResizeCB(Camera camera) {
+        this.camera = camera;
+    }
+    private final List<Runnable> callbackList = new ArrayList<>();
+    public void addCallback(Runnable cb) {
+        callbackList.add(cb);
     }
     @Override
     public void invoke(long window, int width, int height) {
         System.out.println("GLFW Window Resized to: " + width + "*" + height);
         glViewport(0, 0, width, height);
-        CAMERA.setProjMat(width, height);
+        camera.setProjMat(width, height);
+        callbackList.forEach(Runnable::run);
     }
 }

@@ -35,6 +35,18 @@ public class Main extends App {
     }
 
     @Override
+    protected void addCallbacks() {
+        getDefaultCallbacks().getDefaultFrameBufferResizeCB().addCallback(
+                ()-> {
+                    final int[] width = new int[1];
+                    final int[] height = new int[1];
+                    GLFW.glfwGetFramebufferSize(glfwWindow.getID(), width, height);
+                    waterFrameBuffers.resizeTo(width[0], height[0]);
+                }
+                );
+    }
+
+    @Override
     protected void initShaderPrograms() {
         floorProgram = new ShaderProgram(
                 "assets/shaders/waterSimulate/floorShaders/vert.glsl",
@@ -62,10 +74,10 @@ public class Main extends App {
         camera.step(0.7f);
         camera.setPos(0f, 14f, 15f);
 
-        wordWall = new FileModel("assets/models/fathersDayWordWall.obj", new Vector3f(0f, 50f, -1000f), false) {
+        wordWall = new FileModel("assets/models/fathersDayWordWall.obj", new Vector3f(0f, 50f, -50f), false) {
             @Override
             protected void updateMMat() {
-                mMat.identity().translate(position).scale(1f).rotateY((float) GLFW.glfwGetTime() / 3f);
+                mMat.identity().translate(position).scale(0.5f).rotateY((float) GLFW.glfwGetTime() / 3f);
             }
         };
         fileModelList.add(wordWall);
@@ -91,7 +103,12 @@ public class Main extends App {
         // Render from refraction camera
         glBindFramebuffer(GL_FRAMEBUFFER, waterFrameBuffers.getRefractionFrameBuffer());
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        drawFloor();
+        boolean camIsAboveWater = camera.getPos().y > waterSurface.getPos().y;
+        if (camIsAboveWater) {
+            drawObjectsBelowWater();
+        } else {
+            drawObjectsAboveWater();
+        }
 
         // Render from reflection camera
         glBindFramebuffer(GL_FRAMEBUFFER, waterFrameBuffers.getReflectionFrameBuffer());
@@ -99,7 +116,9 @@ public class Main extends App {
         // reflect camera
         camera.reflect(waterSurface.getPos().y);
         camera.updateVMat();
-        skybox.draw();
+        if (camIsAboveWater) {
+            drawObjectsAboveWater();
+        }
 
         // Render from default camera and to screen
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -107,11 +126,18 @@ public class Main extends App {
         // restore camera position
         camera.reflect(waterSurface.getPos().y);
         camera.updateVMat();
-        skybox.draw();
+        drawObjectsAboveWater();
+        drawObjectsBelowWater();
         drawWaterSurface();
-        drawFloor();
+    }
 
+    private void drawObjectsAboveWater() {
+        skybox.draw();
         drawWordWall();
+    }
+
+    private void drawObjectsBelowWater() {
+        drawFloor();
     }
 
     private void drawWordWall() {
@@ -196,8 +222,11 @@ public class Main extends App {
 
         // if camera is above -> render up surface
         // if camera is below -> render down surface
-        if (camera.getPos().y < waterSurface.getPos().y) {
+        if (camera.getPos().y < waterSurface.getPos().y) { // below
             glFrontFace(GL_CW);
+            waterSurfaceProgram.putUniform1i("isAbove", 0);
+        } else {
+            waterSurfaceProgram.putUniform1i("isAbove", 1);
         }
 
         // draw

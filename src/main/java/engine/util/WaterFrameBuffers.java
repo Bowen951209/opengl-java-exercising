@@ -1,7 +1,9 @@
 package engine.util;
+
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL43.*;
+
 public class WaterFrameBuffers {
     private final int reflectionFrameBuffer, refractionFrameBuffer;
     private final int reflectionImageTexture, reflectionDepthTexture, refractionImageTexture, refractionDepthTexture;
@@ -75,5 +77,23 @@ public class WaterFrameBuffers {
         glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, textureID, 0);
 
         return textureID;
+    }
+
+    public void resizeTo(int width, int height) {
+        glBindTexture(GL_TEXTURE_2D, reflectionImageTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
+                GL_RGB, GL_UNSIGNED_BYTE, (ByteBuffer) null);
+
+        glBindTexture(GL_TEXTURE_2D, refractionImageTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
+                GL_RGB, GL_UNSIGNED_BYTE, (ByteBuffer) null);
+
+        glBindTexture(GL_TEXTURE_2D, reflectionDepthTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0,
+                GL_DEPTH_COMPONENT, GL_FLOAT, (ByteBuffer) null);
+
+        glBindTexture(GL_TEXTURE_2D, refractionDepthTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0,
+                GL_DEPTH_COMPONENT, GL_FLOAT, (ByteBuffer) null);
     }
 }

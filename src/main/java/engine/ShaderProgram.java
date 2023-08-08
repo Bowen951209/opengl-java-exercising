@@ -48,6 +48,11 @@ public class ShaderProgram {
     public void putUniform1f(String uniformName, float value) {
         glUniform1f(getUniformLoc(uniformName), value);
     }
+
+    public void putUniform1i(String uniformName, int value) {
+        glUniform1i(getUniformLoc(uniformName), value);
+    }
+
     public void putUniform4f(String uniformName, float[] value) {
         glUniform4fv(getUniformLoc(uniformName), value);
     }

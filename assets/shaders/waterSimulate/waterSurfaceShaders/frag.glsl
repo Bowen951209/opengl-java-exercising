@@ -28,12 +28,15 @@ uniform Material material;
 uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
+uniform int isAbove;
 
 layout(binding = 0) uniform sampler2D reflectionTexture;
 layout(binding = 1) uniform sampler2D refractionTexture;
 
-void main(void) {
+const vec4 blueColor = vec4(0.0, 0.25, 1.0, 1.0);
 
+void main(void) {
+    // -------------------lighting----------------------
     vec3 L = normalize(varyingLightDir);
     vec3 N = normalize(varyingNormal);
 
@@ -42,17 +45,28 @@ void main(void) {
     vec3 H = normalize(varyingHalfVector);
     float cosPhi = dot(H, N);
 
-    vec2 tcForReflection = vec2(glp.x, -glp.y) / glp.w / 2.0 + 0.5;
-    vec2 tcForRefraction = vec2(glp.x, glp.y) / glp.w / 2.0 + 0.5;
-
-    // case above water
-    vec4 reflectColor = texture(reflectionTexture, tcForReflection);
-    vec4 refractColor = texture(refractionTexture, tcForRefraction);
-    vec4 reflectRefractMix = 0.2 * refractColor + reflectColor;
-
     vec3 ambient = ((globalAmbient) + (light.ambient)).xyz;
-    vec3 diffuse = light.diffuse.xyz * max(cosTheta,0.0);
-    vec3 specular = light.specular.xyz * pow(max(cosPhi,0.0), material.shininess);
+    vec3 diffuse = light.diffuse.xyz * max(cosTheta, 0.0);
+    vec3 specular = light.specular.xyz * pow(max(cosPhi, 0.0), material.shininess);
 
-    fragColor = vec4(reflectRefractMix.xyz * (ambient + diffuse) + 0.75 * specular, 1.0);
+    //--------------------water reflection & refraction--
+    vec2 tcForReflection, tcForRefraction;
+    vec4 reflectColor, refractColor, mixColor;
+
+    if (isAbove == 1) { // above water
+        tcForReflection = vec2(glp.x, -glp.y) / glp.w / 2.0 + 0.5;
+        tcForRefraction = vec2(glp.x, glp.y) / glp.w / 2.0 + 0.5;
+
+        reflectColor = texture(reflectionTexture, tcForReflection);
+        refractColor = texture(refractionTexture, tcForRefraction);
+        mixColor = 0.2 * refractColor + reflectColor;
+    } else { // below water
+        tcForRefraction = vec2(glp.x, glp.y) / glp.w / 2.0 + 0.5;
+
+        refractColor = texture(refractionTexture, tcForRefraction);
+        mixColor = 1.8 * blueColor + 1.2 * refractColor;
+    }
+
+
+    fragColor = vec4(mixColor.xyz * (ambient + diffuse) + 0.75 * specular, 1.0);
 }
