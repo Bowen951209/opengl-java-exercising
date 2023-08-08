@@ -44,6 +44,6 @@ void main(void) {
 
 
     fragColor = globalAmbient
-    + vec4(0.0, 0.25, 0.5, 1.0) *(light.ambient + light.diffuse * max(cosTheta, 0.0))
+    + vec4(0.5, 0.5, 0.0, 1.0) *(light.ambient + light.diffuse * max(cosTheta, 0.0))
     + light.specular * pow(max(cosPhi, 0.0), material.shininess);
 }

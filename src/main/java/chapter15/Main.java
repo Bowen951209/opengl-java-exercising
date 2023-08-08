@@ -9,11 +9,13 @@ import engine.gui.GuiWindow;
 import engine.gui.Text;
 import engine.sceneComponents.PositionalLight;
 import engine.sceneComponents.Skybox;
+import engine.sceneComponents.models.FileModel;
 import engine.sceneComponents.models.Grid;
 import engine.util.Material;
 import engine.util.ValuesContainer;
 import engine.util.WaterFrameBuffers;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 
 import static org.lwjgl.opengl.GL43.*;
 
@@ -21,7 +23,8 @@ import static org.lwjgl.opengl.GL43.*;
 public class Main extends App {
     private Skybox skybox;
     private Grid floor, waterSurface;
-    private ShaderProgram floorProgram, waterSurfaceProgram;
+    private FileModel wordWall;
+    private ShaderProgram floorProgram, waterSurfaceProgram, fathersDayProgram;
     private PositionalLight light;
     private WaterFrameBuffers waterFrameBuffers;
 
@@ -41,6 +44,11 @@ public class Main extends App {
                 "assets/shaders/waterSimulate/waterSurfaceShaders/vert.glsl",
                 "assets/shaders/waterSimulate/waterSurfaceShaders/frag.glsl"
         );
+
+        fathersDayProgram = new ShaderProgram(
+                "assets/shaders/waterSimulate/fathersDay/vert.glsl",
+                "assets/shaders/waterSimulate/fathersDay/frag.glsl"
+        );
     }
 
     @Override
@@ -50,7 +58,16 @@ public class Main extends App {
 
     @Override
     protected void initModels() {
+        camera.step(0.7f);
         camera.setPos(0f, 14f, 15f);
+
+        wordWall = new FileModel("assets/models/fathersDayWordWall.obj", new Vector3f(0f, 50f, -1000f), false) {
+            @Override
+            protected void updateMMat() {
+                mMat.identity().translate(position).scale(1f).rotateY((float) GLFW.glfwGetTime() / 3f);
+            }
+        };
+        fileModelList.add(wordWall);
 
         skybox = new Skybox(camera, "assets/textures/skycubes/fluffyClouds");
         floor = new Grid(new Vector3f(0f, -0.4f, 0f));
@@ -92,6 +109,35 @@ public class Main extends App {
         skybox.draw();
         drawWaterSurface();
         drawFloor();
+
+        drawWordWall();
+    }
+
+    private void drawWordWall() {
+        fathersDayProgram.use();
+
+        // put light's uniforms
+        light.putToUniforms(
+                fathersDayProgram.getUniformLoc("globalAmbient"),
+                fathersDayProgram.getUniformLoc("light.ambient"),
+                fathersDayProgram.getUniformLoc("light.diffuse"),
+                fathersDayProgram.getUniformLoc("light.specular"),
+                fathersDayProgram.getUniformLoc("light.position")
+        );
+
+        // put material's uniform
+        Material.getMaterial("gold").putToUniforms(fathersDayProgram.getUniformLoc("material.shininess"));
+
+        // update surface state
+        wordWall.updateState(camera);
+
+        // put states to uniform
+        fathersDayProgram.putUniformMatrix4f("mv_matrix", wordWall.getMvMat().get(ValuesContainer.VALS_OF_16));
+        fathersDayProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
+        fathersDayProgram.putUniformMatrix4f("norm_matrix", wordWall.getInvTrMat().get(ValuesContainer.VALS_OF_16));
+
+        // draw
+        wordWall.draw(GL_TRIANGLES);
     }
 
     private void drawFloor() {
