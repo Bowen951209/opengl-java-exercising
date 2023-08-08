@@ -29,9 +29,6 @@ uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
 
-layout(binding = 0) uniform sampler2D reflectionTexture;
-layout(binding = 1) uniform sampler2D refractionTexture;
-
 void main(void) {
     varyingVertPos = (mv_matrix * vec4(vertPos, 1.0)).xyz;
     varyingLightDir = light.position - varyingVertPos;
