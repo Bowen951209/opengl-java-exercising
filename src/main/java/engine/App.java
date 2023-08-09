@@ -102,7 +102,7 @@ public abstract class App {
         initFrameBuffers();
 
         // always the same setup.
-        camera = new Camera(glfwWindow.getWidth(), glfwWindow.getHeight()); // camera customizedInit.
+        camera = new Camera(glfwWindow.getInitWidth(), glfwWindow.getInitHeight()); // camera customizedInit.
         initTextures();
         initModels();
         defaultCallbacks = new DefaultCallbacks(glfwWindow.getID(), camera, isWantGUI); // callback.
