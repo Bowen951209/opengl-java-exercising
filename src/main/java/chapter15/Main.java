@@ -66,7 +66,7 @@ public class Main extends App {
 
     @Override
     protected void initFrameBuffers() {
-        waterFrameBuffers = new WaterFrameBuffers(glfwWindow.getWidth(), glfwWindow.getHeight());
+        waterFrameBuffers = new WaterFrameBuffers(glfwWindow.getInitWidth(), glfwWindow.getInitHeight());
     }
 
     @Override

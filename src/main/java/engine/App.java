@@ -11,8 +11,7 @@ import engine.sceneComponents.Camera;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
 public abstract class App {
@@ -102,6 +101,7 @@ public abstract class App {
         initFrameBuffers();
 
         // always the same setup.
+        glfwSwapInterval(1);
         camera = new Camera(glfwWindow.getInitWidth(), glfwWindow.getInitHeight()); // camera customizedInit.
         initTextures();
         initModels();
