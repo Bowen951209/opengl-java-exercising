@@ -77,6 +77,10 @@ dependencies {
 
     // Note! here only contain windows natives
     implementation "io.github.spair:imgui-java-natives-windows:$imguiVersion"
+
+
+    // JNoise Library
+    implementation 'de.articdive:jnoise-pipeline:4.0.0'
 }
 
 

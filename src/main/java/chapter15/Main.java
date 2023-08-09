@@ -12,6 +12,8 @@ import engine.sceneComponents.Skybox;
 import engine.sceneComponents.models.FileModel;
 import engine.sceneComponents.models.Grid;
 import engine.sceneComponents.textures.Texture2D;
+import engine.sceneComponents.textures.Texture3D;
+import engine.sceneComponents.textures.WaterSurfaceTexture;
 import engine.util.Material;
 import engine.util.ValuesContainer;
 import engine.util.WaterFrameBuffers;
@@ -87,6 +89,13 @@ public class Main extends App {
         waterSurface = new Grid(new Vector3f(0f, 10f, 0f));
 
         light = new PositionalLight();
+    }
+
+    @Override
+    protected void initTextures() {
+        Texture3D waterNormalMap3D = new WaterSurfaceTexture(2);
+        waterNormalMap3D.setZoom(32);
+        texture3DList.add(waterNormalMap3D);
     }
 
     @Override
@@ -216,6 +225,7 @@ public class Main extends App {
         waterSurfaceProgram.putUniformMatrix4f("mv_matrix", waterSurface.getMvMat().get(ValuesContainer.VALS_OF_16));
         waterSurfaceProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
         waterSurfaceProgram.putUniformMatrix4f("norm_matrix", waterSurface.getInvTrMat().get(ValuesContainer.VALS_OF_16));
+        waterSurfaceProgram.putUniform1f("texture3DSampleY", (float) GLFW.glfwGetTime() / 30);
 
         Texture2D.putToUniform(0, waterFrameBuffers.getReflectionImageTexture());
         Texture2D.putToUniform(1, waterFrameBuffers.getRefractionImageTexture());

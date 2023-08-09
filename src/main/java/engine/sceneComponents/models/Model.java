@@ -40,7 +40,7 @@ public abstract class Model extends Thread {
     protected FloatBuffer normalsInBuf;
     protected FloatBuffer tcInBuf;
 
-    protected Model(Vector3f position, boolean isUsingEBO, boolean isUsingTTextureCoordinate, boolean isUsingTangents) {
+    protected Model(Vector3f position, boolean isUsingEBO, boolean isUsingTextureCoordinate, boolean isUsingTangents) {
         this.position = position;
         vao = glGenVertexArrays();
         bindVAO();
@@ -59,7 +59,7 @@ public abstract class Model extends Thread {
         if (isUsingEBO) {
             ebo = glGenBuffers();
         }
-        if (isUsingTTextureCoordinate) {
+        if (isUsingTextureCoordinate) {
             tcVBO = glGenBuffers();
 
             glBindBuffer(GL_ARRAY_BUFFER, tcVBO);

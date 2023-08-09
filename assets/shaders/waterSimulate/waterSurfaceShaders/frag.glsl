@@ -5,6 +5,7 @@ in vec3 varyingLightDir;
 in vec3 varyingVertPos;
 in vec3 varyingHalfVector;
 in vec4 glp;
+in vec2 tc;
 
 out vec4 fragColor;
 
@@ -29,16 +30,34 @@ uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
 uniform int isAbove;
+uniform float texture3DSampleY;
 
 layout(binding = 0) uniform sampler2D reflectionTexture;
 layout(binding = 1) uniform sampler2D refractionTexture;
+layout(binding = 2) uniform sampler3D noiseTexture;
 
 const vec4 blueColor = vec4(0.0, 0.25, 1.0, 1.0);
+
+vec3 estimateWaveNormal(float offset, float mapScale, float hScale) {
+    // estimate the normal using the noise texture
+    // by looking up three height values around this vertex
+    float h1 = (texture(noiseTexture, vec3(((tc.s)    )*mapScale, texture3DSampleY, ((tc.t)+offset)*mapScale))).r * hScale;
+    float h2 = (texture(noiseTexture, vec3(((tc.s)-offset)*mapScale, texture3DSampleY, ((tc.t)-offset)*mapScale))).r * hScale;
+    float h3 = (texture(noiseTexture, vec3(((tc.s)+offset)*mapScale, texture3DSampleY, ((tc.t)-offset)*mapScale))).r * hScale;
+    vec3 v1 = vec3(0, h1, -1);
+    vec3 v2 = vec3(-1, h2, 1);
+    vec3 v3 = vec3(1, h3, 1);
+    vec3 v4 = v2-v1;
+    vec3 v5 = v3-v1;
+    vec3 normEst = normalize(cross(v4,v5));
+    return normEst;
+}
 
 void main(void) {
     // -------------------lighting----------------------
     vec3 L = normalize(varyingLightDir);
-    vec3 N = normalize(varyingNormal);
+//    vec3 N = normalize(varyingNormal)
+    vec3 N = estimateWaveNormal(0.00005, 3.0, 8.0);
 
     vec3 V = normalize(-varyingVertPos);
     float cosTheta = dot(L, N);
