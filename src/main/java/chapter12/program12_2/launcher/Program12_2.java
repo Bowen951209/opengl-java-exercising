@@ -41,7 +41,7 @@ public class Program12_2 extends App {
         texture.bind();
 
         // GUI
-        gui = new GUI(glfwWindow.getWidth(), glfwWindow.getHeight(), glfwWindow.getID(), 3f) {
+        gui = new GUI(glfwWindow.getInitWidth(), glfwWindow.getInitHeight(), glfwWindow.getID(), 3f) {
             @Override
             protected void drawFrame() {
                 ImGui.newFrame(); // start frame

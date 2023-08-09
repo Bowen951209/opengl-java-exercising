@@ -43,7 +43,7 @@ public class GUI {
         initElementStates();
     }
     public GUI(GLFWWindow glfwWindow, float fontScale) {
-        this(glfwWindow.getWidth(), glfwWindow.getHeight(), glfwWindow.getID(), fontScale);
+        this(glfwWindow.getInitWidth(), glfwWindow.getInitHeight(), glfwWindow.getID(), fontScale);
     }
     public void update() {
 
