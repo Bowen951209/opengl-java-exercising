@@ -77,6 +77,7 @@ public class Skybox {
         glUniformMatrix4fv(skyVmatLoc, false, camera.getVMat().get(VALS_OF_16));
         glUniformMatrix4fv(skyPmatLoc, false, camera.getProjMat().get(VALS_OF_16));
 
+        glActiveTexture(GL_TEXTURE0);
         glDrawArrays(GL_TRIANGLES, 0, 108);
 
         glEnable(GL_DEPTH_TEST);
