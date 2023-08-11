@@ -12,8 +12,6 @@ import engine.sceneComponents.Skybox;
 import engine.sceneComponents.models.FileModel;
 import engine.sceneComponents.models.Grid;
 import engine.sceneComponents.textures.Texture2D;
-import engine.sceneComponents.textures.Texture3D;
-import engine.sceneComponents.textures.WaterSurfaceTexture;
 import engine.util.Material;
 import engine.util.ValuesContainer;
 import engine.util.WaterFrameBuffers;
@@ -24,12 +22,14 @@ import static org.lwjgl.opengl.GL43.*;
 
 /*This chapter will simulate water*/
 public class Main extends App {
+    private static final float WAVE_SPEED = 0.008f;
     private Skybox skybox;
     private Grid floor, waterSurface;
     private FileModel wordWall;
     private ShaderProgram floorProgram, waterSurfaceProgram, fathersDayProgram;
     private PositionalLight light;
     private WaterFrameBuffers waterFrameBuffers;
+    private Texture2D waterSurfaceNormalMap;
 
     @Override
     protected void initGLFWWindow() {
@@ -39,13 +39,13 @@ public class Main extends App {
     @Override
     protected void addCallbacks() {
         getDefaultCallbacks().getDefaultFrameBufferResizeCB().addCallback(
-                ()-> {
+                () -> {
                     final int[] width = new int[1];
                     final int[] height = new int[1];
                     GLFW.glfwGetFramebufferSize(glfwWindow.getID(), width, height);
                     waterFrameBuffers.resizeTo(width[0], height[0]);
                 }
-                );
+        );
     }
 
     @Override
@@ -74,7 +74,7 @@ public class Main extends App {
     @Override
     protected void initModels() {
         camera.step(0.7f);
-        camera.setPos(0f, 14f, 15f);
+        camera.setPos(0f, 15f, 13f);
 
         wordWall = new FileModel("assets/models/fathersDayWordWall.obj", new Vector3f(0f, 50f, -50f), false) {
             @Override
@@ -93,9 +93,7 @@ public class Main extends App {
 
     @Override
     protected void initTextures() {
-        Texture3D waterNormalMap3D = new WaterSurfaceTexture(2);
-        waterNormalMap3D.setZoom(32);
-        texture3DList.add(waterNormalMap3D);
+        waterSurfaceNormalMap = new Texture2D(2, "assets/textures/normalMaps/waterSurfaceNormalMap.png");
     }
 
     @Override
@@ -220,15 +218,19 @@ public class Main extends App {
 
         // update surface state
         waterSurface.updateState(camera);
+        float waterMoveFactor = (float) (WAVE_SPEED * GLFW.glfwGetTime());
+        waterMoveFactor %= 1; // if more than 1, go to 1
 
         // put states to uniform
         waterSurfaceProgram.putUniformMatrix4f("mv_matrix", waterSurface.getMvMat().get(ValuesContainer.VALS_OF_16));
         waterSurfaceProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
         waterSurfaceProgram.putUniformMatrix4f("norm_matrix", waterSurface.getInvTrMat().get(ValuesContainer.VALS_OF_16));
-        waterSurfaceProgram.putUniform1f("texture3DSampleY", (float) GLFW.glfwGetTime() / 30);
+        waterSurfaceProgram.putUniform1f("moveFactor", waterMoveFactor);
 
+        // Textures bindings
         Texture2D.putToUniform(0, waterFrameBuffers.getReflectionImageTexture());
         Texture2D.putToUniform(1, waterFrameBuffers.getRefractionImageTexture());
+        waterSurfaceNormalMap.bind();
 
         // if camera is above -> render up surface
         // if camera is below -> render down surface

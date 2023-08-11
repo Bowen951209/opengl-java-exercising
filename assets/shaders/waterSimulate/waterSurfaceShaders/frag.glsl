@@ -30,34 +30,33 @@ uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
 uniform int isAbove;
-uniform float texture3DSampleY;
+uniform float moveFactor;
 
 layout(binding = 0) uniform sampler2D reflectionTexture;
 layout(binding = 1) uniform sampler2D refractionTexture;
-layout(binding = 2) uniform sampler3D noiseTexture;
+layout(binding = 2) uniform sampler2D normalMap;
 
 const vec4 blueColor = vec4(0.0, 0.25, 1.0, 1.0);
 
-vec3 estimateWaveNormal(float offset, float mapScale, float hScale) {
-    // estimate the normal using the noise texture
-    // by looking up three height values around this vertex
-    float h1 = (texture(noiseTexture, vec3(((tc.s)    )*mapScale, texture3DSampleY, ((tc.t)+offset)*mapScale))).r * hScale;
-    float h2 = (texture(noiseTexture, vec3(((tc.s)-offset)*mapScale, texture3DSampleY, ((tc.t)-offset)*mapScale))).r * hScale;
-    float h3 = (texture(noiseTexture, vec3(((tc.s)+offset)*mapScale, texture3DSampleY, ((tc.t)-offset)*mapScale))).r * hScale;
-    vec3 v1 = vec3(0, h1, -1);
-    vec3 v2 = vec3(-1, h2, 1);
-    vec3 v3 = vec3(1, h3, 1);
-    vec3 v4 = v2-v1;
-    vec3 v5 = v3-v1;
-    vec3 normEst = normalize(cross(v4,v5));
-    return normEst;
+vec3 calcNewNormal() {
+    vec3 normal = normalize(varyingNormal);
+    vec3 tangent = vec3(0.0, 0.0, 1.0);
+    tangent = normalize(tangent - dot(tangent, normal) * normal);
+    vec3 bitangent = cross(tangent, normal);
+    mat3 tbn = mat3(tangent, bitangent, normal);
+    vec3 retrievedNormal = texture(normalMap, vec2(tc.x + moveFactor, tc.y + moveFactor)).xyz;
+    retrievedNormal = retrievedNormal * 2.0 - 1.0;
+    vec3 newNormal = tbn * retrievedNormal;
+    newNormal = normalize(newNormal);
+
+    return newNormal;
 }
 
 void main(void) {
     // -------------------lighting----------------------
     vec3 L = normalize(varyingLightDir);
-//    vec3 N = normalize(varyingNormal)
-    vec3 N = estimateWaveNormal(0.00005, 3.0, 8.0);
+//    vec3 N = normalize(varyingNormal);
+    vec3 N = calcNewNormal();
 
     vec3 V = normalize(-varyingVertPos);
     float cosTheta = dot(L, N);
