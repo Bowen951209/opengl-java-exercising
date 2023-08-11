@@ -29,7 +29,7 @@ public class Main extends App {
     private ShaderProgram floorProgram, waterSurfaceProgram, fathersDayProgram;
     private PositionalLight light;
     private WaterFrameBuffers waterFrameBuffers;
-    private Texture2D waterSurfaceNormalMap;
+    private Texture2D waterSurfaceNormalMap, dudvMap;
 
     @Override
     protected void initGLFWWindow() {
@@ -94,6 +94,7 @@ public class Main extends App {
     @Override
     protected void initTextures() {
         waterSurfaceNormalMap = new Texture2D(2, "assets/textures/normalMaps/waterSurfaceNormalMap.png");
+        dudvMap = new Texture2D(3, "assets/textures/dudvMaps/waterSurfaceDuDvMap.png");
     }
 
     @Override
@@ -196,6 +197,8 @@ public class Main extends App {
         floorProgram.putUniformMatrix4f("mv_matrix", floor.getMvMat().get(ValuesContainer.VALS_OF_16));
         floorProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
         floorProgram.putUniformMatrix4f("norm_matrix", floor.getInvTrMat().get(ValuesContainer.VALS_OF_16));
+
+        dudvMap.bind();
 
         // draw
         floor.draw(GL_TRIANGLES);

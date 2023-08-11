@@ -35,8 +35,10 @@ uniform float moveFactor;
 layout(binding = 0) uniform sampler2D reflectionTexture;
 layout(binding = 1) uniform sampler2D refractionTexture;
 layout(binding = 2) uniform sampler2D normalMap;
+layout(binding = 3) uniform sampler2D dudvMap;
 
 const vec4 blueColor = vec4(0.0, 0.25, 1.0, 1.0);
+const float waveStrength = 0.02;
 
 vec3 calcNewNormal() {
     vec3 normal = normalize(varyingNormal);
@@ -55,7 +57,7 @@ vec3 calcNewNormal() {
 void main(void) {
     // -------------------lighting----------------------
     vec3 L = normalize(varyingLightDir);
-//    vec3 N = normalize(varyingNormal);
+    //    vec3 N = normalize(varyingNormal);
     vec3 N = calcNewNormal();
 
     vec3 V = normalize(-varyingVertPos);
@@ -71,15 +73,22 @@ void main(void) {
     vec2 tcForReflection, tcForRefraction;
     vec4 reflectColor, refractColor, mixColor;
 
+    vec2 distortion = texture(dudvMap, vec2(tc.x + moveFactor, tc.y + moveFactor)).rg * 2.0 - 1.0;
+    distortion *= waveStrength;
+
     if (isAbove == 1) { // above water
         tcForReflection = vec2(glp.x, -glp.y) / glp.w / 2.0 + 0.5;
         tcForRefraction = vec2(glp.x, glp.y) / glp.w / 2.0 + 0.5;
+
+        tcForReflection += distortion;
+        tcForRefraction += distortion;
 
         reflectColor = texture(reflectionTexture, tcForReflection);
         refractColor = texture(refractionTexture, tcForRefraction);
         mixColor = 0.2 * refractColor + reflectColor;
     } else { // below water
         tcForRefraction = vec2(glp.x, glp.y) / glp.w / 2.0 + 0.5;
+        tcForRefraction += distortion;
 
         refractColor = texture(refractionTexture, tcForRefraction);
         mixColor = 1.8 * blueColor + 1.2 * refractColor;
