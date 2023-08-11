@@ -81,7 +81,7 @@ void main(void) {
         tcForRefraction = vec2(glp.x, glp.y) / glp.w / 2.0 + 0.5;
 
         tcForReflection += distortion;
-        tcForReflection = clamp(tcForReflection, 0.001, 0.999);
+        tcForReflection = clamp(tcForReflection, 0.001, 0.999); // avoid sampling from out of [0, 1]
 
         tcForRefraction += distortion;
         tcForRefraction = clamp(tcForRefraction, 0.001, 0.999);
