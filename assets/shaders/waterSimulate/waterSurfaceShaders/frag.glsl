@@ -57,7 +57,7 @@ vec3 calcNewNormal() {
 void main(void) {
     // -------------------lighting----------------------
     vec3 L = normalize(varyingLightDir);
-    //    vec3 N = normalize(varyingNormal);
+//        vec3 N = normalize(varyingNormal);
     vec3 N = calcNewNormal();
 
     vec3 V = normalize(-varyingVertPos);
@@ -81,7 +81,11 @@ void main(void) {
         tcForRefraction = vec2(glp.x, glp.y) / glp.w / 2.0 + 0.5;
 
         tcForReflection += distortion;
+        tcForReflection = clamp(tcForReflection, 0.001, 0.999);
+
         tcForRefraction += distortion;
+        tcForRefraction = clamp(tcForRefraction, 0.001, 0.999);
+
 
         reflectColor = texture(reflectionTexture, tcForReflection);
         refractColor = texture(refractionTexture, tcForRefraction);
