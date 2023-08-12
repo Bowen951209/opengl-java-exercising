@@ -12,6 +12,7 @@ import engine.sceneComponents.Skybox;
 import engine.sceneComponents.models.FileModel;
 import engine.sceneComponents.models.Grid;
 import engine.sceneComponents.textures.Texture2D;
+import engine.util.Destroyer;
 import engine.util.Material;
 import engine.util.ValuesContainer;
 import engine.util.WaterFrameBuffers;
@@ -268,7 +269,7 @@ public class Main extends App {
 
     @Override
     protected void destroy() {
-
+        Destroyer.destroyAll(glfwWindow.getID(), gui);
     }
 
     public static void main(String[] args) {
