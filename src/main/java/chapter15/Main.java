@@ -30,6 +30,7 @@ public class Main extends App {
     private PositionalLight light;
     private WaterFrameBuffers waterFrameBuffers;
     private Texture2D waterSurfaceNormalMap, dudvMap;
+    private boolean camIsAboveWater;
 
     @Override
     protected void initGLFWWindow() {
@@ -111,7 +112,7 @@ public class Main extends App {
         // Render from refraction camera
         glBindFramebuffer(GL_FRAMEBUFFER, waterFrameBuffers.getRefractionFrameBuffer());
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        boolean camIsAboveWater = camera.getPos().y > waterSurface.getPos().y;
+        camIsAboveWater = camera.getPos().y > waterSurface.getPos().y;
         if (camIsAboveWater) {
             drawObjectsBelowWater();
         } else {
@@ -197,6 +198,7 @@ public class Main extends App {
         floorProgram.putUniformMatrix4f("mv_matrix", floor.getMvMat().get(ValuesContainer.VALS_OF_16));
         floorProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
         floorProgram.putUniformMatrix4f("norm_matrix", floor.getInvTrMat().get(ValuesContainer.VALS_OF_16));
+        floorProgram.putUniform1i("isAbove", camIsAboveWater ? 1 : 0);
 
         dudvMap.bind();
 
@@ -237,12 +239,10 @@ public class Main extends App {
 
         // if camera is above -> render up surface
         // if camera is below -> render down surface
-        if (camera.getPos().y < waterSurface.getPos().y) { // below
+        if (!camIsAboveWater) { // below
             glFrontFace(GL_CW);
-            waterSurfaceProgram.putUniform1i("isAbove", 0);
-        } else {
-            waterSurfaceProgram.putUniform1i("isAbove", 1);
         }
+        waterSurfaceProgram.putUniform1i("isAbove", camIsAboveWater ? 1 : 0);
 
         // draw
         waterSurface.draw(GL_TRIANGLES);

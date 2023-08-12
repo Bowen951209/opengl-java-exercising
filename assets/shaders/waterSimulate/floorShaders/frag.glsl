@@ -28,6 +28,7 @@ uniform Material material;
 uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
+uniform int isAbove;
 
 vec3 checkerboard(vec2 tc) {
     float tileScale = 32.0;
@@ -35,6 +36,8 @@ vec3 checkerboard(vec2 tc) {
 
     return tile * vec3(1, 1, 1);
 }
+
+const vec4 blueColor = vec4(0.0, 0.25, 1.0, 1.0);
 
 void main(void) {
 
@@ -52,4 +55,8 @@ void main(void) {
     fragColor = globalAmbient
     + texel * (light.ambient + light.diffuse * max(cosTheta, 0.0))
     + light.specular * pow(max(cosPhi, 0.0), material.shininess);
+
+    if(isAbove != 1) { // below
+        fragColor = mix(fragColor, blueColor, 0.2);
+    }
 }
