@@ -11,6 +11,7 @@ import static org.lwjgl.opengl.GL43.*;
 public class CubeMapTexture {
     private final int texID;
     public void bind() {
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, texID);
     }
 

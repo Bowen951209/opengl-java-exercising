@@ -106,6 +106,7 @@ public class Main extends App {
     protected void initTextures() {
         waterSurfaceNormalMap = new Texture2D(2, "assets/textures/normalMaps/waterSurfaceNormalMap.png");
         Texture2D dudvMap = new Texture2D(3, "assets/textures/dudvMaps/waterSurfaceDuDvMap.png");
+        dudvMap.bind();
     }
 
     @Override
