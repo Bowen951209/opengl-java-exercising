@@ -57,7 +57,7 @@ vec3 calcNewNormal() {
 void main(void) {
     // -------------------lighting----------------------
     vec3 L = normalize(varyingLightDir);
-//        vec3 N = normalize(varyingNormal);
+    //        vec3 N = normalize(varyingNormal);
     vec3 N = calcNewNormal();
 
     vec3 V = normalize(-varyingVertPos);
@@ -81,23 +81,28 @@ void main(void) {
         tcForRefraction = vec2(glp.x, glp.y) / glp.w / 2.0 + 0.5;
 
         tcForReflection += distortion;
-        tcForReflection = clamp(tcForReflection, 0.001, 0.999); // avoid sampling from out of [0, 1]
+        tcForReflection = clamp(tcForReflection, 0.001, 0.999);// avoid sampling from out of [0, 1]
 
         tcForRefraction += distortion;
         tcForRefraction = clamp(tcForRefraction, 0.001, 0.999);
 
 
         reflectColor = texture(reflectionTexture, tcForReflection);
+        reflectColor = vec4(reflectColor.xyz * (ambient + diffuse) + 0.75 * specular, 1.0);
         refractColor = texture(refractionTexture, tcForRefraction);
-        mixColor = 0.2 * refractColor + reflectColor;
+
+        vec3 Nfres = normalize(varyingNormal);
+        float cosFres = dot(V, Nfres);
+        float fresnel = acos(cosFres);
+        fresnel = pow(clamp(fresnel - 0.1, 0.8, 1.0), 3.0);
+
+        fragColor = mix(refractColor, reflectColor, fresnel);
     } else { // below water
         tcForRefraction = vec2(glp.x, glp.y) / glp.w / 2.0 + 0.5;
         tcForRefraction += distortion;
 
         refractColor = texture(refractionTexture, tcForRefraction);
         mixColor = 1.8 * blueColor + 1.2 * refractColor;
+        fragColor = vec4(mixColor.xyz * (ambient + diffuse) + 0.75 * specular, 1.0);
     }
-
-
-    fragColor = vec4(mixColor.xyz * (ambient + diffuse) + 0.75 * specular, 1.0);
 }
