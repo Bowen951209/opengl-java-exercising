@@ -26,11 +26,12 @@ public class Main extends App {
     private Skybox skybox;
     private Grid floor, waterSurface;
     private FileModel wordWall;
-    private ShaderProgram floorProgram, waterSurfaceProgram, fathersDayProgram;
+    private ShaderProgram floorProgram, waterSurfaceProgram, fathersDayProgram, skyboxProgram;
     private PositionalLight light;
     private WaterFrameBuffers waterFrameBuffers;
-    private Texture2D waterSurfaceNormalMap, dudvMap;
+    private Texture2D waterSurfaceNormalMap;
     private boolean camIsAboveWater;
+    private float waterMoveFactor;
 
     @Override
     protected void initGLFWWindow() {
@@ -65,6 +66,10 @@ public class Main extends App {
                 "assets/shaders/waterSimulate/fathersDay/vert.glsl",
                 "assets/shaders/waterSimulate/fathersDay/frag.glsl"
         );
+        skyboxProgram = new ShaderProgram(
+                "assets/shaders/waterSimulate/skybox/vert.glsl",
+                "assets/shaders/waterSimulate/skybox/frag.glsl"
+        );
     }
 
     @Override
@@ -85,7 +90,11 @@ public class Main extends App {
         };
         fileModelList.add(wordWall);
 
-        skybox = new Skybox(camera, "assets/textures/skycubes/fluffyClouds");
+        skybox = new Skybox(
+                camera,
+                "assets/textures/skycubes/fluffyClouds",
+                skyboxProgram
+        );
         floor = new Grid(new Vector3f(0f, -0.4f, 0f));
         waterSurface = new Grid(new Vector3f(0f, 10f, 0f));
 
@@ -95,7 +104,7 @@ public class Main extends App {
     @Override
     protected void initTextures() {
         waterSurfaceNormalMap = new Texture2D(2, "assets/textures/normalMaps/waterSurfaceNormalMap.png");
-        dudvMap = new Texture2D(3, "assets/textures/dudvMaps/waterSurfaceDuDvMap.png");
+        Texture2D dudvMap = new Texture2D(3, "assets/textures/dudvMaps/waterSurfaceDuDvMap.png");
     }
 
     @Override
@@ -141,7 +150,7 @@ public class Main extends App {
     }
 
     private void drawObjectsAboveWater() {
-        skybox.draw();
+        drawSkybox();
         drawWordWall();
     }
 
@@ -199,8 +208,9 @@ public class Main extends App {
         floorProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
         floorProgram.putUniformMatrix4f("norm_matrix", floor.getInvTrMat().get(ValuesContainer.VALS_OF_16));
         floorProgram.putUniform1i("isAbove", camIsAboveWater ? 1 : 0);
+        floorProgram.putUniform1f("moveFactor", waterMoveFactor);
 
-        dudvMap.bind();
+        waterSurfaceNormalMap.bind();
 
         // draw
         floor.draw(GL_TRIANGLES);
@@ -223,7 +233,7 @@ public class Main extends App {
 
         // update surface state
         waterSurface.updateState(camera);
-        float waterMoveFactor = (float) (WAVE_SPEED * GLFW.glfwGetTime());
+        waterMoveFactor = (float) (WAVE_SPEED * GLFW.glfwGetTime());
         waterMoveFactor %= 1; // if more than 1, go to 1
 
         // put states to uniform
@@ -249,6 +259,11 @@ public class Main extends App {
 
         // restore glFrontFace
         glFrontFace(GL_CCW);
+    }
+
+    private void drawSkybox() {
+        skybox.draw();
+        skybox.getShaderProgram().putUniform1i("isAbove", camIsAboveWater ? 1 : 0);
     }
 
     @Override

@@ -11,10 +11,16 @@ public class Skybox {
     private final Camera camera;
     private final int VBO, VAO;
     private CubeMapTexture texture;
-    private static final ShaderProgram SHADER_PROGRAM = new ShaderProgram(
+    private static final ShaderProgram DEFAULT_PROGRAM = new ShaderProgram(
             "assets/shaders/skybox/vert.glsl",
             "assets/shaders/skybox/frag.glsl"
     );
+    private final ShaderProgram shaderProgram;
+
+    public ShaderProgram getShaderProgram() {
+        return shaderProgram;
+    }
+
     private static final float[] VERTICES = {-1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f,
             1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f,
             1.0f, -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f, -1.0f,
@@ -34,6 +40,7 @@ public class Skybox {
         this.skyVmatLoc = skyVMatLoc;
         this.skyPmatLoc = skyPMatLoc;
         this.camera = camera;
+        this.shaderProgram = DEFAULT_PROGRAM;
         VBO = glGenBuffers();
         storeDataToVBO();
 
@@ -44,10 +51,11 @@ public class Skybox {
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
     }
 
-    public Skybox(Camera camera, String textureFolder) {
-        this.programID = SHADER_PROGRAM.getID();
-        this.skyVmatLoc = SHADER_PROGRAM.getUniformLoc("v_matrix");
-        this.skyPmatLoc = SHADER_PROGRAM.getUniformLoc("p_matrix");
+    public Skybox(Camera camera, String textureFolder, ShaderProgram shaders) {
+        this.shaderProgram = shaders;
+        this.programID = shaders.getID();
+        this.skyVmatLoc = shaders.getUniformLoc("v_matrix");
+        this.skyPmatLoc = shaders.getUniformLoc("p_matrix");
         this.camera = camera;
         this.texture = new CubeMapTexture(textureFolder);
 
@@ -59,6 +67,11 @@ public class Skybox {
 
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+
+    }
+
+    public Skybox(Camera camera, String textureFolder) {
+        this(camera, textureFolder, DEFAULT_PROGRAM);
     }
 
     private void storeDataToVBO() {

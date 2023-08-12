@@ -39,6 +39,9 @@ layout(binding = 3) uniform sampler2D dudvMap;
 
 const vec4 blueColor = vec4(0.0, 0.25, 1.0, 1.0);
 const float waveStrength = 0.02;
+const vec4 fogColor = vec4(0.0, 0.0, 0.2, 1.0);
+const float fogStart = 10.0;
+const float fogEnd = 300.0;
 
 vec3 calcNewNormal() {
     vec3 normal = normalize(varyingNormal);
@@ -103,6 +106,11 @@ void main(void) {
 
         refractColor = texture(refractionTexture, tcForRefraction);
         mixColor = 1.8 * blueColor + 1.2 * refractColor;
+
+        float dist = length(varyingVertPos);
+        float fogFactor = clamp((fogEnd - dist) / (fogEnd-fogStart), 0.0, 1.0);
+
         fragColor = vec4(mixColor.xyz * (ambient + diffuse) + 0.75 * specular, 1.0);
+        fragColor = mix(fogColor, fragColor, pow(fogFactor, 5));
     }
 }
