@@ -11,9 +11,16 @@ public abstract class Texture3D extends Thread {
     private final Timer timer = new Timer();
     private int textureID;
     private final int usingUnit;
-    protected final int textureWidth = 256;
-    protected final int textureHeight = 256;
-    protected final int textureDepth = 256;
+    protected int textureWidth = 256;
+    protected int textureHeight = 256;
+    protected int textureDepth = 256;
+
+    public void setResolution(int width, int height, int depth) {
+        this.textureWidth = width;
+        this.textureHeight = height;
+        this.textureDepth = depth;
+    }
+
     protected int zoom = 1;
 
     public void setZoom(int zoom) {

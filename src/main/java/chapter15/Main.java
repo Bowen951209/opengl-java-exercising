@@ -13,7 +13,7 @@ import engine.sceneComponents.models.FileModel;
 import engine.sceneComponents.models.Grid;
 import engine.sceneComponents.textures.Texture2D;
 import engine.sceneComponents.textures.Texture3D;
-import engine.sceneComponents.textures.WaterCausticsTexture;
+import engine.sceneComponents.textures.WaterCausticTexture;
 import engine.util.Destroyer;
 import engine.util.Material;
 import engine.util.ValuesContainer;
@@ -28,13 +28,15 @@ public class Main extends App {
     private static final float WAVE_SPEED = 0.008f;
     private Skybox skybox;
     private Grid floor, waterSurface;
-    private FileModel wordWall;
-    private ShaderProgram floorProgram, waterSurfaceProgram, fathersDayProgram, skyboxProgram;
+    private FileModel wordWall, cube;
+    private ShaderProgram floorProgram, waterSurfaceProgram, fathersDayProgram,
+            skyboxProgram, texture3DProgram;
     private PositionalLight light;
     private WaterFrameBuffers waterFrameBuffers;
     private Texture2D waterSurfaceNormalMap;
     private boolean camIsAboveWater;
     private float waterMoveFactor;
+    private Texture3D causticTexture;
 
     @Override
     protected void initGLFWWindow() {
@@ -73,6 +75,10 @@ public class Main extends App {
                 "assets/shaders/waterSimulate/skybox/vert.glsl",
                 "assets/shaders/waterSimulate/skybox/frag.glsl"
         );
+        texture3DProgram = new ShaderProgram(
+                "assets/shaders/3DTextureShader/vert.glsl",
+                "assets/shaders/3DTextureShader/frag.glsl"
+        );
     }
 
     @Override
@@ -101,6 +107,15 @@ public class Main extends App {
         floor = new Grid(new Vector3f(0f, -0.4f, 0f));
         waterSurface = new Grid(new Vector3f(0f, 10f, 0f));
 
+        // TODO: 2023/8/13 Add a cube displaying my testing water caustic 3d texture
+        cube = new FileModel("assets/models/cube.obj", new Vector3f(0f, 15f, -10f), false) {
+            @Override
+            protected void updateMMat() {
+                mMat.identity().translate(position).scale(10f);
+            }
+        };
+        fileModelList.add(cube);
+
         light = new PositionalLight().setPosition(0f, 5f, -10f);
     }
 
@@ -109,8 +124,10 @@ public class Main extends App {
         waterSurfaceNormalMap = new Texture2D(2, "assets/textures/normalMaps/waterSurfaceNormalMap.png");
         Texture2D dudvMap = new Texture2D(3, "assets/textures/dudvMaps/waterSurfaceDuDvMap.png");
         dudvMap.bind();
-        Texture3D caustics = new WaterCausticsTexture(4);
-        texture3DList.add(caustics);
+        causticTexture = new WaterCausticTexture(0);
+        causticTexture.setResolution(100, 100, 100);
+        causticTexture.setZoom(2);
+        texture3DList.add(causticTexture);
     }
 
     @Override
@@ -158,6 +175,7 @@ public class Main extends App {
     private void drawObjectsAboveWater() {
         drawSkybox();
         drawWordWall();
+        drawCube();
     }
 
     private void drawObjectsBelowWater() {
@@ -270,6 +288,32 @@ public class Main extends App {
     private void drawSkybox() {
         skybox.draw();
         skybox.getShaderProgram().putUniform1i("isAbove", camIsAboveWater ? 1 : 0);
+    }
+
+    private void drawCube() {
+        texture3DProgram.use();
+
+        causticTexture.bind();
+        cube.updateState(camera);
+
+        light.putToUniforms(
+                texture3DProgram.getUniformLoc("globalAmbient"),
+                texture3DProgram.getUniformLoc("light.ambient"),
+                texture3DProgram.getUniformLoc("light.diffuse"),
+                texture3DProgram.getUniformLoc("light.specular"),
+                texture3DProgram.getUniformLoc("light.position")
+        );
+
+        Material.getMaterial("GOLD").putToUniforms(
+            texture3DProgram.getUniformLoc("material.shininess")
+        );
+
+        texture3DProgram.putUniformMatrix4f("mv_matrix", cube.getMvMat().get(ValuesContainer.VALS_OF_16));
+        texture3DProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
+        texture3DProgram.putUniformMatrix4f("norm_matrix", cube.getInvTrMat().get(ValuesContainer.VALS_OF_16));
+
+
+        cube.draw(GL_TRIANGLES);
     }
 
     @Override

@@ -1,12 +1,21 @@
 package engine.util;
 
 
-import de.articdive.jnoise.generators.noisegen.perlin.PerlinNoiseGenerator;
+import de.articdive.jnoise.generators.noise_parameters.fade_functions.FadeFunction;
+import de.articdive.jnoise.generators.noise_parameters.interpolation.Interpolation;
+import de.articdive.jnoise.pipeline.JNoise;
 
 import java.nio.ByteBuffer;
 
 public class NoiseGenerator {
-    private final PerlinNoiseGenerator perlinNoiseGenerator = PerlinNoiseGenerator.newBuilder().build();
+    private final JNoise perlinNoiseGenerator = JNoise.newBuilder().perlin(1077,Interpolation.LINEAR, FadeFunction.IMPROVED_PERLIN_NOISE)
+            .scale(1 / 16.0)
+            .addModifier(v -> (v + 1) / 2.0)
+            .clamp(0.0, 1.0)
+            .build();
+    public JNoise getPerlinNoiseGenerator() {
+        return perlinNoiseGenerator;
+    }
 
     public void turbulence(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, int maxSize, int minSize, String color) {
         final int initialSize = maxSize;
@@ -33,7 +42,6 @@ public class NoiseGenerator {
                         for (double z = 0; z < textureDepth; z++) {
                             double noiseValue = perlinNoiseGenerator.evaluateNoise(x / currentSize, y / currentSize, z / currentSize) * currentSize;
                             noiseValue /= initialSize;
-
 
                             byte lastValue = buffer.get(currentIndex);
                             byte newValue = (byte) (lastValue + noiseValue * 255);
