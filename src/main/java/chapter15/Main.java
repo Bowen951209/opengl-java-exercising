@@ -12,6 +12,8 @@ import engine.sceneComponents.Skybox;
 import engine.sceneComponents.models.FileModel;
 import engine.sceneComponents.models.Grid;
 import engine.sceneComponents.textures.Texture2D;
+import engine.sceneComponents.textures.Texture3D;
+import engine.sceneComponents.textures.WaterCausticsTexture;
 import engine.util.Destroyer;
 import engine.util.Material;
 import engine.util.ValuesContainer;
@@ -99,7 +101,7 @@ public class Main extends App {
         floor = new Grid(new Vector3f(0f, -0.4f, 0f));
         waterSurface = new Grid(new Vector3f(0f, 10f, 0f));
 
-        light = new PositionalLight();
+        light = new PositionalLight().setPosition(0f, 5f, -10f);
     }
 
     @Override
@@ -107,6 +109,8 @@ public class Main extends App {
         waterSurfaceNormalMap = new Texture2D(2, "assets/textures/normalMaps/waterSurfaceNormalMap.png");
         Texture2D dudvMap = new Texture2D(3, "assets/textures/dudvMaps/waterSurfaceDuDvMap.png");
         dudvMap.bind();
+        Texture3D caustics = new WaterCausticsTexture(4);
+        texture3DList.add(caustics);
     }
 
     @Override

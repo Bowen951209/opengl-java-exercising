@@ -13,8 +13,8 @@ public class CloudTexture extends Texture3D {
     @Override
     protected void fillDataArray() {
         if (zoom == 1) // zoom value unset
-            noiseGenerator.levelMixedNoise(data, textureWidth, textureHeight, textureDepth, DEFAULT_ZOOM, 1, "BLUE");
+            noiseGenerator.turbulence(data, textureWidth, textureHeight, textureDepth, DEFAULT_ZOOM, 1, "BLUE");
         else
-            noiseGenerator.levelMixedNoise(data, textureWidth, textureHeight, textureDepth, zoom, 1, "BLUE");
+            noiseGenerator.turbulence(data, textureWidth, textureHeight, textureDepth, zoom, 1, "BLUE");
     }
 }

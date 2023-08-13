@@ -21,7 +21,7 @@ public class MarbleTexture extends Texture3D{
 
     private void fillMarble() {
         // generate data into buffer for coming up usage.
-        noiseGenerator.levelMixedNoise(data, textureWidth, textureHeight, textureDepth, zoom, 1);
+        noiseGenerator.turbulence(data, textureWidth, textureHeight, textureDepth, zoom, 1);
 
         int index = 0;
         for (double x = 0; x < textureWidth; x++) {

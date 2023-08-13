@@ -1,11 +1,11 @@
 package engine.sceneComponents.textures;
 
-import engine.util.NoiseGenerator;
+import de.articdive.jnoise.generators.noisegen.perlin.PerlinNoiseGenerator;
 
 import java.awt.*;
 
 public class WoodTexture extends Texture3D{
-    private final NoiseGenerator noiseGenerator = new NoiseGenerator();
+    private final PerlinNoiseGenerator noiseGenerator = PerlinNoiseGenerator.newBuilder().build();
     private static final double XY_PERIOD = 20.0, TURB_POWER = 15.0;
     public WoodTexture(int usingUnit) {
         super(usingUnit);
@@ -23,7 +23,7 @@ public class WoodTexture extends Texture3D{
                     double xValue = (x - (double)textureWidth/2.0) / (double)textureWidth;
                     double yValue = (y - (double)textureHeight/2.0) / (double)textureHeight;
                     double distanceFromZ = Math.sqrt(xValue * xValue + yValue * yValue)
-                            + TURB_POWER * noiseGenerator.smoothNoise(x / zoom, y / zoom, z / zoom) / 256.0;
+                            + TURB_POWER * noiseGenerator.evaluateNoise(x / zoom, y / zoom, z / zoom) / 256.0;
                     double sineValue = 128.0 * Math.abs(Math.sin(2.0 * XY_PERIOD * distanceFromZ * Math.PI));
 
                     Color color = new Color(60+(int)sineValue, 10+(int)sineValue, 0);
