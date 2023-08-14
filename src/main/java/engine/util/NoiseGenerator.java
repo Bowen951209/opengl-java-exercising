@@ -19,8 +19,6 @@ public class NoiseGenerator {
     }
 
     public void turbulence(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, int maxSize, int minSize, String color) {
-        byte[] data = new byte[buffer.capacity()];
-
         final int initialSize = maxSize;
         int sizeCounts = 0;
         while (maxSize >= minSize) {
@@ -51,19 +49,19 @@ public class NoiseGenerator {
                             // If the value is > 255 then it will go back to 0, so it will look black.
                             // The way to fix it is to mul a smaller number, so I changed "noiseValue * 255" to * 170
                             // NOTE: In java, byte are signed byte, which range [-127, 127]. Our library will transform it to unsigned byte.
-                            byte lastValue = data[currentIndex];
+                            byte lastValue = buffer.get(currentIndex);
                             byte newValue = (byte) (lastValue + byteNoiseValue);
 
                             if (color.equalsIgnoreCase("WHITE")) {
-                                data[currentIndex] = newValue;     //r
-                                data[currentIndex + 1] = newValue; //g
-                                data[currentIndex + 2] = newValue; //b
-                                data[currentIndex + 3] = (byte) 255;//a
+                                buffer.put(currentIndex, newValue);             //r
+                                buffer.put(currentIndex + 1, newValue);  //g
+                                buffer.put(currentIndex + 2, newValue);  //b
+                                buffer.put(currentIndex + 3, (byte) 255);//a
                             } else if (color.equalsIgnoreCase("BLUE")) {
-                                data[currentIndex] = newValue;     //r
-                                data[currentIndex + 1] = newValue; //g
-                                data[currentIndex + 2] = (byte) 255; //b
-                                data[currentIndex + 3] = (byte) 255;//a
+                                buffer.put(currentIndex, newValue);             //r
+                                buffer.put(currentIndex + 1, newValue);  //g
+                                buffer.put(currentIndex + 2, (byte) 255);//b
+                                buffer.put(currentIndex + 3, (byte) 255);//a
                             }
                             currentIndex += 4;
                         }
@@ -83,8 +81,6 @@ public class NoiseGenerator {
                 throw new RuntimeException(e);
             }
         }
-
-        buffer.put(data);
 
     }
 
