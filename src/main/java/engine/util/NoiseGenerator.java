@@ -44,12 +44,13 @@ public class NoiseGenerator {
 
                             double noiseValue = perlinNoiseGenerator
                                     .evaluateNoise(x / currentSize, y / currentSize, z / currentSize)
-                                    * ((float)currentSize / initialSize);
+                                    * ((float) currentSize / initialSize);
                             byte byteNoiseValue = (byte) (noiseValue * 170);
                             // If the value is > 255 then it will go back to 0, so it will look black.
                             // The way to fix it is to mul a smaller number, so I changed "noiseValue * 255" to * 170
                             // NOTE: In java, byte are signed byte, which range [-127, 127]. Our library will transform it to unsigned byte.
                             byte lastValue = buffer.get(currentIndex);
+
                             byte newValue = (byte) (lastValue + byteNoiseValue);
 
                             if (color.equalsIgnoreCase("WHITE")) {
