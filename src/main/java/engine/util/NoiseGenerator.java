@@ -8,16 +8,19 @@ import de.articdive.jnoise.pipeline.JNoise;
 import java.nio.ByteBuffer;
 
 public class NoiseGenerator {
-    private final JNoise perlinNoiseGenerator = JNoise.newBuilder().perlin(1077,Interpolation.LINEAR, FadeFunction.IMPROVED_PERLIN_NOISE)
-            .scale(1 / 16.0) // int point will return 0 (perlin noise law)
+    private final JNoise perlinNoiseGenerator = JNoise.newBuilder().perlin(1077, Interpolation.LINEAR, FadeFunction.IMPROVED_PERLIN_NOISE)
+//            .scale(1 / 32.0) // int point will return 0 (perlin noise law)
             .addModifier(v -> (v + 1) / 2.0) // [-1, 1] to [0, 1]
             .clamp(0.0, 1.0)
             .build();
+
     public JNoise getPerlinNoiseGenerator() {
         return perlinNoiseGenerator;
     }
 
     public void turbulence(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, int maxSize, int minSize, String color) {
+        byte[] data = new byte[buffer.capacity()];
+
         final int initialSize = maxSize;
         int sizeCounts = 0;
         while (maxSize >= minSize) {
@@ -40,22 +43,27 @@ public class NoiseGenerator {
                 for (double x = 0; x < textureWidth; x++) {
                     for (double y = 0; y < textureHeight; y++) {
                         for (double z = 0; z < textureDepth; z++) {
-                            double noiseValue = perlinNoiseGenerator.evaluateNoise(x / currentSize, y / currentSize, z / currentSize) * currentSize;
-                            noiseValue /= initialSize;
 
-                            byte lastValue = buffer.get(currentIndex);
-                            byte newValue = (byte) (lastValue + noiseValue * 255);
+                            double noiseValue = perlinNoiseGenerator
+                                    .evaluateNoise(x / currentSize, y / currentSize, z / currentSize)
+                                    * ((float)currentSize / initialSize);
+                            byte byteNoiseValue = (byte) (noiseValue * 170);
+                            // If the value is > 255 then it will go back to 0, so it will look black.
+                            // The way to fix it is to mul a smaller number, so I changed "noiseValue * 255" to * 170
+                            // NOTE: In java, byte are signed byte, which range [-127, 127]. Our library will transform it to unsigned byte.
+                            byte lastValue = data[currentIndex];
+                            byte newValue = (byte) (lastValue + byteNoiseValue);
 
                             if (color.equalsIgnoreCase("WHITE")) {
-                                buffer.put(currentIndex, newValue);            //r
-                                buffer.put(currentIndex + 1, newValue); //g
-                                buffer.put(currentIndex + 2, newValue); //b
-                                buffer.put(currentIndex + 3, (byte) 255);//a
+                                data[currentIndex] = newValue;     //r
+                                data[currentIndex + 1] = newValue; //g
+                                data[currentIndex + 2] = newValue; //b
+                                data[currentIndex + 3] = (byte) 255;//a
                             } else if (color.equalsIgnoreCase("BLUE")) {
-                                buffer.put(currentIndex, newValue);            //r
-                                buffer.put(currentIndex + 1, newValue); //g
-                                buffer.put(currentIndex + 2, (byte) 255); //b
-                                buffer.put(currentIndex + 3, (byte) 255);//a
+                                data[currentIndex] = newValue;     //r
+                                data[currentIndex + 1] = newValue; //g
+                                data[currentIndex + 2] = (byte) 255; //b
+                                data[currentIndex + 3] = (byte) 255;//a
                             }
                             currentIndex += 4;
                         }
@@ -76,7 +84,10 @@ public class NoiseGenerator {
             }
         }
 
+        buffer.put(data);
+
     }
+
     public void turbulence(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, int maxSize, int minSize) {
         turbulence(buffer, textureWidth, textureHeight, textureDepth, maxSize, minSize, "WHITE");
     }

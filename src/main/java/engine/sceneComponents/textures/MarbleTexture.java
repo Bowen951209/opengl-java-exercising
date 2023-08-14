@@ -6,8 +6,8 @@ import java.awt.*;
 
 public class MarbleTexture extends Texture3D{
     private final NoiseGenerator noiseGenerator;
-    private static final double VEIN_FREQUENCY = 5.0;
-    private static final double TURB_POWER = 8.3;
+    private static final double VEIN_FREQUENCY = 1.0;
+    private static final double TURB_POWER = 5.2;
 
     public MarbleTexture(int usingUnit) {
         super(usingUnit);

@@ -125,8 +125,8 @@ public class Main extends App {
         Texture2D dudvMap = new Texture2D(3, "assets/textures/dudvMaps/waterSurfaceDuDvMap.png");
         dudvMap.bind();
         causticTexture = new WaterCausticTexture(0);
-        causticTexture.setResolution(100, 100, 100);
-        causticTexture.setZoom(2);
+        causticTexture.setResolution(256, 256, 256);
+        causticTexture.setZoom(16);
         texture3DList.add(causticTexture);
     }
 
