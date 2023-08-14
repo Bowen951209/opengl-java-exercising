@@ -9,8 +9,8 @@ import java.nio.ByteBuffer;
 
 public class NoiseGenerator {
     private final JNoise perlinNoiseGenerator = JNoise.newBuilder().perlin(1077,Interpolation.LINEAR, FadeFunction.IMPROVED_PERLIN_NOISE)
-            .scale(1 / 16.0)
-            .addModifier(v -> (v + 1) / 2.0)
+            .scale(1 / 16.0) // int point will return 0 (perlin noise law)
+            .addModifier(v -> (v + 1) / 2.0) // [-1, 1] to [0, 1]
             .clamp(0.0, 1.0)
             .build();
     public JNoise getPerlinNoiseGenerator() {
