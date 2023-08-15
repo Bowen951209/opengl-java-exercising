@@ -39,6 +39,7 @@ layout(binding = 3) uniform sampler2D dudvMap;
 
 const vec4 blueColor = vec4(0.0, 0.25, 1.0, 1.0);
 const float waveStrength = 0.02;
+const float textureScale = 8.0;
 const vec4 fogColor = vec4(0.0, 0.0, 0.2, 1.0);
 const float fogStart = 10.0;
 const float fogEnd = 300.0;
@@ -49,7 +50,7 @@ vec3 calcNewNormal() {
     tangent = normalize(tangent - dot(tangent, normal) * normal);
     vec3 bitangent = cross(tangent, normal);
     mat3 tbn = mat3(tangent, bitangent, normal);
-    vec3 retrievedNormal = texture(normalMap, vec2(tc.x + moveFactor, tc.y + moveFactor)).xyz;
+    vec3 retrievedNormal = texture(normalMap, vec2((tc.x + moveFactor) * textureScale, (tc.y + moveFactor) * textureScale)).xyz;
     retrievedNormal = retrievedNormal * 2.0 - 1.0;
     vec3 newNormal = tbn * retrievedNormal;
     newNormal = normalize(newNormal);
@@ -76,7 +77,7 @@ void main(void) {
     vec2 tcForReflection, tcForRefraction;
     vec4 reflectColor, refractColor, mixColor;
 
-    vec2 distortion = texture(dudvMap, vec2(tc.x + moveFactor, tc.y + moveFactor)).rg * 2.0 - 1.0;
+    vec2 distortion = texture(dudvMap, vec2((tc.x + moveFactor) * textureScale, (tc.y + moveFactor) * textureScale)).rg * 2.0 - 1.0;
     distortion *= waveStrength;
 
     if (isAbove == 1) { // above water

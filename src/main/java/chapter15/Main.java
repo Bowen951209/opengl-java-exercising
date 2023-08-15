@@ -25,7 +25,7 @@ import static org.lwjgl.opengl.GL43.*;
 
 /*This chapter will simulate water*/
 public class Main extends App {
-    private static final float WAVE_SPEED = 0.008f;
+    private static final float WAVE_SPEED = 0.002f;
     private Skybox skybox;
     private Grid floor, waterSurface;
     private FileModel wordWall, cube;
