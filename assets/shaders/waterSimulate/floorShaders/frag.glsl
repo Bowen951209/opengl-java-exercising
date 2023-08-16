@@ -30,8 +30,10 @@ uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
 uniform int isAbove;
 uniform float moveFactor;
+uniform float causticSampleY;
 
 layout(binding = 2) uniform sampler2D normalMap;
+layout(binding = 4) uniform sampler3D noiseTex;
 
 vec3 checkerboard(vec2 tc) {
     float tileScale = 32.0;
@@ -59,10 +61,19 @@ vec3 calcNewNormal() {
     return newNormal;
 }
 
+float getCausticValue(float x, float y, float z){
+    const float SCALE = 0.2;
+
+    float w = 8;  // frequency of caustic ribbon patterns
+    float strength = 4.0;
+    float PI = 3.14159;
+    float noise = texture(noiseTex, vec3(x*w * SCALE,  y, z*w * SCALE)).r;
+    return pow((1.0-abs(sin(noise*2*PI))), strength);
+}
+
 void main(void) {
 
     vec3 L = normalize(varyingLightDir);
-//    vec3 N = normalize(varyingNormal);
     vec3 N = calcNewNormal();
 
     vec3 V = normalize(-varyingVertPos);
@@ -78,6 +89,14 @@ void main(void) {
     + light.specular * pow(max(cosPhi, 0.0), material.shininess);
 
     if(isAbove != 1) { // below
+        // caustic
+        float causticColor = getCausticValue(varyingTc.s, causticSampleY, varyingTc.t);
+        float colorR = clamp(fragColor.x + causticColor, 0.0, 1.0);
+        float colorG = clamp(fragColor.y + causticColor, 0.0, 1.0);
+        float colorB = clamp(fragColor.z + causticColor, 0.0, 1.0);
+        fragColor = vec4(colorR, colorG, colorB, 1.0);
+
+        // fog
         float dist = length(varyingVertPos);
         float fogFactor = clamp((fogEnd - dist) / (fogEnd-fogStart), 0.0, 1.0);
 

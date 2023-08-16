@@ -81,16 +81,16 @@ public class Skybox {
 
     public void draw() {
         glUseProgram(programID);
-        if (this.texture != null) {
-            this.texture.bind();
-        }
+
         glBindVertexArray(VAO);
 
         glDisable(GL_DEPTH_TEST);
         glUniformMatrix4fv(skyVmatLoc, false, camera.getVMat().get(VALS_OF_16));
         glUniformMatrix4fv(skyPmatLoc, false, camera.getProjMat().get(VALS_OF_16));
 
-        glActiveTexture(GL_TEXTURE0);
+        if (this.texture != null) {
+            this.texture.bind();
+        }
         glDrawArrays(GL_TRIANGLES, 0, 108);
 
         glEnable(GL_DEPTH_TEST);

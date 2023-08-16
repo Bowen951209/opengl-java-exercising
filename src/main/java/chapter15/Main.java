@@ -107,7 +107,6 @@ public class Main extends App {
         floor = new Grid(new Vector3f(0f, -0.4f, 0f));
         waterSurface = new Grid(new Vector3f(0f, 10f, 0f));
 
-        // TODO: 2023/8/13 Add a cube displaying my testing water caustic 3d texture
         cube = new FileModel("assets/models/cube.obj", new Vector3f(0f, 15f, -10f), false) {
             @Override
             protected void updateMMat() {
@@ -124,7 +123,7 @@ public class Main extends App {
         waterSurfaceNormalMap = new Texture2D(2, "assets/textures/normalMaps/waterSurfaceNormalMap.png");
         Texture2D dudvMap = new Texture2D(3, "assets/textures/dudvMaps/waterSurfaceDuDvMap.png");
         dudvMap.bind();
-        causticTexture = new WaterCausticTexture(0);
+        causticTexture = new WaterCausticTexture(4);
         causticTexture.setResolution(256, 256, 256);
         causticTexture.setZoom(16);
         texture3DList.add(causticTexture);
@@ -227,14 +226,19 @@ public class Main extends App {
         // update floor states
         floor.updateState(camera);
 
+        // update caustic sample Y
+        float causticSampleY = (float) GLFW.glfwGetTime() * 0.005f;
+
         // put states to uniform
         floorProgram.putUniformMatrix4f("mv_matrix", floor.getMvMat().get(ValuesContainer.VALS_OF_16));
         floorProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
         floorProgram.putUniformMatrix4f("norm_matrix", floor.getInvTrMat().get(ValuesContainer.VALS_OF_16));
         floorProgram.putUniform1i("isAbove", camIsAboveWater ? 1 : 0);
         floorProgram.putUniform1f("moveFactor", waterMoveFactor);
+        floorProgram.putUniform1f("causticSampleY", causticSampleY);
 
         waterSurfaceNormalMap.bind();
+        causticTexture.bind();
 
         // draw
         floor.draw(GL_TRIANGLES);
