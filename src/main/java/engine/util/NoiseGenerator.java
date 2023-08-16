@@ -6,6 +6,8 @@ import de.articdive.jnoise.generators.noise_parameters.interpolation.Interpolati
 import de.articdive.jnoise.pipeline.JNoise;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.sin;
@@ -93,25 +95,49 @@ public class NoiseGenerator {
     }
 
     public void tileTurbulence(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, int maxSize, int minSize) {
-        for (double x = 0; x < textureWidth; x++) {
-            for (double y = 0; y < textureHeight; y++) {
-                for (double z = 0; z < textureDepth; z++) {
-                    double sum, zoom = maxSize;
+        final int CORES_COUNT = Runtime.getRuntime().availableProcessors();
+        final int SLICE_WIDTH = textureWidth / 6; // !!! not int !!!
 
-                    sum = (sin((1.0/(textureWidth + textureDepth))*(8*PI)*(x+z)) + 1) * 8.0;
+        final List<Thread> threadList = new ArrayList<>();
 
-                    while (zoom >= 0.9) {
-                        sum = sum + perlinNoiseGenerator.evaluateNoise(zoom, x / zoom, y / zoom, z / zoom) * zoom;
-                        zoom = zoom / 2.0;
+
+        for (int i = 0; i < CORES_COUNT; i++) { // 1 slice 1 thread
+            final int START_X = SLICE_WIDTH * i;
+            final int END_X = START_X + SLICE_WIDTH;
+
+            Thread thread = new Thread(() -> {
+                for (int x = START_X; x < END_X; x++) {
+                    for (int y = 0; y < textureHeight; y++) {
+                        for (int z = 0; z < textureDepth; z++) {
+
+                            double sum, zoom = maxSize;
+                            sum = (sin((1.0 / (textureWidth + textureDepth)) * (8 * PI) * (x + z)) + 1) * 8.0;
+
+                            while (zoom >= 0.9) {
+                                sum = sum + perlinNoiseGenerator.evaluateNoise(zoom, x / zoom, y / zoom, z / zoom) * zoom;
+                                zoom = zoom / 2.0;
+                            }
+
+                            sum = 100.0 * sum / maxSize; // 100 is my tune value I tested out.
+
+                            final int INDEX = (z + textureDepth * y + textureDepth * textureHeight * x) * 4;
+                            buffer.put(INDEX, (byte) sum);
+                            buffer.put(INDEX + 1, (byte) sum);
+                            buffer.put(INDEX + 2, (byte) sum);
+                            buffer.put(INDEX + 3, (byte) 255);
+                        }
                     }
-
-                    sum = 100.0 * sum / maxSize; // 100 is my tune value I tested out.
-
-                    buffer.put((byte) sum);
-                    buffer.put((byte) sum);
-                    buffer.put((byte) sum);
-                    buffer.put((byte) 255);
                 }
+            });
+            threadList.add(thread);
+            thread.start();
+        }
+
+        for (Thread thread : threadList) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
     }
