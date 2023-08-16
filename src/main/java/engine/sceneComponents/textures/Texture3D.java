@@ -21,6 +21,10 @@ public abstract class Texture3D extends Thread {
         this.textureDepth = depth;
     }
 
+    public int getTextureDepth() {
+        return textureDepth;
+    }
+
     protected int zoom = 1;
 
     public void setZoom(int zoom) {
