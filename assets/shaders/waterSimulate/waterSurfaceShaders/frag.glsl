@@ -104,6 +104,7 @@ void main(void) {
     } else { // below water
         tcForRefraction = vec2(glp.x, glp.y) / glp.w / 2.0 + 0.5;
         tcForRefraction += distortion;
+        tcForRefraction = clamp(tcForRefraction, 0.001, 0.999);
 
         refractColor = texture(refractionTexture, tcForRefraction);
         mixColor = 1.8 * blueColor + 1.2 * refractColor;
