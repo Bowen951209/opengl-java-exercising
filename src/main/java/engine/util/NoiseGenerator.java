@@ -133,7 +133,7 @@ public class NoiseGenerator {
         }
 
         // complete the last slice
-        for (int x = 0; x < LAST_SLICE_WIDTH; x++) {
+        for (int x = textureWidth - LAST_SLICE_WIDTH; x < textureWidth; x++) {
             for (int y = 0; y < textureHeight; y++) {
                 for (int z = 0; z < textureDepth; z++) {
                     double sum = getTileTurbulenceValue(textureWidth, textureHeight, maxSize, x, y, z);
