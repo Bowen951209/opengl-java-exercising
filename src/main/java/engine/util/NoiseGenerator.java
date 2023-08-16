@@ -7,6 +7,9 @@ import de.articdive.jnoise.pipeline.JNoise;
 
 import java.nio.ByteBuffer;
 
+import static java.lang.Math.PI;
+import static java.lang.Math.sin;
+
 public class NoiseGenerator {
     private final JNoise perlinNoiseGenerator = JNoise.newBuilder().perlin(1077, Interpolation.LINEAR, FadeFunction.IMPROVED_PERLIN_NOISE)
 //            .scale(1 / 32.0) // int point will return 0 (perlin noise law)
@@ -87,6 +90,30 @@ public class NoiseGenerator {
 
     public void turbulence(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, int maxSize, int minSize) {
         turbulence(buffer, textureWidth, textureHeight, textureDepth, maxSize, minSize, "WHITE");
+    }
+
+    public void tileTurbulence(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, int maxSize, int minSize) {
+        for (double x = 0; x < textureWidth; x++) {
+            for (double y = 0; y < textureHeight; y++) {
+                for (double z = 0; z < textureDepth; z++) {
+                    double sum, zoom = maxSize;
+
+                    sum = (sin((1.0/(textureWidth + textureDepth))*(8*PI)*(x+z)) + 1) * 8.0;
+
+                    while (zoom >= 0.9) {
+                        sum = sum + perlinNoiseGenerator.evaluateNoise(zoom, x / zoom, y / zoom, z / zoom) * zoom;
+                        zoom = zoom / 2.0;
+                    }
+
+                    sum = 100.0 * sum / maxSize; // 100 is my tune value I tested out.
+
+                    buffer.put((byte) sum);
+                    buffer.put((byte) sum);
+                    buffer.put((byte) sum);
+                    buffer.put((byte) 255);
+                }
+            }
+        }
     }
 
 }
