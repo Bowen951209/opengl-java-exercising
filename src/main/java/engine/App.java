@@ -93,6 +93,8 @@ public abstract class App {
     }
 
     protected void run() {
+        final Timer timer = new Timer();
+        timer.start();
         // customizable customizedInit
         customizedInit();
 
@@ -117,6 +119,7 @@ public abstract class App {
         texture3DList.forEach(Texture3D::end);
         fileModelList.forEach(FileModel::end);
 
+        timer.end("Program initialized in: ");
         // loop.
         assert glfwWindow != null;
         while (!GLFW.glfwWindowShouldClose(glfwWindow.getID())) {
