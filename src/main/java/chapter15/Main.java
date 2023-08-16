@@ -28,17 +28,15 @@ public class Main extends App {
     private static final float WAVE_SPEED = 0.002f;
     private Skybox skybox;
     private Grid floor, waterSurface;
-    private FileModel wordWall;
-    private ShaderProgram floorProgram;
-    private ShaderProgram waterSurfaceProgram;
-    private ShaderProgram fathersDayProgram;
-    private ShaderProgram skyboxProgram;
+    private FileModel wordWall, cube;
+    private ShaderProgram floorProgram, waterSurfaceProgram, fathersDayProgram,
+            skyboxProgram, texture3DProgram;
     private PositionalLight light;
     private WaterFrameBuffers waterFrameBuffers;
     private Texture2D waterSurfaceNormalMap;
     private boolean camIsAboveWater;
     private float waterMoveFactor;
-    private Texture3D causticTexture;
+    private Texture3D noiseTex;
 
     @Override
     protected void initGLFWWindow() {
@@ -77,7 +75,7 @@ public class Main extends App {
                 "assets/shaders/waterSimulate/skybox/vert.glsl",
                 "assets/shaders/waterSimulate/skybox/frag.glsl"
         );
-        ShaderProgram texture3DProgram = new ShaderProgram(
+        texture3DProgram = new ShaderProgram(
                 "assets/shaders/3DTextureShader/vert.glsl",
                 "assets/shaders/3DTextureShader/frag.glsl"
         );
@@ -109,6 +107,14 @@ public class Main extends App {
         floor = new Grid(new Vector3f(0f, -0.4f, 0f));
         waterSurface = new Grid(new Vector3f(0f, 10f, 0f));
 
+        cube = new FileModel("assets/models/cube.obj", new Vector3f(0f, 15f, -10f), false) {
+            @Override
+            protected void updateMMat() {
+                mMat.identity().translate(position).scale(10f);
+            }
+        };
+        fileModelList.add(cube);
+
         light = new PositionalLight().setPosition(0f, 5f, -10f);
     }
 
@@ -117,10 +123,10 @@ public class Main extends App {
         waterSurfaceNormalMap = new Texture2D(2, "assets/textures/normalMaps/waterSurfaceNormalMap.png");
         Texture2D dudvMap = new Texture2D(3, "assets/textures/dudvMaps/waterSurfaceDuDvMap.png");
         dudvMap.bind();
-        causticTexture = new WaterCausticTexture(4);
-        causticTexture.setResolution(256, 256, 256);
-        causticTexture.setZoom(16);
-        texture3DList.add(causticTexture);
+        noiseTex = new WaterCausticTexture(4);
+        noiseTex.setResolution(256, 256, 256);
+        noiseTex.setZoom(16);
+        texture3DList.add(noiseTex);
     }
 
     @Override
@@ -168,6 +174,7 @@ public class Main extends App {
     private void drawObjectsAboveWater() {
         drawSkybox();
         drawWordWall();
+        drawCube();
     }
 
     private void drawObjectsBelowWater() {
@@ -231,7 +238,7 @@ public class Main extends App {
         floorProgram.putUniform1f("causticSampleY", causticSampleY);
 
         waterSurfaceNormalMap.bind();
-        causticTexture.bind();
+        noiseTex.bind();
 
         // draw
         floor.draw(GL_TRIANGLES);
@@ -285,6 +292,33 @@ public class Main extends App {
     private void drawSkybox() {
         skybox.draw();
         skybox.getShaderProgram().putUniform1i("isAbove", camIsAboveWater ? 1 : 0);
+    }
+
+    private void drawCube() {
+        texture3DProgram.use();
+
+        noiseTex.bind();
+        cube.updateState(camera);
+
+        light.putToUniforms(
+                texture3DProgram.getUniformLoc("globalAmbient"),
+                texture3DProgram.getUniformLoc("light.ambient"),
+                texture3DProgram.getUniformLoc("light.diffuse"),
+                texture3DProgram.getUniformLoc("light.specular"),
+                texture3DProgram.getUniformLoc("light.position")
+        );
+
+        Material.getMaterial("GOLD").putToUniforms(
+            texture3DProgram.getUniformLoc("material.shininess")
+        );
+
+        texture3DProgram.putUniformMatrix4f("mv_matrix", cube.getMvMat().get(ValuesContainer.VALS_OF_16));
+        texture3DProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
+        texture3DProgram.putUniformMatrix4f("norm_matrix", cube.getInvTrMat().get(ValuesContainer.VALS_OF_16));
+
+        noiseTex.bind();
+
+        cube.draw(GL_TRIANGLES);
     }
 
     @Override
