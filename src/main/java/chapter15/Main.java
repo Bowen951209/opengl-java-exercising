@@ -28,7 +28,7 @@ public class Main extends App {
     private static final float WAVE_SPEED = 0.002f;
     private Skybox skybox;
     private Grid floor, waterSurface;
-    private FileModel wordWall, cube;
+    private FileModel wordWall;
     private ShaderProgram floorProgram, waterSurfaceProgram, fathersDayProgram,
             skyboxProgram, texture3DProgram;
     private PositionalLight light;
@@ -75,10 +75,6 @@ public class Main extends App {
                 "assets/shaders/waterSimulate/skybox/vert.glsl",
                 "assets/shaders/waterSimulate/skybox/frag.glsl"
         );
-        texture3DProgram = new ShaderProgram(
-                "assets/shaders/3DTextureShader/vert.glsl",
-                "assets/shaders/3DTextureShader/frag.glsl"
-        );
     }
 
     @Override
@@ -106,14 +102,6 @@ public class Main extends App {
         );
         floor = new Grid(new Vector3f(0f, -0.4f, 0f));
         waterSurface = new Grid(new Vector3f(0f, 10f, 0f));
-
-        cube = new FileModel("assets/models/cube.obj", new Vector3f(0f, 15f, -10f), false) {
-            @Override
-            protected void updateMMat() {
-                mMat.identity().translate(position).scale(10f);
-            }
-        };
-        fileModelList.add(cube);
 
         light = new PositionalLight().setPosition(0f, 5f, -10f);
     }
@@ -174,7 +162,6 @@ public class Main extends App {
     private void drawObjectsAboveWater() {
         drawSkybox();
         drawWordWall();
-        drawCube();
     }
 
     private void drawObjectsBelowWater() {
@@ -292,33 +279,6 @@ public class Main extends App {
     private void drawSkybox() {
         skybox.draw();
         skybox.getShaderProgram().putUniform1i("isAbove", camIsAboveWater ? 1 : 0);
-    }
-
-    private void drawCube() {
-        texture3DProgram.use();
-
-        noiseTex.bind();
-        cube.updateState(camera);
-
-        light.putToUniforms(
-                texture3DProgram.getUniformLoc("globalAmbient"),
-                texture3DProgram.getUniformLoc("light.ambient"),
-                texture3DProgram.getUniformLoc("light.diffuse"),
-                texture3DProgram.getUniformLoc("light.specular"),
-                texture3DProgram.getUniformLoc("light.position")
-        );
-
-        Material.getMaterial("GOLD").putToUniforms(
-            texture3DProgram.getUniformLoc("material.shininess")
-        );
-
-        texture3DProgram.putUniformMatrix4f("mv_matrix", cube.getMvMat().get(ValuesContainer.VALS_OF_16));
-        texture3DProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
-        texture3DProgram.putUniformMatrix4f("norm_matrix", cube.getInvTrMat().get(ValuesContainer.VALS_OF_16));
-
-        noiseTex.bind();
-
-        cube.draw(GL_TRIANGLES);
     }
 
     @Override
