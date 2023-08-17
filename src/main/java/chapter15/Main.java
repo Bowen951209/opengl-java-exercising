@@ -35,6 +35,7 @@ public class Main extends App {
     private float waterMoveFactor;
     private Texture3D noiseTex;
     private RadioButtons radioButtons;
+    private float[] textureScale;
 
     @Override
     protected void initGLFWWindow() {
@@ -133,6 +134,15 @@ public class Main extends App {
         radioButtons.addSelection(0, "Existing Texture")
                 .addSelection(1, "Procedural 3D Texture");
         panelWindow.addChild(radioButtons);
+
+        textureScale = new float[] {8f};
+        SliderFloat1 textureScaleSlider = new SliderFloat1(
+                "Texture Scale",
+                textureScale,
+                1f / 128f,
+                128f
+        );
+        panelWindow.addChild(textureScaleSlider);
 
         gui.addComponents(new FpsDisplay(this));
         gui.addComponents(panelWindow);
@@ -275,10 +285,12 @@ public class Main extends App {
             float noiseTexSampleY = (float) GLFW.glfwGetTime() * 0.05f;
             usingShaders.putUniform1f("noiseTexSampleY", noiseTexSampleY);
         }
+
         // put other states to uniform
         usingShaders.putUniformMatrix4f("mv_matrix", waterSurface.getMvMat().get(ValuesContainer.VALS_OF_16));
         usingShaders.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
         usingShaders.putUniformMatrix4f("norm_matrix", waterSurface.getInvTrMat().get(ValuesContainer.VALS_OF_16));
+        usingShaders.putUniform1f("textureScale", textureScale[0]);
 
         // Textures bindings
         Texture2D.putToUniform(0, waterFrameBuffers.getReflectionImageTexture());

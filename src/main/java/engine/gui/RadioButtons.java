@@ -32,5 +32,6 @@ public class RadioButtons implements GuiComponents {
                 ImGui.sameLine();
             }
         }
+        ImGui.newLine();
     }
 }

@@ -31,6 +31,7 @@ uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
 uniform int isAbove;
 uniform float moveFactor;
+uniform float textureScale;
 
 layout(binding = 0) uniform sampler2D reflectionTexture;
 layout(binding = 1) uniform sampler2D refractionTexture;
@@ -39,7 +40,6 @@ layout(binding = 3) uniform sampler2D dudvMap;
 
 const vec4 blueColor = vec4(0.0, 0.25, 1.0, 1.0);
 const float waveStrength = 0.02;
-const float textureScale = 8.0;
 const vec4 fogColor = vec4(0.0, 0.0, 0.2, 1.0);
 const float fogStart = 10.0;
 const float fogEnd = 300.0;
