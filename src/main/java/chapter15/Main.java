@@ -3,10 +3,7 @@ package chapter15;
 import engine.App;
 import engine.GLFWWindow;
 import engine.ShaderProgram;
-import engine.gui.FpsDisplay;
-import engine.gui.GUI;
-import engine.gui.GuiWindow;
-import engine.gui.Text;
+import engine.gui.*;
 import engine.sceneComponents.PositionalLight;
 import engine.sceneComponents.Skybox;
 import engine.sceneComponents.models.FileModel;
@@ -29,14 +26,17 @@ public class Main extends App {
     private Skybox skybox;
     private Grid floor, waterSurface;
     private FileModel wordWall;
-    private ShaderProgram floorProgram, waterSurfaceProgram, fathersDayProgram,
-            skyboxProgram, texture3DProgram;
+    private ShaderProgram floorProgram, existingTexturesWaterSurfaceProgram, fathersDayProgram,
+            skyboxProgram, proceduralTextureWaterSurfaceProgram;
     private PositionalLight light;
     private WaterFrameBuffers waterFrameBuffers;
     private Texture2D waterSurfaceNormalMap;
     private boolean camIsAboveWater;
     private float waterMoveFactor;
     private Texture3D noiseTex;
+    private RadioButtons radioButtons;
+
+    // TODO: 2023/8/16 add a chose for 3d texture or loaded map
 
     @Override
     protected void initGLFWWindow() {
@@ -62,9 +62,14 @@ public class Main extends App {
                 "assets/shaders/waterSimulate/floorShaders/frag.glsl"
         );
 
-        waterSurfaceProgram = new ShaderProgram(
-                "assets/shaders/waterSimulate/waterSurfaceShaders/vert.glsl",
-                "assets/shaders/waterSimulate/waterSurfaceShaders/frag.glsl"
+        existingTexturesWaterSurfaceProgram = new ShaderProgram(
+                "assets/shaders/waterSimulate/waterSurfaceShaders/existingTextures/vert.glsl",
+                "assets/shaders/waterSimulate/waterSurfaceShaders/existingTextures/frag.glsl"
+        );
+
+        proceduralTextureWaterSurfaceProgram = new ShaderProgram(
+                "assets/shaders/waterSimulate/waterSurfaceShaders/proceduralTexture/vert.glsl",
+                "assets/shaders/waterSimulate/waterSurfaceShaders/proceduralTexture/frag.glsl"
         );
 
         fathersDayProgram = new ShaderProgram(
@@ -120,10 +125,19 @@ public class Main extends App {
     @Override
     protected void initGUI() {
         gui = new GUI(glfwWindow, 3.0f);
-        GuiWindow descriptionWindow = new GuiWindow("Description", false);
-        descriptionWindow.addChild(new Text("Water simulating"));
+        GuiWindow panelWindow = new GuiWindow("Panel", false);
+        panelWindow.addChild(new Text("""
+                        "Water simulating"
+                Select wave and distortion generate method below:
+                """));
+
+        radioButtons = new RadioButtons(true);
+        radioButtons.addSelection(0, "Existing Texture")
+                .addSelection(1, "Procedural 3D Texture");
+        panelWindow.addChild(radioButtons);
+
         gui.addComponents(new FpsDisplay(this));
-        gui.addComponents(descriptionWindow);
+        gui.addComponents(panelWindow);
     }
 
     @Override
@@ -232,42 +246,54 @@ public class Main extends App {
     }
 
     private void drawWaterSurface() {
-        waterSurfaceProgram.use();
+        ShaderProgram usingShaders;
+        if (radioButtons.getChose().get() == 0) {
+            usingShaders = existingTexturesWaterSurfaceProgram;
+        } else {
+            usingShaders = proceduralTextureWaterSurfaceProgram;
+        }
+        usingShaders.use();
 
         // put light's uniforms
         light.putToUniforms(
-                waterSurfaceProgram.getUniformLoc("globalAmbient"),
-                waterSurfaceProgram.getUniformLoc("light.ambient"),
-                waterSurfaceProgram.getUniformLoc("light.diffuse"),
-                waterSurfaceProgram.getUniformLoc("light.specular"),
-                waterSurfaceProgram.getUniformLoc("light.position")
+                usingShaders.getUniformLoc("globalAmbient"),
+                usingShaders.getUniformLoc("light.ambient"),
+                usingShaders.getUniformLoc("light.diffuse"),
+                usingShaders.getUniformLoc("light.specular"),
+                usingShaders.getUniformLoc("light.position")
         );
 
         // put material's uniform
-        Material.getMaterial("gold").putToUniforms(waterSurfaceProgram.getUniformLoc("material.shininess"));
+        Material.getMaterial("gold").putToUniforms(usingShaders.getUniformLoc("material.shininess"));
 
         // update surface state
         waterSurface.updateState(camera);
-        waterMoveFactor = (float) (WAVE_SPEED * GLFW.glfwGetTime());
-        waterMoveFactor %= 1; // if more than 1, go to 1
+        if (usingShaders == existingTexturesWaterSurfaceProgram) {
+            waterMoveFactor = (float) (WAVE_SPEED * GLFW.glfwGetTime());
+            waterMoveFactor %= 1; // if more than 1, go to 1
 
-        // put states to uniform
-        waterSurfaceProgram.putUniformMatrix4f("mv_matrix", waterSurface.getMvMat().get(ValuesContainer.VALS_OF_16));
-        waterSurfaceProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
-        waterSurfaceProgram.putUniformMatrix4f("norm_matrix", waterSurface.getInvTrMat().get(ValuesContainer.VALS_OF_16));
-        waterSurfaceProgram.putUniform1f("moveFactor", waterMoveFactor);
+            usingShaders.putUniform1f("moveFactor", waterMoveFactor);
+        } else {
+            float noiseTexSampleY = (float) GLFW.glfwGetTime() * 0.05f;
+            usingShaders.putUniform1f("noiseTexSampleY", noiseTexSampleY);
+        }
+        // put other states to uniform
+        usingShaders.putUniformMatrix4f("mv_matrix", waterSurface.getMvMat().get(ValuesContainer.VALS_OF_16));
+        usingShaders.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
+        usingShaders.putUniformMatrix4f("norm_matrix", waterSurface.getInvTrMat().get(ValuesContainer.VALS_OF_16));
 
         // Textures bindings
         Texture2D.putToUniform(0, waterFrameBuffers.getReflectionImageTexture());
         Texture2D.putToUniform(1, waterFrameBuffers.getRefractionImageTexture());
         waterSurfaceNormalMap.bind();
+        noiseTex.bind();
 
         // if camera is above -> render up surface
         // if camera is below -> render down surface
         if (!camIsAboveWater) { // below
             glFrontFace(GL_CW);
         }
-        waterSurfaceProgram.putUniform1i("isAbove", camIsAboveWater ? 1 : 0);
+        usingShaders.putUniform1i("isAbove", camIsAboveWater ? 1 : 0);
 
         // draw
         waterSurface.draw(GL_TRIANGLES);
