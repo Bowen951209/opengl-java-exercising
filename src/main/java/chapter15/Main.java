@@ -3,10 +3,7 @@ package chapter15;
 import engine.App;
 import engine.GLFWWindow;
 import engine.ShaderProgram;
-import engine.gui.FpsDisplay;
-import engine.gui.GUI;
-import engine.gui.GuiWindow;
-import engine.gui.Text;
+import engine.gui.*;
 import engine.sceneComponents.PositionalLight;
 import engine.sceneComponents.Skybox;
 import engine.sceneComponents.models.FileModel;
@@ -29,8 +26,8 @@ public class Main extends App {
     private Skybox skybox;
     private Grid floor, waterSurface;
     private FileModel wordWall;
-    private ShaderProgram floorProgram, waterSurfaceProgram, fathersDayProgram,
-            skyboxProgram, texture3DProgram;
+    private ShaderProgram floorProgram, existingTexturesWaterSurfaceProgram, fathersDayProgram,
+            skyboxProgram, proceduralTextureWaterSurfaceProgram;
     private PositionalLight light;
     private WaterFrameBuffers waterFrameBuffers;
     private Texture2D waterSurfaceNormalMap;
@@ -64,9 +61,14 @@ public class Main extends App {
                 "assets/shaders/waterSimulate/floorShaders/frag.glsl"
         );
 
-        waterSurfaceProgram = new ShaderProgram(
-                "assets/shaders/waterSimulate/waterSurfaceShaders/vert.glsl",
-                "assets/shaders/waterSimulate/waterSurfaceShaders/frag.glsl"
+        existingTexturesWaterSurfaceProgram = new ShaderProgram(
+                "assets/shaders/waterSimulate/waterSurfaceShaders/existingTextures/vert.glsl",
+                "assets/shaders/waterSimulate/waterSurfaceShaders/existingTextures/frag.glsl"
+        );
+
+        proceduralTextureWaterSurfaceProgram = new ShaderProgram(
+                "assets/shaders/waterSimulate/waterSurfaceShaders/proceduralTexture/vert.glsl",
+                "assets/shaders/waterSimulate/waterSurfaceShaders/proceduralTexture/frag.glsl"
         );
 
         fathersDayProgram = new ShaderProgram(
@@ -122,10 +124,19 @@ public class Main extends App {
     @Override
     protected void initGUI() {
         gui = new GUI(glfwWindow, 3.0f);
-        GuiWindow descriptionWindow = new GuiWindow("Description", false);
-        descriptionWindow.addChild(new Text("Water simulating"));
+        GuiWindow panelWindow = new GuiWindow("Panel", false);
+        panelWindow.addChild(new Text("""
+                        "Water simulating"
+                Select wave and distortion generate method below:
+                """));
+
+        RadioButtons radioButtons = new RadioButtons(true);
+        radioButtons.addSelection(0, "Existing Texture")
+                .addSelection(1, "Procedural 3D Texture");
+        panelWindow.addChild(radioButtons);
+
         gui.addComponents(new FpsDisplay(this));
-        gui.addComponents(descriptionWindow);
+        gui.addComponents(panelWindow);
     }
 
     @Override
@@ -234,19 +245,19 @@ public class Main extends App {
     }
 
     private void drawWaterSurface() {
-        waterSurfaceProgram.use();
+        existingTexturesWaterSurfaceProgram.use();
 
         // put light's uniforms
         light.putToUniforms(
-                waterSurfaceProgram.getUniformLoc("globalAmbient"),
-                waterSurfaceProgram.getUniformLoc("light.ambient"),
-                waterSurfaceProgram.getUniformLoc("light.diffuse"),
-                waterSurfaceProgram.getUniformLoc("light.specular"),
-                waterSurfaceProgram.getUniformLoc("light.position")
+                existingTexturesWaterSurfaceProgram.getUniformLoc("globalAmbient"),
+                existingTexturesWaterSurfaceProgram.getUniformLoc("light.ambient"),
+                existingTexturesWaterSurfaceProgram.getUniformLoc("light.diffuse"),
+                existingTexturesWaterSurfaceProgram.getUniformLoc("light.specular"),
+                existingTexturesWaterSurfaceProgram.getUniformLoc("light.position")
         );
 
         // put material's uniform
-        Material.getMaterial("gold").putToUniforms(waterSurfaceProgram.getUniformLoc("material.shininess"));
+        Material.getMaterial("gold").putToUniforms(existingTexturesWaterSurfaceProgram.getUniformLoc("material.shininess"));
 
         // update surface state
         waterSurface.updateState(camera);
@@ -254,10 +265,10 @@ public class Main extends App {
         waterMoveFactor %= 1; // if more than 1, go to 1
 
         // put states to uniform
-        waterSurfaceProgram.putUniformMatrix4f("mv_matrix", waterSurface.getMvMat().get(ValuesContainer.VALS_OF_16));
-        waterSurfaceProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
-        waterSurfaceProgram.putUniformMatrix4f("norm_matrix", waterSurface.getInvTrMat().get(ValuesContainer.VALS_OF_16));
-        waterSurfaceProgram.putUniform1f("moveFactor", waterMoveFactor);
+        existingTexturesWaterSurfaceProgram.putUniformMatrix4f("mv_matrix", waterSurface.getMvMat().get(ValuesContainer.VALS_OF_16));
+        existingTexturesWaterSurfaceProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
+        existingTexturesWaterSurfaceProgram.putUniformMatrix4f("norm_matrix", waterSurface.getInvTrMat().get(ValuesContainer.VALS_OF_16));
+        existingTexturesWaterSurfaceProgram.putUniform1f("moveFactor", waterMoveFactor);
 
         // Textures bindings
         Texture2D.putToUniform(0, waterFrameBuffers.getReflectionImageTexture());
@@ -269,7 +280,7 @@ public class Main extends App {
         if (!camIsAboveWater) { // below
             glFrontFace(GL_CW);
         }
-        waterSurfaceProgram.putUniform1i("isAbove", camIsAboveWater ? 1 : 0);
+        existingTexturesWaterSurfaceProgram.putUniform1i("isAbove", camIsAboveWater ? 1 : 0);
 
         // draw
         waterSurface.draw(GL_TRIANGLES);
