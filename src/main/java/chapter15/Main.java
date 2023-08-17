@@ -36,8 +36,6 @@ public class Main extends App {
     private Texture3D noiseTex;
     private RadioButtons radioButtons;
 
-    // TODO: 2023/8/16 add a chose for 3d texture or loaded map
-
     @Override
     protected void initGLFWWindow() {
         super.glfwWindow = new GLFWWindow(2000, 1500, "Water Simulation");
