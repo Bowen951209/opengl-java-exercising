@@ -10,6 +10,10 @@ public class RadioButtons implements GuiComponents {
     private final HashMap<Integer, String> selections = new HashMap<>();
     protected final ImInt chose = new ImInt();
 
+    public ImInt getChose() {
+        return chose;
+    }
+
     public RadioButtons addSelection(int order, String label) {
         selections.put(order, label);
         return this;

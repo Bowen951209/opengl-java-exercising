@@ -34,6 +34,7 @@ public class Main extends App {
     private boolean camIsAboveWater;
     private float waterMoveFactor;
     private Texture3D noiseTex;
+    private RadioButtons radioButtons;
 
     // TODO: 2023/8/16 add a chose for 3d texture or loaded map
 
@@ -130,7 +131,7 @@ public class Main extends App {
                 Select wave and distortion generate method below:
                 """));
 
-        RadioButtons radioButtons = new RadioButtons(true);
+        radioButtons = new RadioButtons(true);
         radioButtons.addSelection(0, "Existing Texture")
                 .addSelection(1, "Procedural 3D Texture");
         panelWindow.addChild(radioButtons);
@@ -245,7 +246,11 @@ public class Main extends App {
     }
 
     private void drawWaterSurface() {
-        existingTexturesWaterSurfaceProgram.use();
+        if (radioButtons.getChose().get() == 0) {
+            existingTexturesWaterSurfaceProgram.use();
+        } else {
+            proceduralTextureWaterSurfaceProgram.use();
+        }
 
         // put light's uniforms
         light.putToUniforms(
