@@ -246,46 +246,54 @@ public class Main extends App {
     }
 
     private void drawWaterSurface() {
+        ShaderProgram usingShaders;
         if (radioButtons.getChose().get() == 0) {
-            existingTexturesWaterSurfaceProgram.use();
+            usingShaders = existingTexturesWaterSurfaceProgram;
         } else {
-            proceduralTextureWaterSurfaceProgram.use();
+            usingShaders = proceduralTextureWaterSurfaceProgram;
         }
+        usingShaders.use();
 
         // put light's uniforms
         light.putToUniforms(
-                existingTexturesWaterSurfaceProgram.getUniformLoc("globalAmbient"),
-                existingTexturesWaterSurfaceProgram.getUniformLoc("light.ambient"),
-                existingTexturesWaterSurfaceProgram.getUniformLoc("light.diffuse"),
-                existingTexturesWaterSurfaceProgram.getUniformLoc("light.specular"),
-                existingTexturesWaterSurfaceProgram.getUniformLoc("light.position")
+                usingShaders.getUniformLoc("globalAmbient"),
+                usingShaders.getUniformLoc("light.ambient"),
+                usingShaders.getUniformLoc("light.diffuse"),
+                usingShaders.getUniformLoc("light.specular"),
+                usingShaders.getUniformLoc("light.position")
         );
 
         // put material's uniform
-        Material.getMaterial("gold").putToUniforms(existingTexturesWaterSurfaceProgram.getUniformLoc("material.shininess"));
+        Material.getMaterial("gold").putToUniforms(usingShaders.getUniformLoc("material.shininess"));
 
         // update surface state
         waterSurface.updateState(camera);
-        waterMoveFactor = (float) (WAVE_SPEED * GLFW.glfwGetTime());
-        waterMoveFactor %= 1; // if more than 1, go to 1
+        if (usingShaders == existingTexturesWaterSurfaceProgram) {
+            waterMoveFactor = (float) (WAVE_SPEED * GLFW.glfwGetTime());
+            waterMoveFactor %= 1; // if more than 1, go to 1
 
-        // put states to uniform
-        existingTexturesWaterSurfaceProgram.putUniformMatrix4f("mv_matrix", waterSurface.getMvMat().get(ValuesContainer.VALS_OF_16));
-        existingTexturesWaterSurfaceProgram.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
-        existingTexturesWaterSurfaceProgram.putUniformMatrix4f("norm_matrix", waterSurface.getInvTrMat().get(ValuesContainer.VALS_OF_16));
-        existingTexturesWaterSurfaceProgram.putUniform1f("moveFactor", waterMoveFactor);
+            usingShaders.putUniform1f("moveFactor", waterMoveFactor);
+        } else {
+            float noiseTexSampleY = (float) GLFW.glfwGetTime() * 0.05f;
+            usingShaders.putUniform1f("noiseTexSampleY", noiseTexSampleY);
+        }
+        // put other states to uniform
+        usingShaders.putUniformMatrix4f("mv_matrix", waterSurface.getMvMat().get(ValuesContainer.VALS_OF_16));
+        usingShaders.putUniformMatrix4f("proj_matrix", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
+        usingShaders.putUniformMatrix4f("norm_matrix", waterSurface.getInvTrMat().get(ValuesContainer.VALS_OF_16));
 
         // Textures bindings
         Texture2D.putToUniform(0, waterFrameBuffers.getReflectionImageTexture());
         Texture2D.putToUniform(1, waterFrameBuffers.getRefractionImageTexture());
         waterSurfaceNormalMap.bind();
+        noiseTex.bind();
 
         // if camera is above -> render up surface
         // if camera is below -> render down surface
         if (!camIsAboveWater) { // below
             glFrontFace(GL_CW);
         }
-        existingTexturesWaterSurfaceProgram.putUniform1i("isAbove", camIsAboveWater ? 1 : 0);
+        usingShaders.putUniform1i("isAbove", camIsAboveWater ? 1 : 0);
 
         // draw
         waterSurface.draw(GL_TRIANGLES);

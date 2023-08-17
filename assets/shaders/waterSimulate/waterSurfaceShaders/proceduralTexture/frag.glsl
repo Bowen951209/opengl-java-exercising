@@ -30,12 +30,11 @@ uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
 uniform int isAbove;
-uniform float moveFactor;
+uniform float noiseTexSampleY;
 
 layout(binding = 0) uniform sampler2D reflectionTexture;
 layout(binding = 1) uniform sampler2D refractionTexture;
-layout(binding = 2) uniform sampler2D normalMap;
-layout(binding = 3) uniform sampler2D dudvMap;
+layout(binding = 4) uniform sampler3D noiseTex;
 
 const vec4 blueColor = vec4(0.0, 0.25, 1.0, 1.0);
 const float waveStrength = 0.02;
@@ -44,25 +43,25 @@ const vec4 fogColor = vec4(0.0, 0.0, 0.2, 1.0);
 const float fogStart = 10.0;
 const float fogEnd = 300.0;
 
-vec3 calcNewNormal() {
-    vec3 normal = normalize(varyingNormal);
-    vec3 tangent = vec3(0.0, 0.0, 1.0);
-    tangent = normalize(tangent - dot(tangent, normal) * normal);
-    vec3 bitangent = cross(tangent, normal);
-    mat3 tbn = mat3(tangent, bitangent, normal);
-    vec3 retrievedNormal = texture(normalMap, vec2((tc.x + moveFactor) * textureScale, (tc.y + moveFactor) * textureScale)).xyz;
-    retrievedNormal = retrievedNormal * 2.0 - 1.0;
-    vec3 newNormal = tbn * retrievedNormal;
-    newNormal = normalize(newNormal);
-
-    return newNormal;
+vec3 estimateWaveNormal(float offset, float mapScale, float hScale) {
+    // estimate the normal using the noise texture
+    // by looking up three height values around this vertex
+    float h1 = (texture(noiseTex, vec3(((tc.s)    )*mapScale, noiseTexSampleY, ((tc.t)+offset)*mapScale))).r * hScale;
+    float h2 = (texture(noiseTex, vec3(((tc.s)-offset)*mapScale, noiseTexSampleY, ((tc.t)-offset)*mapScale))).r * hScale;
+    float h3 = (texture(noiseTex, vec3(((tc.s)+offset)*mapScale, noiseTexSampleY, ((tc.t)-offset)*mapScale))).r * hScale;
+    vec3 v1 = vec3(0, h1, -1);
+    vec3 v2 = vec3(-1, h2, 1);
+    vec3 v3 = vec3(1, h3, 1);
+    vec3 v4 = v2-v1;
+    vec3 v5 = v3-v1;
+    vec3 normEst = normalize(cross(v4,v5));
+    return normEst;
 }
 
 void main(void) {
     // -------------------lighting----------------------
     vec3 L = normalize(varyingLightDir);
-    //        vec3 N = normalize(varyingNormal);
-    vec3 N = calcNewNormal();
+    vec3 N = estimateWaveNormal(0.0002, textureScale * 0.4, 30.0);
 
     vec3 V = normalize(-varyingVertPos);
     float cosTheta = dot(L, N);
@@ -77,7 +76,16 @@ void main(void) {
     vec2 tcForReflection, tcForRefraction;
     vec4 reflectColor, refractColor, mixColor;
 
-    vec2 distortion = texture(dudvMap, vec2((tc.x + moveFactor) * textureScale, (tc.y + moveFactor) * textureScale)).rg * 2.0 - 1.0;
+
+    // desortion
+    vec3 estNcb = estimateWaveNormal(.05, textureScale, 0.05);
+
+    float distortStrength = 0.5;
+    if (isAbove != 1) distortStrength = 0.0;
+
+    vec2 distorted = tc + estNcb.xz * distortStrength;
+
+    vec2 distortion = texture(noiseTex, vec3((distorted * textureScale).x, noiseTexSampleY, (distorted * textureScale).y)).rg * 2.0 - 1.0;
     distortion *= waveStrength;
 
     if (isAbove == 1) { // above water
@@ -98,7 +106,7 @@ void main(void) {
         vec3 Nfres = normalize(varyingNormal);
         float cosFres = dot(V, Nfres);
         float fresnel = acos(cosFres);
-        fresnel = pow(clamp(fresnel - 0.1, 0.8, 1.0), 3.0);
+        fresnel = pow(clamp(fresnel - 0.1, 0.0, 1.0), 3.0);
 
         fragColor = mix(refractColor, reflectColor, fresnel);
     } else { // below water
