@@ -27,11 +27,10 @@ public class ShaderProgram {
     private final HashMap<String, Integer> uniformLocMap = new HashMap<>();
 
     public int getUniformLoc(String uniformName) {
-        if(this.uniformLocMap.get(uniformName) != null) {
+        if (this.uniformLocMap.get(uniformName) != null) {
             // Given.
             return this.uniformLocMap.get(uniformName);
-        }
-        else {
+        } else {
             // Not given.
             int loc = glGetUniformLocation(this.id, uniformName);
             this.uniformLocMap.put(uniformName, loc);
@@ -55,6 +54,15 @@ public class ShaderProgram {
 
     public void putUniform4f(String uniformName, float[] value) {
         glUniform4fv(getUniformLoc(uniformName), value);
+    }
+
+    // Compute shader
+    public ShaderProgram(String computeShaderPath) {
+        String shaderSource = new GLSLReader(Path.of(computeShaderPath)).getString();
+        int shaderID = glCreateShader(GL_COMPUTE_SHADER);
+        compileAndCatchShaderErr(shaderID, shaderSource, GL_COMPUTE_SHADER);
+
+        this.id = setupProgram(shaderID);
     }
 
     // Only vertex & fragment
@@ -128,6 +136,15 @@ public class ShaderProgram {
         this(Path.of(vertexShaderPath), Path.of(fragmentShaderPath), Path.of(tessellationControlShaderPath), Path.of(tessellationEvaluationShaderPath));
     }
 
+    private static int setupProgram(int computeShaderID) {
+        int programID = glCreateProgram();
+        glAttachShader(programID, computeShaderID);
+        glLinkProgram(programID);
+        checkLinkStatus(programID);
+
+        return programID;
+    }
+
     private static int setupProgram(int vertexShaderID, int fragmentShaderID) {
         // This method returns the programID
         int programID = glCreateProgram();
@@ -175,24 +192,25 @@ public class ShaderProgram {
         glShaderSource(shaderID, source);
         glCompileShader(shaderID);
 
-        String shader = null;
-        switch (shaderType) {
-            case GL_VERTEX_SHADER ->
-                    shader = "Vertex Shader";
-            case GL_FRAGMENT_SHADER ->
-                    shader = "Fragment Shader";
-            case GL_GEOMETRY_SHADER ->
-                    shader = "Geometry Shader";
-            case GL_TESS_CONTROL_SHADER ->
-                    shader = "Tess Control Shader";
-            case GL_TESS_EVALUATION_SHADER ->
-                    shader = "Tess Evaluation Shader";
-        }
+        String shader = getString(shaderType);
         if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == 0) {
             throw new ShaderCompiledFailedException(shader + " (ID=" + shaderID + ") compiled failed\n" + glGetShaderInfoLog(shaderID));
         } else {
             System.out.println(shader + "(ID=" + shaderID + ") compiled succeeded.");
         }
+    }
+
+    private static String getString(int shaderType) {
+        String shader = null;
+        switch (shaderType) {
+            case GL_VERTEX_SHADER -> shader = "Vertex Shader";
+            case GL_FRAGMENT_SHADER -> shader = "Fragment Shader";
+            case GL_GEOMETRY_SHADER -> shader = "Geometry Shader";
+            case GL_TESS_CONTROL_SHADER -> shader = "Tess Control Shader";
+            case GL_TESS_EVALUATION_SHADER -> shader = "Tess Evaluation Shader";
+            case GL_COMPUTE_SHADER -> shader = "Compute Shader";
+        }
+        return shader;
     }
 
 }
