@@ -22,8 +22,8 @@ public class NoiseGenerator {
         return perlinNoiseGenerator;
     }
 
-    public void turbulence(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, int maxSize, int minSize, String color) {
-        final int initialSize = maxSize;
+    public void turbulence(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, double maxSize, int minSize, String color) {
+        final double initialSize = maxSize;
         int sizeCounts = 0;
         while (maxSize >= minSize) {
             sizeCounts++;
@@ -36,7 +36,7 @@ public class NoiseGenerator {
         // I don't allocate thread here because I think too large size scale is meaningless
         Thread[] threads = new Thread[sizeCounts];
         for (int i = 0; i < sizeCounts; i++) {
-            final int currentSize = maxSize;
+            final double currentSize = maxSize;
 
             threads[i] = new Thread(() -> {
 //                System.out.println("Processing size #" + currentSize);
@@ -93,10 +93,11 @@ public class NoiseGenerator {
         turbulence(buffer, textureWidth, textureHeight, textureDepth, maxSize, minSize, "WHITE");
     }
 
-    public void tileTurbulence(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, int maxSize, int minSize) {
+    public void tileTurbulence(ByteBuffer buffer, int textureWidth, int textureHeight, int textureDepth, double maxSize, double minSize) {
         final int CORES_COUNT = Runtime.getRuntime().availableProcessors();
         final int SLICE_WIDTH = textureWidth / CORES_COUNT; // !!! not int !!!
         final int LAST_SLICE_WIDTH = textureWidth - (SLICE_WIDTH * CORES_COUNT);
+        final int DEPTH_MUL_HEIGHT = textureDepth * textureHeight;
 
         final List<Thread> threadList = new ArrayList<>();
 
@@ -111,7 +112,7 @@ public class NoiseGenerator {
                         for (int z = 0; z < textureDepth; z++) {
                             double sum = getTileTurbulenceValue(textureWidth, textureHeight, maxSize, x, y, z);
 
-                            final int INDEX = (z + textureDepth * y + textureDepth * textureHeight * x) * 4;
+                            final int INDEX = (z + textureDepth * y + DEPTH_MUL_HEIGHT * x) * 4;
                             buffer.put(INDEX, (byte) sum);
                             buffer.put(INDEX + 1, (byte) sum);
                             buffer.put(INDEX + 2, (byte) sum);
@@ -138,7 +139,7 @@ public class NoiseGenerator {
                 for (int z = 0; z < textureDepth; z++) {
                     double sum = getTileTurbulenceValue(textureWidth, textureHeight, maxSize, x, y, z);
 
-                    final int INDEX = (z + textureDepth * y + textureDepth * textureHeight * x) * 4;
+                    final int INDEX = (z + textureDepth * y + DEPTH_MUL_HEIGHT * x) * 4;
                     buffer.put(INDEX, (byte) sum);
                     buffer.put(INDEX + 1, (byte) sum);
                     buffer.put(INDEX + 2, (byte) sum);
@@ -149,7 +150,7 @@ public class NoiseGenerator {
     }
 
 
-    private double getTileTurbulenceValue(int textureWidth, int textureDepth, int maxSize, double x, double y, double z) {
+    private double getTileTurbulenceValue(int textureWidth, int textureDepth, double maxSize, double x, double y, double z) {
         double sum, zoom = maxSize;
         sum = (sin((1.0 / (textureWidth + textureDepth)) * (8 * PI) * (x + z)) + 1) * 8.0;
 
