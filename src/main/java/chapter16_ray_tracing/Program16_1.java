@@ -3,6 +3,7 @@ import static org.lwjgl.opengl.GL43.*;
 import engine.App;
 import engine.GLFWWindow;
 import engine.ShaderProgram;
+import engine.util.Destroyer;
 
 import java.util.Arrays;
 
@@ -59,7 +60,7 @@ public class Program16_1 extends App {
 
     @Override
     protected void destroy() {
-        // Nothing to destroy for now.
+        Destroyer.destroyAll(glfwWindow.getID());
     }
 
     public static void main(String[] args) {
