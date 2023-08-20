@@ -7,6 +7,15 @@ import java.nio.ByteBuffer;
 
 public class TextureReader {
     private final int texID;
+    public TextureReader() {
+        texID = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, texID);
+
+        // Set texture parameters
+        // Repeat image in both directions
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    }
     public TextureReader(String filepath) {
         texID = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, texID);

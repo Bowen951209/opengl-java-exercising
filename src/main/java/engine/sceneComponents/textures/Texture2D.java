@@ -5,6 +5,8 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 import engine.readers.TextureReader;
 
+import java.awt.*;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT;
@@ -12,6 +14,13 @@ import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOT
 import static org.lwjgl.opengl.GL43.*;
 public class Texture2D extends TextureReader {
     private final int usingUnit;
+
+    public Texture2D(int usingUnit) {
+        super();
+        this.usingUnit = usingUnit;
+        config(GL_NEAREST);
+        glActiveTexture(GL_TEXTURE0 + usingUnit);
+    }
 
     public Texture2D(int usingUnit, String filepath) {
         super(filepath);
@@ -53,6 +62,21 @@ public class Texture2D extends TextureReader {
     public void bind() {
         glActiveTexture(GL_TEXTURE0 + usingUnit);
         glBindTexture(GL_TEXTURE_2D, getTexID());
+    }
+
+    public void fill(int width, int height, Color color) {
+        ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4);
+        for (int i = 0; i < buffer.capacity() / 4; i++) {
+            buffer.put((byte) color.getRed());
+            buffer.put((byte) color.getGreen());
+            buffer.put((byte) color.getBlue());
+            buffer.put((byte) color.getAlpha());
+        }
+
+        buffer.flip();
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+
     }
 
     public static void putToUniform(int unit, int id) {
