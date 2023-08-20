@@ -24,6 +24,17 @@ public class GLFWWindow {
     public int getInitHeight() {
         return initHeight;
     }
+    public int getCurrentWidth() {
+        int[] width = new int[1];
+        glfwGetWindowSize(getID(), width, null);
+        return width[0];
+    }
+
+    public int getCurrentHeight() {
+        int[] height = new int[1];
+        glfwGetWindowSize(getID(), null, height);
+        return height[0];
+    }
 
     private final long windowHandle;
     public long getID() {
