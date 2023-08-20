@@ -1,9 +1,8 @@
 package engine.sceneComponents.models;
 
-import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
-import static org.lwjgl.opengl.GL43.*;
+import static org.lwjgl.opengl.GL43.glDrawArrays;
 
 public class FullScreenQuad extends Model{
     private static final float[] VERTICES = new float[] {
