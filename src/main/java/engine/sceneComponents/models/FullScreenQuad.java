@@ -14,7 +14,7 @@ public class FullScreenQuad extends Model{
             0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
             1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f
     };
-    protected FullScreenQuad() {
+    public FullScreenQuad() {
         super(null, false, true, false);
 
         verticesInBuf = BufferUtils.createFloatBuffer(VERTICES.length);
