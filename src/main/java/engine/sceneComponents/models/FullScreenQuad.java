@@ -1,35 +1,26 @@
 package engine.sceneComponents.models;
 
-import org.lwjgl.BufferUtils;
-
 import static org.lwjgl.opengl.GL43.glDrawArrays;
 
-public class FullScreenQuad extends Model{
-    private static final float[] VERTICES = new float[] {
-            -1.0f, 1.0f, 0.0f,  -1.0f,-1.0f, 0.0f,  1.0f, -1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f,  1.0f,  1.0f, 0.0f,  -1.0f,  1.0f, 0.0f
+public class FullScreenQuad extends Model {
+    private static final float[] VERTICES = {
+            -1.0f, 1.0f, 0.0f, -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, -1.0f, 1.0f, 0.0f
     };
-
-    private static final float[] TCS = new float[] {
+    private static final float[] TEXCOORDS = {
             0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
             1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f
     };
+    private static final float[] NORMALS = new float[1];
+
     public FullScreenQuad() {
         super(null, false, true, false);
 
-        verticesInBuf = BufferUtils.createFloatBuffer(VERTICES.length);
-        verticesInBuf.put(VERTICES);
-        verticesInBuf.flip();
-        tcInBuf = BufferUtils.createFloatBuffer(TCS.length);
-        tcInBuf.put(TCS);
-        tcInBuf.flip();
-
-        storeDataToVBOs(verticesInBuf, null, tcInBuf);
+        storeDataToVBOs(VERTICES, NORMALS, TEXCOORDS);
     }
 
     @Override
     protected void updateMMat() {
-
     }
 
     @Override
