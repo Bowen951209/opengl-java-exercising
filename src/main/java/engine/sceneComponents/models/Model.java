@@ -129,21 +129,12 @@ public abstract class Model extends Thread {
     }
 
     protected void storeDataToVBOs(FloatBuffer vertices, FloatBuffer normals, FloatBuffer tcs) {
-        if (normals != null) {
-            storeDataToVBOs(vertices, normals);
-        } else {
-            storeVertices(vertices);
-        }
+        storeDataToVBOs(vertices, normals);
         storeTextureCoords(tcs);
     }
 
     protected void storeDataToVBOs(float[] vertices, float[] normals, float[] tcs) {
-        if (normals != null) {
-            storeDataToVBOs(vertices, normals);
-        } else {
-            storeVertices(vertices);
-        }
-
+        storeDataToVBOs(vertices, normals);
         storeTextureCoords(tcs);
     }
 
