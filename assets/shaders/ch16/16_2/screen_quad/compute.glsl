@@ -12,7 +12,7 @@ struct Collision {
     float t;// distance from ray's origin to collision point
     vec3 p;// world position
     vec3 n;// normal at the collision point
-    bool isInside;// whether ray started inside an object and collided TODO: rename to "isInside"
+    bool isInside;// whether ray started inside an object and collided
     int object_index;// index of the object that the ray hits
 };
 
