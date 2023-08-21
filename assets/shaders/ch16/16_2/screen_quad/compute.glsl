@@ -12,7 +12,7 @@ struct Collision {
     float t;// distance from ray's origin to collision point
     vec3 p;// world position
     vec3 n;// normal at the collision point
-    bool inside;// whether ray started inside an object and collided TODO: rename to "isInside"
+    bool isInside;// whether ray started inside an object and collided TODO: rename to "isInside"
     int object_index;// index of the object that the ray hits
 };
 
@@ -39,7 +39,7 @@ Collision intersect_box_object(Ray ray) {
 
     Collision collision;
     collision.t = t_near;
-    collision.inside = false;
+    collision.isInside = false;
 
     // if the ray didn't hit the box, return a negative t value
     if (t_near > t_far || t_far < 0.0) {
@@ -55,7 +55,7 @@ Collision intersect_box_object(Ray ray) {
         collision.t = t_far;
         intersect_distance = t_far;
         plane_intersect_distances = t_maxDist;
-        collision.inside = true;
+        collision.isInside = true;
     }
 
     // check which boundary the ray hits
@@ -89,7 +89,7 @@ Collision intersect_sphere_object(Ray ray) {
     float qd = qb * qb - 4 * qa * qc;
 
     Collision collision;
-    collision.inside = false;
+    collision.isInside = false;
 
     if (qd < 0.0) { // no solution in this case
         collision.t = -1.0;
@@ -109,13 +109,13 @@ Collision intersect_sphere_object(Ray ray) {
 
     if(t_near < 0.0) { // ray started inside the sphere
         collision.t = t_far;
-        collision.inside = true;
+        collision.isInside = true;
     }
 
     collision.p = ray.start + collision.t * ray.dir; // world position if the hit point
     collision.n = normalize(collision.p - sphere_position);
 
-    if (collision.inside) { // if ray is inside, flip the normal
+    if (collision.isInside) { // if ray is inside, flip the normal
         collision.n *= -1.0;
     }
 
