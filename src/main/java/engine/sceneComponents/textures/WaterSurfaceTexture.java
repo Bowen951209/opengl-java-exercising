@@ -14,8 +14,8 @@ public class WaterSurfaceTexture extends Texture3D {
         levelMixedNoise(zoom, 1);
     }
 
-    public void levelMixedNoise(int maxSize, int minSize) {
-        final int initialSize = maxSize;
+    public void levelMixedNoise(double maxSize, int minSize) {
+        final double initialSize = maxSize;
         int sizeCounts = 0;
         while (maxSize >= minSize) {
             sizeCounts++;
@@ -25,7 +25,7 @@ public class WaterSurfaceTexture extends Texture3D {
 
         Thread[] threads = new Thread[sizeCounts];
         for (int i = 0; i < sizeCounts; i++) {
-            final int currentSize = maxSize;
+            final double currentSize = maxSize;
 
             threads[i] = new Thread(() -> {
                 int currentIndex = 0;

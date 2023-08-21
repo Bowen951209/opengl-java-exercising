@@ -11,6 +11,7 @@ import engine.sceneComponents.models.Grid;
 import engine.sceneComponents.textures.Texture2D;
 import engine.sceneComponents.textures.Texture3D;
 import engine.sceneComponents.textures.WaterCausticTexture;
+import engine.sceneComponents.textures.WaterSurfaceTexture;
 import engine.util.Destroyer;
 import engine.util.Material;
 import engine.util.ValuesContainer;
@@ -33,7 +34,7 @@ public class Main extends App {
     private Texture2D waterSurfaceNormalMap;
     private boolean camIsAboveWater;
     private float waterMoveFactor;
-    private Texture3D noiseTex;
+    private Texture3D waterSurfaceNoiseTex, waterCausticTex;
     private RadioButtons radioButtons;
     private float[] textureScale;
 
@@ -115,10 +116,15 @@ public class Main extends App {
         waterSurfaceNormalMap = new Texture2D(2, "assets/textures/normalMaps/waterSurfaceNormalMap.png");
         Texture2D dudvMap = new Texture2D(3, "assets/textures/dudvMaps/waterSurfaceDuDvMap.png");
         dudvMap.bind();
-        noiseTex = new WaterCausticTexture(4);
-        noiseTex.setResolution(256, 256, 256);
-        noiseTex.setZoom(16);
-        texture3DList.add(noiseTex);
+        waterSurfaceNoiseTex = new WaterSurfaceTexture(4);
+        waterSurfaceNoiseTex.setResolution(256, 256, 256);
+        waterSurfaceNoiseTex.setZoom(16);
+        texture3DList.add(waterSurfaceNoiseTex);
+
+        waterCausticTex = new WaterCausticTexture(4);
+        waterCausticTex.setResolution(256, 256, 256);
+        waterCausticTex.setZoom(16);
+        texture3DList.add(waterCausticTex);
     }
 
     @Override
@@ -247,7 +253,7 @@ public class Main extends App {
         floorProgram.putUniform1f("causticSampleY", causticSampleY);
 
         waterSurfaceNormalMap.bind();
-        noiseTex.bind();
+        waterCausticTex.bind();
 
         // draw
         floor.draw(GL_TRIANGLES);
@@ -296,7 +302,7 @@ public class Main extends App {
         Texture2D.putToUniform(0, waterFrameBuffers.getReflectionImageTexture());
         Texture2D.putToUniform(1, waterFrameBuffers.getRefractionImageTexture());
         waterSurfaceNormalMap.bind();
-        noiseTex.bind();
+        waterSurfaceNoiseTex.bind();
 
         // if camera is above -> render up surface
         // if camera is below -> render down surface
