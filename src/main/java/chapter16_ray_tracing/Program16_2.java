@@ -11,7 +11,7 @@ import static org.lwjgl.opengl.GL43.*;
 import java.awt.*;
 
 public class Program16_2 extends App {
-    private ShaderProgram screenQuadShader;
+    private ShaderProgram screenQuadShader, computeShader;
     private Texture2D screenQuadTexture;
     private Model fullScreenQuad;
 
@@ -25,6 +25,9 @@ public class Program16_2 extends App {
         screenQuadShader = new ShaderProgram(
                 "assets/shaders/ch16/16_2/screen_quad/vert.glsl",
                 "assets/shaders/ch16/16_2/screen_quad/frag.glsl"
+        );
+        computeShader = new ShaderProgram(
+                "assets/shaders/ch16/16_2/screen_quad/compute.glsl"
         );
     }
 
@@ -45,6 +48,12 @@ public class Program16_2 extends App {
 
     @Override
     protected void drawScene() {
+        computeShader.use();
+        glBindImageTexture(0, screenQuadTexture.getTexID(), 0, false,
+                0, GL_WRITE_ONLY, GL_RGBA8);
+        glDispatchCompute(glfwWindow.getCurrentWidth(), glfwWindow.getCurrentHeight(), 1);
+        glFinish();
+
         screenQuadShader.use();
         screenQuadTexture.bind();
         fullScreenQuad.draw(GL_TRIANGLES);
