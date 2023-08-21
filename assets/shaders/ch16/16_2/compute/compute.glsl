@@ -25,7 +25,7 @@ vec3 sphere_color = vec3(0.0, 0.0, 1.0);// blue
 // Box
 vec3 box_mins = vec3(-2.0, -2.0, 0.0);// a corner of the box
 vec3 box_maxs = vec3(-0.5, 1.0, 2.0);// a corner of the box
-vec3 box_color = vec3(1.0, 0.0, 0.0);
+vec3 box_color = vec3(1.0, 0.0, 0.0);// red
 
 // ----------------------------Check if the ray hit the box----------------------------
 Collision intersect_box_object(Ray ray) {
@@ -107,12 +107,12 @@ Collision intersect_sphere_object(Ray ray) {
         return collision;
     }
 
-    if(t_near < 0.0) { // ray started inside the sphere
+    if (t_near < 0.0) { // ray started inside the sphere
         collision.t = t_far;
         collision.isInside = true;
     }
 
-    collision.p = ray.start + collision.t * ray.dir; // world position if the hit point
+    collision.p = ray.start + collision.t * ray.dir;// world position if the hit point
     collision.n = normalize(collision.p - sphere_position);
 
     if (collision.isInside) { // if ray is inside, flip the normal
@@ -132,38 +132,37 @@ object_index == 2 -> collision with box
 */
 
 Collision get_closet_collision(Ray ray) {
-    Collision closet_collision, cSphere, cBox;
-    closet_collision.object_index = -1;
+    Collision closest_collision, cSphere, cBox;
+    closest_collision.object_index = -1;
 
     cSphere = intersect_sphere_object(ray);
     cBox = intersect_box_object(ray);
 
-    if ((cSphere.t < 0.0) && ((cSphere.t < cBox.t) || (cBox.t < 0.0))) {
-        closet_collision = cSphere;
-        closet_collision.object_index = 1;
+    if ((cSphere.t > 0) && ((cSphere.t < cBox.t) || (cBox.t < 0))) {
+        closest_collision = cSphere;
+        closest_collision.object_index = 1;
+    }
+    if ((cBox.t > 0) && ((cBox.t < cSphere.t) || (cSphere.t < 0))) {
+        closest_collision = cBox;
+        closest_collision.object_index = 2;
     }
 
-    if ((cBox.t > 0.0) && ((cBox.t < cSphere.t) || (cSphere.t < 0.0))) {
-        closet_collision = cBox;
-        closet_collision.object_index = 2;
-    }
-
-    return closet_collision;
+    return closest_collision;
 }
 
 vec3 raytrace(Ray ray) {
     Collision collision = get_closet_collision(ray);
-    if(collision.object_index == -1) {// no collision
-        return vec3(0.0); // black
+    if (collision.object_index == -1) { // no collision
+        return vec3(0.0);// black
     }
-    if(collision.object_index == 1) {
+    if (collision.object_index == 1) {
         return sphere_color;
     }
-    if(collision.object_index == 2) {
+    if (collision.object_index == 2) {
         return box_color;
     }
 
-    return vec3(1.0, 1.0, 1.0); // error white
+    return vec3(1.0, 1.0, 1.0);// error white
 }
 
 void main() {

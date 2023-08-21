@@ -17,7 +17,7 @@ public class Program16_2 extends App {
 
     @Override
     protected void initGLFWWindow() {
-        glfwWindow = new GLFWWindow(3000, 1500, "Ray Casting");
+        glfwWindow = new GLFWWindow(1500, 1500, "Ray Casting");
     }
 
     @Override
@@ -27,7 +27,7 @@ public class Program16_2 extends App {
                 "assets/shaders/ch16/16_2/screen_quad/frag.glsl"
         );
         computeShader = new ShaderProgram(
-                "assets/shaders/ch16/16_2/screen_quad/compute.glsl"
+                "assets/shaders/ch16/16_2/compute/compute.glsl"
         );
     }
 
