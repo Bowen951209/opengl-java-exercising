@@ -8,6 +8,7 @@ import engine.sceneComponents.textures.Texture2D;
 import engine.util.Destroyer;
 
 import static org.lwjgl.opengl.GL43.*;
+
 import java.awt.*;
 
 public class Program16_2 extends App {
@@ -17,7 +18,7 @@ public class Program16_2 extends App {
 
     @Override
     protected void initGLFWWindow() {
-        glfwWindow = new GLFWWindow(1500, 1500, "Ray Casting");
+        glfwWindow = new GLFWWindow(3000, 1500, "Ray Casting");
     }
 
     @Override
