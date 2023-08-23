@@ -21,6 +21,13 @@ public class Program16_2 extends App {
     }
 
     @Override
+    protected void addCallbacks() {
+        this.getDefaultCallbacks().getDefaultFrameBufferResizeCB().addCallback(
+                () -> screenQuadTexture.fill(glfwWindow.getCurrentWidth(), glfwWindow.getInitHeight(), Color.PINK)
+        );
+    }
+
+    @Override
     protected void initShaderPrograms() {
         screenQuadShader = new ShaderProgram(
                 "assets/shaders/ch16/16_2/screen_quad/vert.glsl",
