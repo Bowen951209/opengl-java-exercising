@@ -84,50 +84,36 @@ public abstract class Model extends Thread {
     }
 
     private void storeVertices(FloatBuffer vertices) {
-        if (vertices == null)
-            throw new NullPointerException();
         glBindBuffer(GL_ARRAY_BUFFER, verticesVBO);
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
     }
 
     private void storeVertices(float[] vertices) {
-        if (vertices == null)
-            throw new NullPointerException();
         glBindBuffer(GL_ARRAY_BUFFER, verticesVBO);
         glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
     }
 
     private void storeNormals(FloatBuffer normals) {
-        if (normals == null)
-            throw new NullPointerException();
         glBindBuffer(GL_ARRAY_BUFFER, normalsVBO);
         glBufferData(GL_ARRAY_BUFFER, normals, GL_STATIC_DRAW);
     }
 
     private void storeNormals(float[] normals) {
-        if (normals == null)
-            throw new NullPointerException();
         glBindBuffer(GL_ARRAY_BUFFER, normalsVBO);
         glBufferData(GL_ARRAY_BUFFER, normals, GL_STATIC_DRAW);
     }
 
     private void storeTextureCoords(FloatBuffer tcs) {
-        if (tcs == null)
-            throw new NullPointerException();
         glBindBuffer(GL_ARRAY_BUFFER, tcVBO);
         glBufferData(GL_ARRAY_BUFFER, tcs, GL_STATIC_DRAW);
     }
 
     private void storeTextureCoords(float[] tcs) {
-        if (tcs == null)
-            throw new NullPointerException();
         glBindBuffer(GL_ARRAY_BUFFER, tcVBO);
         glBufferData(GL_ARRAY_BUFFER, tcs, GL_STATIC_DRAW);
     }
 
     private void storeTangents(FloatBuffer tangents) {
-        if (tangents == null)
-            throw new NullPointerException();
         glBindBuffer(GL_ARRAY_BUFFER, tangentsVBO);
         glBufferData(GL_ARRAY_BUFFER, tangents, GL_STATIC_DRAW);
     }
