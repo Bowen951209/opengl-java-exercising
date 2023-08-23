@@ -46,7 +46,14 @@ public class Program16_2 extends App {
 
     @Override
     protected void initTextures() {
-        screenQuadTexture= new Texture2D(0);
+        screenQuadTexture = new Texture2D(0) {
+            @Override
+            public void config(int mipMapSampleMode) {
+                // no extra mipmap
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            }
+        };
         screenQuadTexture.fill(
                 glfwWindow.getCurrentWidth(),
                 glfwWindow.getCurrentHeight(),
