@@ -2,10 +2,10 @@ package engine.sceneComponents.textures;
 
 import engine.util.NoiseGenerator;
 
-public class WaterCausticTexture extends Texture3D {
+public class WaterNoiseTexture extends Texture3D {
     private final NoiseGenerator noiseGenerator = new NoiseGenerator();
 
-    public WaterCausticTexture(int usingUnit) {
+    public WaterNoiseTexture(int usingUnit) {
         super(usingUnit);
     }
 
