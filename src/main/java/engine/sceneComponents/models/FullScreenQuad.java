@@ -11,12 +11,11 @@ public class FullScreenQuad extends Model {
             0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
             1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f
     };
-    private static final float[] NORMALS = new float[1];
 
     public FullScreenQuad() {
         super(null, false, true, false);
 
-        storeDataToVBOs(VERTICES, NORMALS, TEXCOORDS);
+        storeDataToVBOs(VERTICES, null, TEXCOORDS);
     }
 
     @Override
