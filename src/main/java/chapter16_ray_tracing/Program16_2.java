@@ -19,8 +19,7 @@ public class Program16_2 extends App {
     private ShaderProgram screenQuadShader, computeShader;
     private Texture2D screenQuadTexture, earthTexture, brickTexture;
     private Model fullScreenQuad;
-    private float[] boxPosition;
-
+    private float[] boxPosition, lightPosition, boxRotation;
     @Override
     protected void initGLFWWindow() {
         glfwWindow = new GLFWWindow(3000, 1500, "Ray Casting");
@@ -76,12 +75,19 @@ public class Program16_2 extends App {
         userWindow.addChild(new Text(
                 """
                         Use buttons below to play with things:
+                        
                         """
         ));
-        boxPosition = new float[4];
+        boxPosition = new float[] {-1.0f, -.5f, 1.0f};
+        boxRotation = new float[] {10f, 70f, 55f};
+        lightPosition = new float[] {-4.0f, 1.0f, 8.0f};
         SliderFloat3 boxPositionSlider = new SliderFloat3("box_position", boxPosition,
                 -10f, 10f);
-        userWindow.addChild(boxPositionSlider);
+        SliderFloat3 boxRotationSlider = new SliderFloat3("box_rotation", boxRotation,
+                -90f, 90f);
+        SliderFloat3 lightPositionSlider = new SliderFloat3("light_position", lightPosition,
+                -10, 10);
+        userWindow.addChild(boxPositionSlider).addChild(boxRotationSlider).addChild(lightPositionSlider);
         gui.addComponents(userWindow);
     }
 
@@ -95,6 +101,8 @@ public class Program16_2 extends App {
                 0, GL_WRITE_ONLY, GL_RGBA8);
 
         computeShader.putUniform3f("box_position", boxPosition);
+        computeShader.putUniform3f("box_rotation", boxRotation);
+        computeShader.putUniform3f("light_position", lightPosition);
 
         glDispatchCompute(glfwWindow.getCurrentWidth(), glfwWindow.getCurrentHeight(), 1);
         glFinish();

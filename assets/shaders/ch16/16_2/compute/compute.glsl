@@ -34,9 +34,7 @@ const vec3 box_mins = vec3(-.5, -.5, -1.0);// a corner of the box
 const vec3 box_maxs = vec3(.5, .5, 1.0);// a corner of the box
 const vec3 box_color = vec3(1.0, 0.0, 0.0);// red
 uniform vec3 box_position;
-const float box_x_rotate = 10.0;
-const float box_y_rotate = 70.0;
-const float box_z_rotate = 55.0;
+uniform vec3 box_rotation;
 
 // Light
 const vec4 global_ambient = vec4(.3, .3, .3, 1.0);
@@ -44,7 +42,7 @@ const vec4 material_ambient = vec4(.2, .2, .2, 1.0);
 const vec4 material_diffuse = vec4(.7, .7, .7, 1.0);
 const vec4 material_specular = vec4(1.0, 1.0, 1.0, 1.0);
 const float material_shininess = 50.0;
-const vec3 light_position = vec3(-4.0, 1.0, 8.0);
+uniform vec3 light_position;
 const vec4 light_ambient = vec4(.2, .2, .2, 1.0);
 const vec4 light_diffuse = vec4(.7, .7, .7, 1.0);
 const vec4 light_specular = vec4(1.0, 1.0, 1.0, 1.0);
@@ -92,9 +90,9 @@ mat4 buildRotation(float xRad, float yRad, float zRad) {
 Collision intersect_box_object(Ray ray) {
     mat4 model_translation = buildTranslate(box_position);
     mat4 model_rotation = buildRotation(
-    box_x_rotate * DEG_TO_RAD,
-    box_y_rotate * DEG_TO_RAD,
-    box_z_rotate * DEG_TO_RAD
+    box_rotation.x * DEG_TO_RAD,
+    box_rotation.y * DEG_TO_RAD,
+    box_rotation.z * DEG_TO_RAD
     );
 
     mat4 local_to_world_matrix = model_translation * model_rotation;
