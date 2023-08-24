@@ -19,7 +19,7 @@ struct Collision {
 // Defining Models
 // sphere
 float sphere_radius = 2.5;
-vec3 sphere_position = vec3(1.0, 0.0, -3.0);
+vec3 sphere_position = vec3(0.0, 0.0, -3.0);
 vec3 sphere_color = vec3(0.0, 0.0, 1.0);// blue
 
 // Box
@@ -171,7 +171,7 @@ void main() {
     ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
 
     // conver this screen space location to world space
-    float x_pixel = 2.0 * pixel.x / width - 1.0;
+    float x_pixel = 2.0 * pixel.x / height - float(width) / float(height);
     float y_pixel = 2.0 * pixel.y / height - 1.0;
 
     // get this pixel's world-space ray
