@@ -1,9 +1,8 @@
 package engine.callbacks;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWCursorPosCallback;
 import engine.sceneComponents.Camera;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFWCursorPosCallback;
 
 import java.nio.IntBuffer;
 
