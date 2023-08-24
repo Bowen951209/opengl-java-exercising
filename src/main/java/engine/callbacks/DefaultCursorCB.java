@@ -40,8 +40,6 @@ class DefaultCursorCB extends GLFWCursorPosCallback {
             IntBuffer width = BufferUtils.createIntBuffer(1);
             IntBuffer height = BufferUtils.createIntBuffer(1);
             glfwGetFramebufferSize(window, width, height);
-            assert width.get(0) == 0;
-            assert height.get(0) == 0;
 
             int centerX = width.get(0) / 2;
             int centerY = height.get(0) / 2;
