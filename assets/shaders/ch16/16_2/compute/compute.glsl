@@ -19,7 +19,7 @@ struct Collision {
 // Defining Models
 // sphere
 const float sphere_radius = 2.5;
-const vec3 sphere_position = vec3(0.0, 0.0, -3.0);
+const vec3 sphere_position = vec3(0.5, 0.0, -3.0);
 const vec3 sphere_color = vec3(0.0, 0.0, 1.0);// blue
 
 // Box
@@ -33,22 +33,10 @@ const vec4 material_ambient = vec4(.2, .2, .2, 1.0);
 const vec4 material_diffuse = vec4(.7, .7, .7, 1.0);
 const vec4 material_specular = vec4(1.0, 1.0, 1.0, 1.0);
 const float material_shininess = 50.0;
-const vec3 light_position = vec3(-3.0, 2.0, 4.0);
+const vec3 light_position = vec3(-4.0, 1.0, 8.0);
 const vec4 light_ambient = vec4(.2, .2, .2, 1.0);
 const vec4 light_diffuse = vec4(.7, .7, .7, 1.0);
 const vec4 light_specular = vec4(1.0, 1.0, 1.0, 1.0);
-
-vec3 adsLighting(Ray ray, Collision collision) {
-    vec3 lightDir = normalize(light_position - collision.p);
-    vec3 lightReflect = normalize(reflect(-lightDir, collision.n));
-    float cosTheta = dot(lightDir, collision.n);
-    float cosPhi = dot(normalize(-ray.dir), lightReflect);
-
-    vec4 ambient = global_ambient + light_ambient + material_ambient;
-    vec4 diffuse = light_diffuse * material_diffuse * max(cosTheta, 0.0);
-    vec4 specular = light_specular * material_specular * pow(max(cosPhi, 0.0), material_shininess);
-    return (ambient + diffuse + specular).rgb;
-}
 
 
 // ----------------------------Check if the ray hit the box----------------------------
@@ -155,7 +143,7 @@ object_index == 1 -> collision with sphere
 object_index == 2 -> collision with box
 */
 
-Collision get_closet_collision(Ray ray) {
+Collision get_closest_collision(Ray ray) {
     Collision closest_collision, cSphere, cBox;
     closest_collision.object_index = -1;
 
@@ -174,8 +162,40 @@ Collision get_closet_collision(Ray ray) {
     return closest_collision;
 }
 
+
+vec3 adsLighting(Ray ray, Collision collision) {
+    vec4 ambient = global_ambient + light_ambient * material_ambient;
+    vec4 diffuse = vec4(0.0);
+    vec4 specular = vec4(0.0);
+
+    // Check if is in shadow
+    Ray lightRay;
+    lightRay.start = collision.p + collision.n * 0.01; //small offset along normal. Without it, it may bump into the object itself.
+    lightRay.dir = normalize(light_position - collision.p);
+    bool isInShadow = false;
+
+    // Cast the ray against the scene
+    Collision collision_shadow = get_closest_collision(lightRay);
+
+    // if ray hit an object && hit between surface and light's position
+    if (collision_shadow.object_index != -1 && collision_shadow.t < length(light_position - collision.p)) {
+        isInShadow = true;
+    }
+
+    vec3 lightDir = normalize(light_position - collision.p);
+    vec3 lightReflect = normalize(reflect(-lightDir, collision.n));
+    float cosTheta = dot(lightDir, collision.n);
+    float cosPhi = dot(normalize(-ray.dir), lightReflect);
+
+    if (!isInShadow) {
+        diffuse = light_diffuse * material_diffuse * max(cosTheta, 0.0);
+        specular = light_specular * material_specular * pow(max(cosPhi, 0.0), material_shininess);
+    }
+    return (ambient + diffuse + specular).rgb;
+}
+
 vec3 raytrace(Ray ray) {
-    Collision collision = get_closet_collision(ray);
+    Collision collision = get_closest_collision(ray);
     if (collision.object_index == -1) { // no collision
         return vec3(0.0);// black
     }
