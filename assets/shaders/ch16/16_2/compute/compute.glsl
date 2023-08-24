@@ -18,14 +18,14 @@ struct Collision {
 
 // Defining Models
 // sphere
-float sphere_radius = 2.5;
-vec3 sphere_position = vec3(0.0, 0.0, -3.0);
-vec3 sphere_color = vec3(0.0, 0.0, 1.0);// blue
+const float sphere_radius = 2.5;
+const vec3 sphere_position = vec3(0.0, 0.0, -3.0);
+const vec3 sphere_color = vec3(0.0, 0.0, 1.0);// blue
 
 // Box
-vec3 box_mins = vec3(-2.0, -2.0, 0.0);// a corner of the box
-vec3 box_maxs = vec3(-0.5, 1.0, 2.0);// a corner of the box
-vec3 box_color = vec3(1.0, 0.0, 0.0);// red
+const vec3 box_mins = vec3(-2.0, -2.0, 0.0);// a corner of the box
+const vec3 box_maxs = vec3(-0.5, 1.0, 2.0);// a corner of the box
+const vec3 box_color = vec3(1.0, 0.0, 0.0);// red
 
 // ----------------------------Check if the ray hit the box----------------------------
 Collision intersect_box_object(Ray ray) {
