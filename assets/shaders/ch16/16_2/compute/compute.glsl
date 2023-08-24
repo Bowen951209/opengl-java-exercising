@@ -27,6 +27,30 @@ const vec3 box_mins = vec3(-2.0, -2.0, 0.0);// a corner of the box
 const vec3 box_maxs = vec3(-0.5, 1.0, 2.0);// a corner of the box
 const vec3 box_color = vec3(1.0, 0.0, 0.0);// red
 
+// Light
+const vec4 global_ambient = vec4(.3, .3, .3, 1.0);
+const vec4 material_ambient = vec4(.2, .2, .2, 1.0);
+const vec4 material_diffuse = vec4(.7, .7, .7, 1.0);
+const vec4 material_specular = vec4(1.0, 1.0, 1.0, 1.0);
+const float material_shininess = 50.0;
+const vec3 light_position = vec3(-3.0, 2.0, 4.0);
+const vec4 light_ambient = vec4(.2, .2, .2, 1.0);
+const vec4 light_diffuse = vec4(.7, .7, .7, 1.0);
+const vec4 light_specular = vec4(1.0, 1.0, 1.0, 1.0);
+
+vec3 adsLighting(Ray ray, Collision collision) {
+    vec3 lightDir = normalize(light_position - collision.p);
+    vec3 lightReflect = normalize(reflect(-lightDir, collision.n));
+    float cosTheta = dot(lightDir, collision.n);
+    float cosPhi = dot(normalize(-ray.dir), lightReflect);
+
+    vec4 ambient = global_ambient + light_ambient + material_ambient;
+    vec4 diffuse = light_diffuse * material_diffuse * max(cosTheta, 0.0);
+    vec4 specular = light_specular * material_specular * pow(max(cosPhi, 0.0), material_shininess);
+    return (ambient + diffuse + specular).rgb;
+}
+
+
 // ----------------------------Check if the ray hit the box----------------------------
 Collision intersect_box_object(Ray ray) {
     // calculate the box's mins and maxs
@@ -156,10 +180,10 @@ vec3 raytrace(Ray ray) {
         return vec3(0.0);// black
     }
     if (collision.object_index == 1) {
-        return sphere_color;
+        return adsLighting(ray, collision) * sphere_color;
     }
     if (collision.object_index == 2) {
-        return box_color;
+        return adsLighting(ray, collision) * box_color;
     }
 
     return vec3(1.0, 1.0, 1.0);// error white
