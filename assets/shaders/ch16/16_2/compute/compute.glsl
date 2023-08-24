@@ -1,6 +1,9 @@
 #version 430
 layout(local_size_x = 1) in;
 layout(binding = 0, rgba8) uniform image2D output_texture;
+layout(binding = 0) uniform sampler2D earthTexture;
+layout(binding = 1) uniform sampler2D brickTexture;
+
 float camera_pos_z = 5.0;
 
 struct Ray {
@@ -14,9 +17,11 @@ struct Collision {
     vec3 n;// normal at the collision point
     bool isInside;// whether ray started inside an object and collided
     int object_index;// index of the object that the ray hits
+    vec2 tc; // texture coordinate of the collision point
 };
 
-const float DEG_TO_RAD = 3.1415926535897932384626433832795 / 180.0;
+const float PI = 3.1415926535897932384626433832795;
+const float DEG_TO_RAD = PI / 180.0;
 
 // Defining Models
 // sphere
@@ -150,6 +155,30 @@ Collision intersect_box_object(Ray ray) {
 
     // calculate the world position of the hit point
     collision.p = ray.start + collision.t * ray.dir;
+
+    // Texture coordinate
+
+    // collision point in local space
+    vec3 collisionPoint = (world_to_local_matrix * vec4(collision.p, 1.0)).xyz;
+
+    // compute largest box dimension
+    float totalWidth = box_maxs.x - box_mins.x;
+    float totalHeight = box_maxs.y - box_mins.y;
+    float totalDepth = box_maxs.z - box_mins.z;
+    float maxDimesion = max(totalWidth, max(totalHeight, totalDepth));
+
+    // convert X/Y/Z coordinate to range [0, 1], and devide by largest box dimension
+    float rayStrikeX = (collisionPoint.x + totalWidth / 2.0) / maxDimesion;
+    float rayStrikeY = (collisionPoint.y + totalHeight / 2.0) / maxDimesion;
+    float rayStrikeZ = (collisionPoint.z + totalDepth / 2.0) / maxDimesion;
+
+    // select (X,Y) / (X,Z) / (Y,Z) as texture coordinate depeending on box face
+    switch(face_index) {
+        case 0: collision.tc = vec2(rayStrikeZ, rayStrikeY);
+        case 1: collision.tc = vec2(rayStrikeZ, rayStrikeX);
+        default: collision.tc = vec2(rayStrikeY, rayStrikeX);
+    }
+
     return collision;
 }
 
@@ -193,6 +222,10 @@ Collision intersect_sphere_object(Ray ray) {
     if (collision.isInside) { // if ray is inside, flip the normal
         collision.n *= -1.0;
     }
+
+    // Texture coordinate
+    collision.tc.x = 0.5 + atan(-collision.n.z, collision.n.x) / (2.0 * PI);
+    collision.tc.y = 0.5 - asin(-collision.n.y) / PI;
 
     return collision;
 }
@@ -259,14 +292,15 @@ vec3 adsLighting(Ray ray, Collision collision) {
 
 vec3 raytrace(Ray ray) {
     Collision collision = get_closest_collision(ray);
+    // TODO use switch statement
     if (collision.object_index == -1) { // no collision
         return vec3(0.0);// black
     }
     if (collision.object_index == 1) {
-        return adsLighting(ray, collision) * sphere_color;
+        return adsLighting(ray, collision) * texture(earthTexture, collision.tc).xyz;
     }
     if (collision.object_index == 2) {
-        return adsLighting(ray, collision) * box_color;
+        return adsLighting(ray, collision) * texture(brickTexture, collision.tc).xyz;
     }
 
     return vec3(1.0, 1.0, 1.0);// error white

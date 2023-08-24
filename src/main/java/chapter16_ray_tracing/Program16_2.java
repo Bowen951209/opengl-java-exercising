@@ -13,7 +13,7 @@ import java.awt.*;
 
 public class Program16_2 extends App {
     private ShaderProgram screenQuadShader, computeShader;
-    private Texture2D screenQuadTexture;
+    private Texture2D screenQuadTexture, earthTexture, brickTexture;
     private Model fullScreenQuad;
 
     @Override
@@ -59,15 +59,23 @@ public class Program16_2 extends App {
                 glfwWindow.getCurrentHeight(),
                 Color.PINK
         );
+
+        brickTexture = new Texture2D(1, "assets/textures/imageTextures/brick1.jpg");
+        earthTexture = new Texture2D(0, "assets/textures/imageTextures/earthmap1k.jpg");
     }
 
     @Override
     protected void drawScene() {
         computeShader.use();
+
+        brickTexture.bind();
+        earthTexture.bind();
         glBindImageTexture(0, screenQuadTexture.getTexID(), 0, false,
                 0, GL_WRITE_ONLY, GL_RGBA8);
         glDispatchCompute(glfwWindow.getCurrentWidth(), glfwWindow.getCurrentHeight(), 1);
         glFinish();
+
+
 
         screenQuadShader.use();
         screenQuadTexture.bind();
