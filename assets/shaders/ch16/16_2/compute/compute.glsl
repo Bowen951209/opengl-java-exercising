@@ -172,10 +172,14 @@ Collision intersect_box_object(Ray ray) {
 
     // select (X,Y) / (X,Z) / (Y,Z) as texture coordinate depeending on box face
 
-    collision.tc = vec2(rayStrikeY, rayStrikeX);
-    switch (face_index) {
-        case 0: collision.tc = vec2(rayStrikeZ, rayStrikeY);
-        case 1: collision.tc = vec2(rayStrikeZ, rayStrikeX);
+    if (face_index == 0){
+        collision.tc = vec2(rayStrikeZ, rayStrikeY);
+    }
+    else if (face_index == 1){
+        collision.tc = vec2(rayStrikeZ, rayStrikeX);
+    }
+    else {
+        collision.tc = vec2(rayStrikeY, rayStrikeX);
     }
 
     return collision;
