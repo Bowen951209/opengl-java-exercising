@@ -44,15 +44,15 @@ public class DefaultCallbacks {
             // using imGUI
             ImGuiIO IO = ImGui.getIO();
             defaultCursorCB = new DefaultCursorCB(camera) {
-                private static DoubleBuffer cursorXpos = BufferUtils.createDoubleBuffer(1);
-                private static DoubleBuffer cursorYpos = BufferUtils.createDoubleBuffer(1);
+                private static final DoubleBuffer CURSOR_XPOS = BufferUtils.createDoubleBuffer(1);
+                private static final DoubleBuffer CURSOR_YPOS = BufferUtils.createDoubleBuffer(1);
                 @Override
                 public void invoke(long window, double xpos, double ypos) {
                     super.invoke(window, xpos, ypos);
 
 
-                    GLFW.glfwGetCursorPos(window, cursorXpos, cursorYpos);
-                    IO.setMousePos((float) cursorXpos.get(0), (float) cursorYpos.get(0));
+                    GLFW.glfwGetCursorPos(window, CURSOR_XPOS, CURSOR_YPOS);
+                    IO.setMousePos((float) CURSOR_XPOS.get(0), (float) CURSOR_YPOS.get(0));
                 }
             };
 
