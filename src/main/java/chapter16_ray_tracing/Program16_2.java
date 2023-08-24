@@ -24,7 +24,7 @@ public class Program16_2 extends App {
     @Override
     protected void addCallbacks() {
         this.getDefaultCallbacks().getDefaultFrameBufferResizeCB().addCallback(
-                () -> screenQuadTexture.fill(glfwWindow.getCurrentWidth(), glfwWindow.getInitHeight(), Color.PINK)
+                () -> screenQuadTexture.fill(glfwWindow.getCurrentWidth(), glfwWindow.getCurrentHeight(), Color.PINK)
         );
     }
 
