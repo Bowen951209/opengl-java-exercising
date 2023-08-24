@@ -33,7 +33,7 @@ const vec3 sphere_color = vec3(0.0, 0.0, 1.0);// blue
 const vec3 box_mins = vec3(-.5, -.5, -1.0);// a corner of the box
 const vec3 box_maxs = vec3(.5, .5, 1.0);// a corner of the box
 const vec3 box_color = vec3(1.0, 0.0, 0.0);// red
-const vec3 box_position = vec3(-1.0, -.5, 1.0);
+uniform vec3 box_position;
 const float box_x_rotate = 10.0;
 const float box_y_rotate = 70.0;
 const float box_z_rotate = 55.0;

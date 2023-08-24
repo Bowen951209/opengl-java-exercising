@@ -3,6 +3,10 @@ package chapter16_ray_tracing;
 import engine.App;
 import engine.GLFWWindow;
 import engine.ShaderProgram;
+import engine.gui.GUI;
+import engine.gui.GuiWindow;
+import engine.gui.SliderFloat3;
+import engine.gui.Text;
 import engine.sceneComponents.models.*;
 import engine.sceneComponents.textures.Texture2D;
 import engine.util.Destroyer;
@@ -15,6 +19,7 @@ public class Program16_2 extends App {
     private ShaderProgram screenQuadShader, computeShader;
     private Texture2D screenQuadTexture, earthTexture, brickTexture;
     private Model fullScreenQuad;
+    private float[] boxPosition;
 
     @Override
     protected void initGLFWWindow() {
@@ -65,6 +70,22 @@ public class Program16_2 extends App {
     }
 
     @Override
+    protected void initGUI() {
+        gui = new GUI(glfwWindow, 3f);
+        GuiWindow userWindow = new GuiWindow("Hello! User", false);
+        userWindow.addChild(new Text(
+                """
+                        Use buttons below to play with things:
+                        """
+        ));
+        boxPosition = new float[4];
+        SliderFloat3 boxPositionSlider = new SliderFloat3("box_position", boxPosition,
+                -10f, 10f);
+        userWindow.addChild(boxPositionSlider);
+        gui.addComponents(userWindow);
+    }
+
+    @Override
     protected void drawScene() {
         computeShader.use();
 
@@ -72,9 +93,11 @@ public class Program16_2 extends App {
         earthTexture.bind();
         glBindImageTexture(0, screenQuadTexture.getTexID(), 0, false,
                 0, GL_WRITE_ONLY, GL_RGBA8);
+
+        computeShader.putUniform3f("box_position", boxPosition);
+
         glDispatchCompute(glfwWindow.getCurrentWidth(), glfwWindow.getCurrentHeight(), 1);
         glFinish();
-
 
 
         screenQuadShader.use();
@@ -88,6 +111,6 @@ public class Program16_2 extends App {
     }
 
     public static void main(String[] args) {
-        new Program16_2().run(false);
+        new Program16_2().run(true);
     }
 }
