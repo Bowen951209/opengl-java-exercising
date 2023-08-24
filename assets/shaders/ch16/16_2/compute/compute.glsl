@@ -16,6 +16,8 @@ struct Collision {
     int object_index;// index of the object that the ray hits
 };
 
+const float DEG_TO_RAD = 3.1415926535897932384626433832795 / 180.0;
+
 // Defining Models
 // sphere
 const float sphere_radius = 2.5;
@@ -23,9 +25,13 @@ const vec3 sphere_position = vec3(0.5, 0.0, -3.0);
 const vec3 sphere_color = vec3(0.0, 0.0, 1.0);// blue
 
 // Box
-const vec3 box_mins = vec3(-2.0, -2.0, 0.0);// a corner of the box
-const vec3 box_maxs = vec3(-0.5, 1.0, 2.0);// a corner of the box
+const vec3 box_mins = vec3(-.5, -.5, -1.0);// a corner of the box
+const vec3 box_maxs = vec3(.5, .5, 1.0);// a corner of the box
 const vec3 box_color = vec3(1.0, 0.0, 0.0);// red
+const vec3 box_position = vec3(-1.0, -.5, 1.0);
+const float box_x_rotate = 10.0;
+const float box_y_rotate = 70.0;
+const float box_z_rotate = 55.0;
 
 // Light
 const vec4 global_ambient = vec4(.3, .3, .3, 1.0);
@@ -39,11 +45,64 @@ const vec4 light_diffuse = vec4(.7, .7, .7, 1.0);
 const vec4 light_specular = vec4(1.0, 1.0, 1.0, 1.0);
 
 
+mat4 buildTranslate(vec3 position){
+    return mat4(
+    1.0, 0.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0,
+    0.0, 0.0, 1.0, 0.0,
+    position.x, position.y, position.z, 1.0
+    );
+}
+mat4 buildRotateX(float rad){
+    return mat4(
+    1.0, 0.0, 0.0, 0.0,
+    0.0, cos(rad), sin(rad), 0.0,
+    0.0, -sin(rad), cos(rad), 0.0,
+    0.0, 0.0, 0.0, 1.0
+    );
+}
+mat4 buildRotateY(float rad){
+    return mat4(
+    cos(rad), 0.0, -sin(rad), 0.0,
+    0.0, 1.0, 0.0, 0.0,
+    sin(rad), 0.0, cos(rad), 0.0,
+    0.0, 0.0, 0.0, 1.0
+    );
+}
+mat4 buildRotateZ(float rad){
+    return mat4(
+    cos(rad), sin(rad), 0.0, 0.0,
+    -sin(rad), cos(rad), 0.0, 0.0,
+    0.0, 0.0, 1.0, 0.0,
+    0.0, 0.0, 0.0, 1.0
+    );
+}
+
+mat4 buildRotation(float xRad, float yRad, float zRad) {
+    return buildRotateX(xRad) * buildRotateY(yRad) * buildRotateZ(zRad);
+}
+
+
 // ----------------------------Check if the ray hit the box----------------------------
 Collision intersect_box_object(Ray ray) {
+    mat4 model_translation = buildTranslate(box_position);
+    mat4 model_rotation = buildRotation(
+    box_x_rotate * DEG_TO_RAD,
+    box_y_rotate * DEG_TO_RAD,
+    box_z_rotate * DEG_TO_RAD
+    );
+
+    mat4 local_to_world_matrix = model_translation * model_rotation;
+    mat4 world_to_local_matrix = inverse(local_to_world_matrix);
+    mat4 world_to_local_rotation_matrix = inverse(model_rotation);
+
+    vec3 ray_start = (world_to_local_matrix * vec4(ray.start, 1.0)).xyz;
+    vec3 ray_dir = (world_to_local_rotation_matrix * vec4(ray.dir, 1.0)).xyz;
+
+
     // calculate the box's mins and maxs
-    vec3 t_min = (box_mins - ray.start) / ray.dir;
-    vec3 t_max = (box_maxs - ray.start) / ray.dir;
+    vec3 t_min = (box_mins - ray_start) / ray_dir;
+    vec3 t_max = (box_maxs - ray_start) / ray_dir;
     vec3 t_minDist = min(t_min, t_max);
     vec3 t_maxDist = max(t_min, t_max);
     float t_near = max(max(t_minDist.x, t_minDist.y), t_minDist.z);
@@ -85,6 +144,10 @@ Collision intersect_box_object(Ray ray) {
     if (ray.dir[face_index] > 0.0) {
         collision.n *= -1.0;
     }
+
+    // convert normal back into world space
+    collision.n = transpose(inverse(mat3(model_rotation))) * collision.n;
+
     // calculate the world position of the hit point
     collision.p = ray.start + collision.t * ray.dir;
     return collision;
@@ -170,7 +233,7 @@ vec3 adsLighting(Ray ray, Collision collision) {
 
     // Check if is in shadow
     Ray lightRay;
-    lightRay.start = collision.p + collision.n * 0.01; //small offset along normal. Without it, it may bump into the object itself.
+    lightRay.start = collision.p + collision.n * 0.01;//small offset along normal. Without it, it may bump into the object itself.
     lightRay.dir = normalize(light_position - collision.p);
     bool isInShadow = false;
 
