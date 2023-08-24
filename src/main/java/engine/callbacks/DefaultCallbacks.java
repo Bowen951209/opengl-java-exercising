@@ -46,13 +46,15 @@ public class DefaultCallbacks {
             defaultCursorCB = new DefaultCursorCB(camera) {
                 private static final DoubleBuffer CURSOR_XPOS = BufferUtils.createDoubleBuffer(1);
                 private static final DoubleBuffer CURSOR_YPOS = BufferUtils.createDoubleBuffer(1);
+
                 @Override
                 public void invoke(long window, double xpos, double ypos) {
                     super.invoke(window, xpos, ypos);
-
-
                     GLFW.glfwGetCursorPos(window, CURSOR_XPOS, CURSOR_YPOS);
+
+
                     IO.setMousePos((float) CURSOR_XPOS.get(0), (float) CURSOR_YPOS.get(0));
+
                 }
             };
 

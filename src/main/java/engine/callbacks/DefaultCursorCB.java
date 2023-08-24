@@ -9,10 +9,10 @@ import java.nio.IntBuffer;
 import static org.lwjgl.glfw.GLFW.*;
 
 class DefaultCursorCB extends GLFWCursorPosCallback {
-    private final Camera CAMERA;
+    private final Camera camera;
     private long window;
     public DefaultCursorCB(Camera camera) {
-        this.CAMERA = camera;
+        this.camera = camera;
     }
 
     private boolean lockCursor;
@@ -47,18 +47,18 @@ class DefaultCursorCB extends GLFWCursorPosCallback {
 
             if (ypos < centerY) {
                 // up
-                CAMERA.lookUp();
+                camera.lookUp();
             } else if (ypos > centerY) {
                 // down
-                CAMERA.lookDown();
+                camera.lookDown();
             }
 
             if (xpos < centerX) {
                 // left
-                CAMERA.lookLeft();
+                camera.lookLeft();
             } else if (xpos > centerX) {
                 // right
-                CAMERA.lookRight();
+                camera.lookRight();
             }
         }
     }
