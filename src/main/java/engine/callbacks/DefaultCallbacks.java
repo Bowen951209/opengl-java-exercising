@@ -30,7 +30,7 @@ public class DefaultCallbacks {
     public DefaultCallbacks(long windowID, Camera camera) {
         this.windowID = windowID;
 
-        defaultCursorCB = new DefaultCursorCB(camera);
+        defaultCursorCB = new DefaultCursorCB(camera, windowID);
         defaultFrameBufferResizeCB = new DefaultFrameBufferResizeCB(camera);
         defaultKeyCB = new DefaultKeyCB(camera, defaultCursorCB);
     }
@@ -38,12 +38,12 @@ public class DefaultCallbacks {
     public DefaultCallbacks(long windowID, Camera camera, boolean isUsingImGUI) {
         this.windowID = windowID;
         if (!isUsingImGUI) {
-            defaultCursorCB = new DefaultCursorCB(camera);
+            defaultCursorCB = new DefaultCursorCB(camera, windowID);
             defaultFrameBufferResizeCB = new DefaultFrameBufferResizeCB(camera);
         } else {
             // using imGUI
             ImGuiIO IO = ImGui.getIO();
-            defaultCursorCB = new DefaultCursorCB(camera) {
+            defaultCursorCB = new DefaultCursorCB(camera, windowID) {
                 private static final DoubleBuffer CURSOR_XPOS = BufferUtils.createDoubleBuffer(1);
                 private static final DoubleBuffer CURSOR_YPOS = BufferUtils.createDoubleBuffer(1);
 

@@ -1,6 +1,7 @@
 package engine.callbacks;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import engine.sceneComponents.Camera;
 
@@ -10,9 +11,11 @@ import static org.lwjgl.glfw.GLFW.*;
 
 class DefaultCursorCB extends GLFWCursorPosCallback {
     private final Camera camera;
-    private long window;
-    public DefaultCursorCB(Camera camera) {
+    private final long window;
+    private float deltaScroll;
+    public DefaultCursorCB(Camera camera, long window) {
         this.camera = camera;
+        this.window = window;
     }
 
     private boolean lockCursor;
@@ -34,8 +37,6 @@ class DefaultCursorCB extends GLFWCursorPosCallback {
 
     @Override
     public void invoke(long window, double xpos, double ypos) {
-        this.window = window;
-
         if (lockCursor) {
             IntBuffer width = BufferUtils.createIntBuffer(1);
             IntBuffer height = BufferUtils.createIntBuffer(1);
