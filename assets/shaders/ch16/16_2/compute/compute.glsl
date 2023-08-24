@@ -144,12 +144,13 @@ Collision intersect_box_object(Ray ray) {
     collision.n = vec3(0.0);
     collision.n[face_index] = 1.0;
     // if hit the box from the negative axis, invert the normal
-    if (ray.dir[face_index] > 0.0) {
+    if (ray_dir[face_index] > 0.0) {
         collision.n *= -1.0;
     }
 
     // convert normal back into world space
-    collision.n = transpose(inverse(mat3(model_rotation))) * collision.n;
+    mat4 invTrMatrix = transpose(world_to_local_rotation_matrix);
+    collision.n = mat3(invTrMatrix) * collision.n;
 
     // calculate the world position of the hit point
     collision.p = ray.start + collision.t * ray.dir;
@@ -184,7 +185,6 @@ Collision intersect_box_object(Ray ray) {
 
     return collision;
 }
-
 // ---------------------------- Check if ray hit the sphere ----------------------------
 Collision intersect_sphere_object(Ray ray) {
     float qa = dot(ray.dir, ray.dir);
