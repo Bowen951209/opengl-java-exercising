@@ -17,7 +17,7 @@ struct Collision {
     vec3 n;// normal at the collision point
     bool isInside;// whether ray started inside an object and collided
     int object_index;// index of the object that the ray hits
-    vec2 tc; // texture coordinate of the collision point
+    vec2 tc;// texture coordinate of the collision point
 };
 
 const float PI = 3.1415926535897932384626433832795;
@@ -173,10 +173,14 @@ Collision intersect_box_object(Ray ray) {
     float rayStrikeZ = (collisionPoint.z + totalDepth / 2.0) / maxDimesion;
 
     // select (X,Y) / (X,Z) / (Y,Z) as texture coordinate depeending on box face
-    switch(face_index) {
-        case 0: collision.tc = vec2(rayStrikeZ, rayStrikeY);
-        case 1: collision.tc = vec2(rayStrikeZ, rayStrikeX);
-        default: collision.tc = vec2(rayStrikeY, rayStrikeX);
+    if (face_index == 0){
+        collision.tc = vec2(rayStrikeZ, rayStrikeY);
+    }
+    else if (face_index == 1){
+        collision.tc = vec2(rayStrikeZ, rayStrikeX);
+    }
+    else {
+        collision.tc = vec2(rayStrikeY, rayStrikeX);
     }
 
     return collision;
