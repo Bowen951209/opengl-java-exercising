@@ -173,14 +173,11 @@ Collision intersect_box_object(Ray ray) {
     float rayStrikeZ = (collisionPoint.z + totalDepth / 2.0) / maxDimesion;
 
     // select (X,Y) / (X,Z) / (Y,Z) as texture coordinate depeending on box face
-    if (face_index == 0){
-        collision.tc = vec2(rayStrikeZ, rayStrikeY);
-    }
-    else if (face_index == 1){
-        collision.tc = vec2(rayStrikeZ, rayStrikeX);
-    }
-    else {
-        collision.tc = vec2(rayStrikeY, rayStrikeX);
+
+    collision.tc = vec2(rayStrikeY, rayStrikeX);
+    switch (face_index) {
+        case 0: collision.tc = vec2(rayStrikeZ, rayStrikeY);
+        case 1: collision.tc = vec2(rayStrikeZ, rayStrikeX);
     }
 
     return collision;
@@ -296,7 +293,6 @@ vec3 adsLighting(Ray ray, Collision collision) {
 
 vec3 raytrace(Ray ray) {
     Collision collision = get_closest_collision(ray);
-    // TODO use switch statement
     if (collision.object_index == -1) { // no collision
         return vec3(0.0);// black
     }
