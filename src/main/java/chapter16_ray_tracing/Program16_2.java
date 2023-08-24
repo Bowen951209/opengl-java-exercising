@@ -3,10 +3,7 @@ package chapter16_ray_tracing;
 import engine.App;
 import engine.GLFWWindow;
 import engine.ShaderProgram;
-import engine.gui.GUI;
-import engine.gui.GuiWindow;
-import engine.gui.SliderFloat3;
-import engine.gui.Text;
+import engine.gui.*;
 import engine.sceneComponents.models.*;
 import engine.sceneComponents.textures.Texture2D;
 import engine.util.Destroyer;
@@ -45,6 +42,7 @@ public class Program16_2 extends App {
 
     @Override
     protected void initModels() {
+        camera.setPos(0f, 0f, 5f);
         fullScreenQuad = new FullScreenQuad();
     }
 
@@ -89,6 +87,7 @@ public class Program16_2 extends App {
                 -10, 10);
         userWindow.addChild(boxPositionSlider).addChild(boxRotationSlider).addChild(lightPositionSlider);
         gui.addComponents(userWindow);
+        gui.addComponents(new FpsDisplay(this));
     }
 
     @Override
