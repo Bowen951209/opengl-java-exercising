@@ -54,7 +54,7 @@ public class DefaultCallbacks {
 
 
                     IO.setMousePos((float) CURSOR_XPOS.get(0), (float) CURSOR_YPOS.get(0));
-
+                    IO.setMouseWheel(defaultCursorCB.getDeltaScroll());
                 }
             };
 

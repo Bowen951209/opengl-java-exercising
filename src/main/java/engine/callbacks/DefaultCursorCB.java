@@ -12,18 +12,28 @@ class DefaultCursorCB extends GLFWCursorPosCallback {
     private final Camera camera;
     private final long window;
     private float deltaScroll;
+
+    public float getDeltaScroll() {
+        return deltaScroll;
+    }
+
     public DefaultCursorCB(Camera camera, long window) {
         this.camera = camera;
         this.window = window;
+
+        glfwSetScrollCallback(window, (windowID, dx, dy) -> deltaScroll = (float) dy);
     }
 
     private boolean lockCursor;
+
     private void lockCursor() {
         lockCursor = true;
     }
+
     private void unlockCursor() {
         lockCursor = false;
     }
+
     public void changeLock() {
         if (lockCursor) {
             unlockCursor();
