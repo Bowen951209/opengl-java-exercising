@@ -4,6 +4,8 @@ import imgui.ImGui;
 import imgui.ImVec2;
 import org.joml.Math;
 
+import java.util.HashSet;
+
 public abstract class Slider implements GuiComponents {
     private final float[] values;
 
@@ -20,6 +22,11 @@ public abstract class Slider implements GuiComponents {
 
     private final ImVec2 rectMin = new ImVec2();
     private final ImVec2 rectMax = new ImVec2();
+    private final HashSet<Runnable> scrollCallbacks = new HashSet<>();
+    public Slider addScrollCallBack(Runnable e) {
+        scrollCallbacks.add(e);
+        return this;
+    }
 
     public Slider enableMouseWheelControl() {
         isMouseWheelControlAble = true;
@@ -62,6 +69,8 @@ public abstract class Slider implements GuiComponents {
                     values[section] += Math.clamp(-1f, 1f, ImGui.getIO().getMouseWheel()) * wheelSpeed;
                 }
             }
+
+            scrollCallbacks.forEach(Runnable::run);
         }
     }
 
