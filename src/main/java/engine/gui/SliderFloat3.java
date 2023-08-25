@@ -2,7 +2,6 @@ package engine.gui;
 
 import imgui.ImGui;
 import imgui.ImVec2;
-import org.joml.Math;
 
 public class SliderFloat3 implements GuiComponents {
     private final float[] values;
@@ -36,11 +35,6 @@ public class SliderFloat3 implements GuiComponents {
 
     @Override
     public void render() {
-        // Clamp values
-        for (int i = 0; i < values.length; i++) {
-            values[i] = Math.clamp(minValue, maxValue, values[i]);
-        }
-
         ImGui.sliderFloat3(label, values, minValue, maxValue);
 
         ImGui.getItemRectMax(rectMax);
@@ -56,7 +50,11 @@ public class SliderFloat3 implements GuiComponents {
         if (ImGui.getIO().getMouseWheel() != 0f) {
             if (ImGui.isMouseHoveringRect(rectMin.x, rectMin.y, rectMax.x, rectMax.y)) {
                 int section = detectHoveredSection(rectMin, rectMax);
-                values[section] += ImGui.getIO().getMouseWheel() * wheelSpeed;
+
+                if ((ImGui.getIO().getMouseWheel() > 0f && values[section] < maxValue) ||
+                        (ImGui.getIO().getMouseWheel() < 0f && values[section] > minValue)) {
+                        values[section] += ImGui.getIO().getMouseWheel() * wheelSpeed;
+                }
             }
         }
     }
