@@ -4,7 +4,9 @@ layout(binding = 0, rgba8) uniform image2D output_texture;
 layout(binding = 0) uniform sampler2D earthTexture;
 layout(binding = 1) uniform sampler2D brickTexture;
 
-float camera_pos_z = 5.0;
+uniform float camera_pos_x;
+uniform float camera_pos_y;
+uniform float camera_pos_z;
 
 struct Ray {
     vec3 start;// origin
@@ -319,8 +321,8 @@ void main() {
 
     // get this pixel's world-space ray
     Ray world_ray;
-    world_ray.start = vec3(0.0, 0.0, camera_pos_z);
-    vec4 world_ray_end = vec4(x_pixel, y_pixel, camera_pos_z - 1.0, 1.0);
+    world_ray.start = vec3(camera_pos_x, camera_pos_y, camera_pos_z);
+    vec4 world_ray_end = vec4(x_pixel + camera_pos_x, y_pixel + camera_pos_y, camera_pos_z - 1.0, 1.0);
     world_ray.dir = normalize(world_ray_end.xyz - world_ray.start);
 
     vec3 color = raytrace(world_ray);
