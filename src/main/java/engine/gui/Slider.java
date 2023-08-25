@@ -23,6 +23,7 @@ public abstract class Slider implements GuiComponents {
     private final ImVec2 rectMin = new ImVec2();
     private final ImVec2 rectMax = new ImVec2();
     private final HashSet<Runnable> scrollCallbacks = new HashSet<>();
+
     public Slider addScrollCallBack(Runnable e) {
         scrollCallbacks.add(e);
         return this;
@@ -32,6 +33,7 @@ public abstract class Slider implements GuiComponents {
         isMouseWheelControlAble = true;
         return this;
     }
+
     public Slider(String label, float[] values, float minValue, float maxValue) {
         this.label = label;
         this.values = values;
@@ -42,14 +44,22 @@ public abstract class Slider implements GuiComponents {
 
     @Override
     public void render() {
+        boolean isSlide = false;
+
         if (getClass().equals(SliderFloat1.class)) {
-            ImGui.sliderFloat(label, values, minValue, maxValue);
+            isSlide = ImGui.sliderFloat(label, values, minValue, maxValue);
         } else if (getClass().equals(SliderFloat3.class)) {
-            ImGui.sliderFloat3(label, values, minValue, maxValue);
+            isSlide = ImGui.sliderFloat3(label, values, minValue, maxValue);
         } else if (getClass().equals(SliderFloat4.class)) {
-            ImGui.sliderFloat4(label, values, minValue, maxValue);
+            isSlide = ImGui.sliderFloat4(label, values, minValue, maxValue);
         }
 
+        if (isSlide) {
+            scrollCallbacks.forEach(Runnable::run);
+        }
+
+
+        // For mouse wheel control
         ImGui.getItemRectMax(rectMax);
         rectMax.x -= labelLength;
         ImGui.getItemRectMin(rectMin);
