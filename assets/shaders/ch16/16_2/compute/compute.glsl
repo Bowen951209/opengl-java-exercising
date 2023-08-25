@@ -7,6 +7,7 @@ layout(binding = 1) uniform sampler2D brickTexture;
 uniform float camera_pos_x;
 uniform float camera_pos_y;
 uniform float camera_pos_z;
+uniform mat4 cameraToWorld_matrix;
 
 struct Ray {
     vec3 start;// origin
@@ -315,15 +316,19 @@ void main() {
     int height = int(gl_NumWorkGroups.y);
     ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
 
-    // conver this screen space location to world space
-    float x_pixel = 2.0 * pixel.x / height - float(width) / float(height);
-    float y_pixel = 2.0 * pixel.y / height - 1.0;
+    // Algorithm thanks to https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays.html
+    float aspectRatio = width / height; // assuming width > height
+    float Px = (2 * ((pixel.x + 0.5) / width) - 1) * aspectRatio;
+    float Py = -(1 - 2 * ((pixel.y + 0.5) / height));
+    vec3 rayOrigin = vec3(0f, 0f, 0f);
 
-    // get this pixel's world-space ray
+    vec3 rayOriginWorld = mat3(cameraToWorld_matrix) * rayOrigin;
+    vec3 rayPWorld = mat3(cameraToWorld_matrix) * vec3(Px, Py, -1f);
+
     Ray world_ray;
     world_ray.start = vec3(camera_pos_x, camera_pos_y, camera_pos_z);
-    vec4 world_ray_end = vec4(x_pixel + camera_pos_x, y_pixel + camera_pos_y, camera_pos_z - 1.0, 1.0);
-    world_ray.dir = normalize(world_ray_end.xyz - world_ray.start);
+    world_ray.dir = rayPWorld - rayOriginWorld;
+    // ---------------------------------------------
 
     vec3 color = raytrace(world_ray);
     imageStore(output_texture, pixel, vec4(color, 1.0));

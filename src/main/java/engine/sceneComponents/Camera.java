@@ -24,7 +24,13 @@ public class Camera {
     private final Vector3f leftVec = new Vector3f();
     private final Vector3f directionMulStep = new Vector3f();
     private final Vector3f camFront = new Vector3f();
-    private final Matrix4f VMat = new Matrix4f();
+    private final Matrix4f vMat = new Matrix4f();
+    private final Matrix4f invVMat = new Matrix4f();
+
+    public Matrix4f getInvVMat() {
+        invVMat.set(vMat).invert();
+        return invVMat;
+    }
 
     public Camera() {
     }
@@ -34,7 +40,7 @@ public class Camera {
     }
 
     public Matrix4f getVMat() {
-        return VMat;
+        return vMat;
     }
 
     public Matrix4f getProjMat() {
@@ -71,8 +77,8 @@ public class Camera {
 
     public void updateVMat() {
         lookAtPoint.set(position).add(direction);
-        VMat.identity();
-        VMat.lookAt(this.position, lookAtPoint, Y);
+        vMat.identity();
+        vMat.lookAt(this.position, lookAtPoint, Y);
     }
 
     // looking direction

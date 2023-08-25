@@ -7,6 +7,7 @@ import engine.gui.*;
 import engine.sceneComponents.models.*;
 import engine.sceneComponents.textures.Texture2D;
 import engine.util.Destroyer;
+import engine.util.ValuesContainer;
 
 import static org.lwjgl.opengl.GL43.*;
 
@@ -121,6 +122,8 @@ public class Program16_2 extends App {
         computeShader.putUniform1f("camera_pos_x", camera.getPos().x);
         computeShader.putUniform1f("camera_pos_y", camera.getPos().y);
         computeShader.putUniform1f("camera_pos_z", camera.getPos().z);
+        computeShader.putUniformMatrix4f("cameraToWorld_matrix",
+                camera.getInvVMat().get(ValuesContainer.VALS_OF_16));
 
         glDispatchCompute((int) (glfwWindow.getCurrentWidth() * resolutionScale[0]),
                 (int) (glfwWindow.getCurrentHeight() * resolutionScale[0]), 1);
