@@ -12,6 +12,7 @@ import java.nio.FloatBuffer;
 import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT;
 import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT;
 import static org.lwjgl.opengl.GL43.*;
+
 public class Texture2D extends TextureReader {
     private final int usingUnit;
 
@@ -31,7 +32,7 @@ public class Texture2D extends TextureReader {
 
     public void config(int mipMapSampleMode) {
         // if needed, this can be overridden
-       genMipMap(mipMapSampleMode); // GL_LINEAR_MIPMAP_LINEAR
+        genMipMap(mipMapSampleMode); // GL_LINEAR_MIPMAP_LINEAR
 
         GLCapabilities capabilities = GL.getCapabilities();
         // if graphics card has anisotropic
@@ -49,12 +50,14 @@ public class Texture2D extends TextureReader {
         glGenerateMipmap(GL_TEXTURE_2D);
         shout("generated mipmap.");
     }
+
     private void enableAnisotropic() {
         FloatBuffer anisoset = BufferUtils.createFloatBuffer(1);
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, anisoset);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisoset.get(0));
         shout("enabled anisotropic.");
     }
+
     private void shout(String message) {
         System.out.println("Texture2D on unit " + usingUnit + "(id: " + getTexID() + ") " + message);
     }
@@ -65,18 +68,20 @@ public class Texture2D extends TextureReader {
     }
 
     public void fill(int width, int height, Color color) {
-        ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4);
-        for (int i = 0; i < buffer.capacity() / 4; i++) {
-            buffer.put((byte) color.getRed());
-            buffer.put((byte) color.getGreen());
-            buffer.put((byte) color.getBlue());
-            buffer.put((byte) color.getAlpha());
+        if (color == null) {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (ByteBuffer) null);
+        } else {
+            ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4);
+            for (int i = 0; i < buffer.capacity() / 4; i++) {
+                buffer.put((byte) color.getRed());
+                buffer.put((byte) color.getGreen());
+                buffer.put((byte) color.getBlue());
+                buffer.put((byte) color.getAlpha());
+            }
+            buffer.flip();
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
         }
-
-        buffer.flip();
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-
     }
 
     public static void putToUniform(int unit, int id) {
