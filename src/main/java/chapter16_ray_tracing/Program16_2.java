@@ -25,7 +25,7 @@ public class Program16_2 extends App {
     @Override
     protected void addCallbacks() {
         this.getDefaultCallbacks().getDefaultFrameBufferResizeCB().addCallback(
-                () -> screenQuadTexture.fill(glfwWindow.getCurrentWidth(), glfwWindow.getCurrentHeight(), Color.PINK)
+                () -> screenQuadTexture.fill(glfwWindow.getCurrentWidth(), glfwWindow.getCurrentHeight(), null)
         );
     }
 
@@ -80,11 +80,11 @@ public class Program16_2 extends App {
         boxRotation = new float[] {10f, 70f, 55f};
         lightPosition = new float[] {-4.0f, 1.0f, 8.0f};
         SliderFloat3 boxPositionSlider = new SliderFloat3("box_position", boxPosition,
-                -10f, 10f);
+                -10f, 10f).enableMouseWheelControl();
         SliderFloat3 boxRotationSlider = new SliderFloat3("box_rotation", boxRotation,
-                -90f, 90f);
+                -180f, 180f).enableMouseWheelControl().setWheelSpeed(5f);
         SliderFloat3 lightPositionSlider = new SliderFloat3("light_position", lightPosition,
-                -10, 10);
+                -10, 10).enableMouseWheelControl();
         userWindow.addChild(boxPositionSlider).addChild(boxRotationSlider).addChild(lightPositionSlider);
         gui.addComponents(userWindow);
         gui.addComponents(new FpsDisplay(this));
