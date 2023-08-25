@@ -42,6 +42,7 @@ public class DefaultCallbacks {
             defaultFrameBufferResizeCB = new DefaultFrameBufferResizeCB(camera);
         } else {
             // using imGUI
+
             ImGuiIO IO = ImGui.getIO();
             defaultCursorCB = new DefaultCursorCB(camera, windowID) {
                 private static final DoubleBuffer CURSOR_XPOS = BufferUtils.createDoubleBuffer(1);
@@ -52,11 +53,11 @@ public class DefaultCallbacks {
                     super.invoke(window, xpos, ypos);
                     GLFW.glfwGetCursorPos(window, CURSOR_XPOS, CURSOR_YPOS);
 
-
                     IO.setMousePos((float) CURSOR_XPOS.get(0), (float) CURSOR_YPOS.get(0));
-                    IO.setMouseWheel(defaultCursorCB.getDeltaScroll());
                 }
             };
+
+            defaultCursorCB.createScrollCallback();
 
             defaultFrameBufferResizeCB = new DefaultFrameBufferResizeCB(camera) {
                 @Override

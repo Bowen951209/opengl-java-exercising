@@ -1,6 +1,7 @@
 package engine.callbacks;
 
 import engine.sceneComponents.Camera;
+import imgui.ImGui;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 
@@ -13,15 +14,16 @@ class DefaultCursorCB extends GLFWCursorPosCallback {
     private final long window;
     private float deltaScroll;
 
-    public float getDeltaScroll() {
-        return deltaScroll;
-    }
-
     public DefaultCursorCB(Camera camera, long window) {
         this.camera = camera;
         this.window = window;
+    }
 
-        glfwSetScrollCallback(window, (windowID, dx, dy) -> deltaScroll = (float) dy);
+    public void createScrollCallback() {
+        glfwSetScrollCallback(window, (windowID, dx, dy) -> {
+            deltaScroll = (float) dy;
+            ImGui.getIO().setMouseWheel(deltaScroll);
+        });
     }
 
     private boolean lockCursor;
