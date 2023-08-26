@@ -20,7 +20,8 @@ public class Program16_2 extends App {
     private float[] boxPosition;
     private float[] lightPosition;
     private float[] boxRotation;
-    private final float[] resolutionScale = {1f};
+    private final float[] resScaleSliderVal = {0f};
+    private float resolutionScale = (float) Math.pow(2, -resScaleSliderVal[0]);
     @Override
     protected void initGLFWWindow() {
         glfwWindow = new GLFWWindow(3000, 1500, "Ray Casting");
@@ -30,8 +31,8 @@ public class Program16_2 extends App {
     protected void addCallbacks() {
         this.getDefaultCallbacks().getDefaultFrameBufferResizeCB().addCallback(
                 () -> screenQuadTexture.fill(
-                        (int) (glfwWindow.getCurrentWidth() * resolutionScale[0]),
-                        (int) (glfwWindow.getCurrentHeight() * resolutionScale[0]),
+                        (int) (glfwWindow.getCurrentWidth() * resolutionScale),
+                        (int) (glfwWindow.getCurrentHeight() * resolutionScale),
                         null)
         );
     }
@@ -64,8 +65,8 @@ public class Program16_2 extends App {
             }
         };
         screenQuadTexture.fill(
-                (int) (glfwWindow.getCurrentWidth() * resolutionScale[0]),
-                (int) (glfwWindow.getCurrentHeight() * resolutionScale[0]),
+                (int) (glfwWindow.getCurrentWidth() * resolutionScale),
+                (int) (glfwWindow.getCurrentHeight() * resolutionScale),
                 Color.PINK
         );
 
@@ -87,12 +88,17 @@ public class Program16_2 extends App {
         boxRotation = new float[] {10f, 70f, 55f};
         lightPosition = new float[] {-4.0f, 1.0f, 8.0f};
 
-        Slider resolutionSlider = new SliderFloat1("resolution_scale", resolutionScale,
-                0.1f, 1f).enableMouseWheelControl().setWheelSpeed(0.1f)
-                .addScrollCallBack(() -> screenQuadTexture.fill(
-                        (int) (glfwWindow.getCurrentWidth() * resolutionScale[0]),
-                        (int) (glfwWindow.getCurrentHeight() * resolutionScale[0]),
-                        null));
+        Slider resolutionSlider = new SliderFloat1("resolution_scale ((1/2) ^ x)", resScaleSliderVal,
+                0f, 5f).enableMouseWheelControl().setWheelSpeed(0.5f)
+                .addScrollCallBack(() -> {
+                    resolutionScale = (float) Math.pow(2, -resScaleSliderVal[0]);
+
+                    screenQuadTexture.fill(
+                            (int) (glfwWindow.getCurrentWidth() * resolutionScale),
+                            (int) (glfwWindow.getCurrentHeight() * resolutionScale),
+                            null
+                    );
+                });
         Slider boxPositionSlider = new SliderFloat3("box_position", boxPosition,
                 -10f, 10f).enableMouseWheelControl();
         Slider boxRotationSlider = new SliderFloat3("box_rotation", boxRotation,
@@ -125,8 +131,8 @@ public class Program16_2 extends App {
         computeShader.putUniformMatrix4f("cameraToWorld_matrix",
                 camera.getInvVMat().get(ValuesContainer.VALS_OF_16));
 
-        glDispatchCompute((int) (glfwWindow.getCurrentWidth() * resolutionScale[0]),
-                (int) (glfwWindow.getCurrentHeight() * resolutionScale[0]), 1);
+        glDispatchCompute((int) (glfwWindow.getCurrentWidth() * resolutionScale),
+                (int) (glfwWindow.getCurrentHeight() * resolutionScale), 1);
         glFinish();
 
 
