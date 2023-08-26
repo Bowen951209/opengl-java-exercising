@@ -29,6 +29,10 @@ public abstract class Slider implements GuiComponents {
         return this;
     }
 
+    public void runCallbacks() {
+        scrollCallbacks.forEach(Runnable::run);
+    }
+
     public Slider enableMouseWheelControl() {
         isMouseWheelControlAble = true;
         return this;
@@ -77,10 +81,10 @@ public abstract class Slider implements GuiComponents {
                 if ((ImGui.getIO().getMouseWheel() > 0f && values[section] < maxValue) ||
                         (ImGui.getIO().getMouseWheel() < 0f && values[section] > minValue)) {
                     values[section] += Math.clamp(-1f, 1f, ImGui.getIO().getMouseWheel()) * wheelSpeed;
+                    scrollCallbacks.forEach(Runnable::run);
                 }
             }
 
-            scrollCallbacks.forEach(Runnable::run);
         }
     }
 
