@@ -144,16 +144,7 @@ public class Program16_2 extends App {
 
     @Override
     protected void drawScene() {
-        rayComputeShader.use();
-        rayComputeShader.putUniform1f("camera_pos_x", camera.getPos().x);
-        rayComputeShader.putUniform1f("camera_pos_y", camera.getPos().y);
-        rayComputeShader.putUniform1f("camera_pos_z", camera.getPos().z);
-        rayComputeShader.putUniformMatrix4f("cameraToWorld_matrix",
-                camera.getInvVMat().get(ValuesContainer.VALS_OF_16));
-        updateNumXPixel();
-        updateNumYPixel();
-        glDispatchCompute(numXPixel, numYPixel, 1);
-
+        computeRays();
 
         computeShader.use();
 
@@ -166,6 +157,8 @@ public class Program16_2 extends App {
         computeShader.putUniform3f("box_rotation", boxRotation);
         computeShader.putUniform3f("light_position", lightPosition);
 
+        updateNumXPixel();
+        updateNumYPixel();
         glDispatchCompute(numXPixel, numYPixel, 1);
         glFinish();
 
@@ -173,6 +166,18 @@ public class Program16_2 extends App {
         screenQuadShader.use();
         screenQuadTexture.bind();
         fullScreenQuad.draw(GL_TRIANGLES);
+    }
+
+    private void computeRays() {
+        rayComputeShader.use();
+        rayComputeShader.putUniform1f("camera_pos_x", camera.getPos().x);
+        rayComputeShader.putUniform1f("camera_pos_y", camera.getPos().y);
+        rayComputeShader.putUniform1f("camera_pos_z", camera.getPos().z);
+        rayComputeShader.putUniformMatrix4f("cameraToWorld_matrix",
+                camera.getInvVMat().get(ValuesContainer.VALS_OF_16));
+        updateNumXPixel();
+        updateNumYPixel();
+        glDispatchCompute(numXPixel, numYPixel, 1);
     }
 
     @Override
