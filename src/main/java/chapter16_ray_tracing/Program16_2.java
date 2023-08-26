@@ -173,6 +173,10 @@ public class Program16_2 extends App {
         computeShader.putUniform3f("box_rotation", boxRotation);
         computeShader.putUniform3f("light_position", lightPosition);
 
+        computeShader.putUniform1f("camera_pos_x", camera.getPos().x);
+        computeShader.putUniform1f("camera_pos_y", camera.getPos().y);
+        computeShader.putUniform1f("camera_pos_z", camera.getPos().z);
+
         updateNumXPixel();
         updateNumYPixel();
         glDispatchCompute(numXPixel, numYPixel, 1);

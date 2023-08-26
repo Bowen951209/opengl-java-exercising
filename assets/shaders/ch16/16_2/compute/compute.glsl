@@ -11,6 +11,10 @@ layout (binding=5) uniform sampler2D ynTex;
 layout (binding=6) uniform sampler2D zpTex;
 layout (binding=7) uniform sampler2D znTex;
 
+uniform float camera_pos_x;
+uniform float camera_pos_y;
+uniform float camera_pos_z;
+
 layout(binding=0) buffer inputRayStart {
     float[] input_ray_start;
 };
@@ -43,8 +47,9 @@ const vec3 sphere_position = vec3(0.5, 0.0, -3.0);
 const vec3 sphere_color = vec3(0.0, 0.0, 1.0);// blue
 
 // Skybox
-vec3 sbox_mins = vec3(-20, -20, -20);
-vec3 sbox_maxs = vec3(20, 20, 20);
+const float sbox_side_length = 40;
+vec3 sbox_mins;
+vec3 sbox_maxs;
 
 // Box
 const vec3 box_mins = vec3(-.5, -.5, -1.0);// a corner of the box
@@ -168,9 +173,9 @@ Collision intersect_sky_box_object(Ray r)
     float maxDimension = max(totalWidth, max(totalHeight, totalDepth));
 
     // select tex coordinates depending on box face
-    float rayStrikeX = ((c.p).x + totalWidth/2.0)/maxDimension;
-    float rayStrikeY = ((c.p).y + totalHeight/2.0)/maxDimension;
-    float rayStrikeZ = ((c.p).z + totalDepth/2.0)/maxDimension;
+    float rayStrikeX = ((c.p).x  - camera_pos_x + totalWidth/2.0)/maxDimension;
+    float rayStrikeY = ((c.p).y  - camera_pos_y+ totalHeight/2.0)/maxDimension;
+    float rayStrikeZ = ((c.p).z - camera_pos_z + totalDepth/2.0)/maxDimension;
 
     if (c.face_index == 0) // xn
     c.tc = vec2(rayStrikeZ, -rayStrikeY);
@@ -422,9 +427,17 @@ vec3 raytrace(Ray ray) {
     return vec3(1.0, 1.0, 1.0);// error white
 }
 
+void calcSkyboxCorners() {
+    float sbox_side_length_d2 = sbox_side_length / 2.0;
+    sbox_mins = vec3(-sbox_side_length_d2) + vec3(camera_pos_x, camera_pos_y, camera_pos_z);
+    sbox_maxs = vec3(sbox_side_length_d2) + vec3(camera_pos_x, camera_pos_y, camera_pos_z);
+}
+
 void main() {
     int width = int(gl_NumWorkGroups.x);
     ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
+
+    calcSkyboxCorners();
 
     Ray world_ray;
     uint index = (gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * width) * 3;
