@@ -20,9 +20,10 @@ public class Program16_2 extends App {
     private float[] boxPosition;
     private float[] lightPosition;
     private float[] boxRotation;
-    private final float[] resScaleSliderVal = {0f};
+    private final float[] resScaleSliderVal = {2f};
     private float resolutionScale = (float) Math.pow(2, -resScaleSliderVal[0]);
-    private int numPixel, numXPixel, numYPixel;
+    private int numXPixel;
+    private int numYPixel;
     private Texture2D xp, xn, yp, yn, zp, zn;
 
     @Override
@@ -32,8 +33,7 @@ public class Program16_2 extends App {
     }
 
     private void initSSBO() {
-        updateNumPixel();
-        int bufferSize = numPixel * Float.BYTES * 3;
+        int bufferSize = glfwWindow.getInitWidth() * glfwWindow.getCurrentHeight() * Float.BYTES * 3;
 
         int ssboRayStart = glGenBuffers();
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboRayStart);
@@ -46,16 +46,9 @@ public class Program16_2 extends App {
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssboRayDir);
     }
 
-    private void updateNumXPixel() {
+    private void updateNumPixelXY() {
         numXPixel = (int) (glfwWindow.getCurrentWidth() * resolutionScale);
-    }
-    private void updateNumYPixel() {
         numYPixel = (int) (glfwWindow.getCurrentHeight() * resolutionScale);
-    }
-    private void updateNumPixel() {
-        updateNumXPixel();
-        updateNumYPixel();
-        numPixel = numXPixel * numYPixel;
     }
 
     @Override
@@ -104,8 +97,7 @@ public class Program16_2 extends App {
             }
         };
 
-        updateNumXPixel();
-        updateNumYPixel();
+        updateNumPixelXY();
         screenQuadTexture.fill(numXPixel, numYPixel, Color.PINK);
 
         brickTexture = new Texture2D(1, "assets/textures/imageTextures/brick1.jpg");
@@ -177,8 +169,7 @@ public class Program16_2 extends App {
         computeShader.putUniform1f("camera_pos_y", camera.getPos().y);
         computeShader.putUniform1f("camera_pos_z", camera.getPos().z);
 
-        updateNumXPixel();
-        updateNumYPixel();
+        updateNumPixelXY();
         glDispatchCompute(numXPixel, numYPixel, 1);
         glFinish();
 
@@ -195,8 +186,7 @@ public class Program16_2 extends App {
         rayComputeShader.putUniform1f("camera_pos_z", camera.getPos().z);
         rayComputeShader.putUniformMatrix4f("cameraToWorld_matrix",
                 camera.getInvVMat().get(ValuesContainer.VALS_OF_16));
-        updateNumXPixel();
-        updateNumYPixel();
+        updateNumPixelXY();
         glDispatchCompute(numXPixel, numYPixel, 1);
     }
 
