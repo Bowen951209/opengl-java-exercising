@@ -109,6 +109,14 @@ public class Program16_2 extends App {
 
         brickTexture = new Texture2D(1, "assets/textures/imageTextures/brick1.jpg");
         earthTexture = new Texture2D(0, "assets/textures/imageTextures/earthmap1k.jpg");
+
+        // skybox
+        new Texture2D(3, "assets/textures/skycubes/lakesIsland/xp.jpg");
+        new Texture2D(4, "assets/textures/skycubes/lakesIsland/xn.jpg");
+        new Texture2D(5, "assets/textures/skycubes/lakesIsland/yp.jpg");
+        new Texture2D(6, "assets/textures/skycubes/lakesIsland/yn.jpg");
+        new Texture2D(7, "assets/textures/skycubes/lakesIsland/zp.jpg");
+        new Texture2D(8, "assets/textures/skycubes/lakesIsland/zn.jpg");
     }
 
     @Override

@@ -4,6 +4,13 @@ layout(binding = 0, rgba8) uniform image2D output_texture;
 layout(binding = 0) uniform sampler2D earthTexture;
 layout(binding = 1) uniform sampler2D brickTexture;
 
+layout (binding=3) uniform sampler2D xpTex;
+layout (binding=4) uniform sampler2D xnTex;
+layout (binding=5) uniform sampler2D ypTex;
+layout (binding=6) uniform sampler2D ynTex;
+layout (binding=7) uniform sampler2D zpTex;
+layout (binding=8) uniform sampler2D znTex;
+
 layout(binding=0) buffer inputRayStart {
     float[] input_ray_start;
 };
@@ -23,6 +30,7 @@ struct Collision {
     bool isInside;// whether ray started inside an object and collided
     int object_index;// index of the object that the ray hits
     vec2 tc;// texture coordinate of the collision point
+    int face_index;// which box face (for room or sky box)
 };
 
 const float PI = 3.1415926535897932384626433832795;
@@ -33,6 +41,10 @@ const float DEG_TO_RAD = PI / 180.0;
 const float sphere_radius = 2.5;
 const vec3 sphere_position = vec3(0.5, 0.0, -3.0);
 const vec3 sphere_color = vec3(0.0, 0.0, 1.0);// blue
+
+// Skybox
+vec3 sbox_mins = vec3(-20, -20, -20);
+vec3 sbox_maxs = vec3(20, 20, 20);
 
 // Box
 const vec3 box_mins = vec3(-.5, -.5, -1.0);// a corner of the box
@@ -90,6 +102,91 @@ mat4 buildRotation(float xRad, float yRad, float zRad) {
     return buildRotateX(xRad) * buildRotateY(yRad) * buildRotateZ(zRad);
 }
 
+
+Collision intersect_sky_box_object(Ray r)
+{ // Calculate the box's world mins and maxs:
+    vec3 t_min = (sbox_mins - r.start) / r.dir;
+    vec3 t_max = (sbox_maxs - r.start) / r.dir;
+    vec3 t_minDist = min(t_min, t_max);
+    vec3 t_maxDist = max(t_min, t_max);
+    float t_near = max(max(t_minDist.x, t_minDist.y), t_minDist.z);
+    float t_far = min(min(t_maxDist.x, t_maxDist.y), t_maxDist.z);
+
+    Collision c;
+    c.t = t_near;
+    c.isInside = false;
+
+    // If the ray is entering the box, t_near contains the farthest boundary of entry
+    // If the ray is leaving the box, t_far contains the closest boundary of exit
+    // The ray intersects the box if and only if t_near < t_far, and if t_far > 0.0
+
+    // If the ray didn't intersect the box, return a negative t value
+    if (t_near >= t_far || t_far <= 0.0)
+    { c.t = -1.0;
+        return c;
+    }
+
+    float intersection = t_near;
+    vec3 boundary = t_minDist;
+
+    // if t_near < 0, then the ray started inside the box and left the box
+    if (t_near < 0.0)
+    { c.t = t_far;
+        intersection = t_far;
+        boundary = t_maxDist;
+        c.isInside = true;
+    }
+
+    // Checking which boundary the intersection lies on
+    int face_index = 0;
+    if (intersection == boundary.y) face_index = 1;
+    else if (intersection == boundary.z) face_index = 2;
+
+    // Creating the collision normal
+    c.n = vec3(0.0);
+    c.n[face_index] = 1.0;
+
+    // If we hit the box from the negative axis, invert the normal
+    if (r.dir[face_index] > 0.0) c.n *= -1.0;
+
+    // Calculate the world-position of the intersection:
+    c.p = r.start + c.t * r.dir;
+
+    // Calculate face index for collision object
+    if (c.n == vec3(1, 0, 0)) c.face_index = 0;
+    else if (c.n == vec3(-1, 0, 0)) c.face_index = 1;
+    else if (c.n == vec3(0, 1, 0)) c.face_index = 2;
+    else if (c.n == vec3(0, -1, 0)) c.face_index = 3;
+    else if (c.n == vec3(0, 0, 1)) c.face_index = 4;
+    else if (c.n == vec3(0, 0, -1)) c.face_index = 5;
+
+    // Compute texture coordinates
+    // compute largest box dimension
+    float totalWidth = sbox_maxs.x - sbox_mins.x;
+    float totalHeight = sbox_maxs.y - sbox_mins.y;
+    float totalDepth = sbox_maxs.z - sbox_mins.z;
+    float maxDimension = max(totalWidth, max(totalHeight, totalDepth));
+
+    // select tex coordinates depending on box face
+    float rayStrikeX = ((c.p).x + totalWidth/2.0)/maxDimension;
+    float rayStrikeY = ((c.p).y + totalHeight/2.0)/maxDimension;
+    float rayStrikeZ = ((c.p).z + totalDepth/2.0)/maxDimension;
+
+    if (c.face_index == 0)
+    c.tc = vec2(rayStrikeZ, rayStrikeY);
+    else if (c.face_index == 1)
+    c.tc = vec2(1.0-rayStrikeZ, rayStrikeY);
+    else if (c.face_index == 2)
+    c.tc = vec2(rayStrikeX, rayStrikeZ);
+    else if (c.face_index == 3)
+    c.tc = vec2(rayStrikeX, 1.0-rayStrikeZ);
+    else if (c.face_index == 4)
+    c.tc = vec2(1.0-rayStrikeX, rayStrikeY);
+    else if (c.face_index == 5)
+    c.tc = vec2(rayStrikeX, rayStrikeY);
+
+    return c;
+}
 
 // ----------------------------Check if the ray hit the box----------------------------
 Collision intersect_box_object(Ray ray) {
@@ -248,11 +345,12 @@ object_index == 2 -> collision with box
 */
 
 Collision get_closest_collision(Ray ray) {
-    Collision closest_collision, cSphere, cBox;
+    Collision closest_collision, cSphere, cBox, cSBox;
     closest_collision.object_index = -1;
 
     cSphere = intersect_sphere_object(ray);
     cBox = intersect_box_object(ray);
+    cSBox = intersect_sky_box_object(ray);
 
     if ((cSphere.t > 0) && ((cSphere.t < cBox.t) || (cBox.t < 0))) {
         closest_collision = cSphere;
@@ -261,6 +359,10 @@ Collision get_closest_collision(Ray ray) {
     if ((cBox.t > 0) && ((cBox.t < cSphere.t) || (cSphere.t < 0))) {
         closest_collision = cBox;
         closest_collision.object_index = 2;
+    }
+    if ((cSBox.t > 0) && ((cSBox.t < cSphere.t) || (cSphere.t < 0)) && ((cSBox.t < cBox.t) || (cBox.t < 0)))
+    { closest_collision = cSBox;
+        closest_collision.object_index = 3;
     }
 
     return closest_collision;
@@ -309,7 +411,14 @@ vec3 raytrace(Ray ray) {
     if (collision.object_index == 2) {
         return adsLighting(ray, collision) * texture(brickTexture, collision.tc).xyz;
     }
-
+    if (collision.object_index == 3) {
+        if (collision.face_index == 0) return texture(xnTex, collision.tc).rgb;
+        else if (collision.face_index == 1) return texture(xpTex, collision.tc).rgb;
+        else if (collision.face_index == 2) return texture(ynTex, collision.tc).rgb;
+        else if (collision.face_index == 3) return texture(ypTex, collision.tc).rgb;
+        else if (collision.face_index == 4) return texture(znTex, collision.tc).rgb;
+        else if (collision.face_index == 5) return texture(zpTex, collision.tc).rgb;
+    }
     return vec3(1.0, 1.0, 1.0);// error white
 }
 
