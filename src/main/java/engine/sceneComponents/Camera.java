@@ -3,6 +3,9 @@ package engine.sceneComponents;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static engine.util.ValuesContainer.VEC3_FOR_UTILS;
 
 public class Camera {
@@ -26,6 +29,10 @@ public class Camera {
     private final Vector3f camFront = new Vector3f();
     private final Matrix4f vMat = new Matrix4f();
     private final Matrix4f invVMat = new Matrix4f();
+    private final Set<Runnable> cameraUpdateCallbacks = new HashSet<>();
+    public void addCameraUpdateCallBack(Runnable cb) {
+        cameraUpdateCallbacks.add(cb);
+    }
 
     public Matrix4f getInvVMat() {
         invVMat.set(vMat).invert();
@@ -88,6 +95,8 @@ public class Camera {
             // we want to rotate around camera's x-axis.
             leftVec.set(direction).cross(Y);
             direction.rotateAxis(sensitive, leftVec.x, leftVec.y, leftVec.z);
+
+            cameraUpdateCallbacks.forEach(Runnable::run);
         }
     }
 
@@ -96,16 +105,20 @@ public class Camera {
             pitch -= sensitive;
             // we want to rotate around camera's x-axis.
             leftVec.set(direction).cross(Y);
+            cameraUpdateCallbacks.forEach(Runnable::run);
+
             direction.rotateAxis(-sensitive, leftVec.x, leftVec.y, leftVec.z);
         }
     }
 
     public void lookLeft() {
         direction.rotateY(sensitive);
+        cameraUpdateCallbacks.forEach(Runnable::run);
     }
 
     public void lookRight() {
         direction.rotateY(-sensitive);
+        cameraUpdateCallbacks.forEach(Runnable::run);
     }
 
 
@@ -176,24 +189,30 @@ public class Camera {
 
         if (forward) {
             position.add(camFront);
+            cameraUpdateCallbacks.forEach(Runnable::run);
         }
         if (backward) {
             final Vector3f CAM_BACK = VEC3_FOR_UTILS.set(camFront).mul(-1f);
             position.add(CAM_BACK);
+            cameraUpdateCallbacks.forEach(Runnable::run);
         }
         if (left) {
             final Vector3f CAM_LEFT = VEC3_FOR_UTILS.set(camFront).rotateY(.5f * (float) Math.PI); // 90 DEG
             position.add(CAM_LEFT);
+            cameraUpdateCallbacks.forEach(Runnable::run);
         }
         if (right) {
             final Vector3f CAM_RIGHT = VEC3_FOR_UTILS.set(camFront).rotateY(1.5f * (float) Math.PI);
             position.add(CAM_RIGHT);
+            cameraUpdateCallbacks.forEach(Runnable::run);
         }
         if (fly) {
             position.add(0f, step, 0f);
+            cameraUpdateCallbacks.forEach(Runnable::run);
         }
         if (land) {
             position.add(0f, -step, 0f);
+            cameraUpdateCallbacks.forEach(Runnable::run);
         }
     }
 }

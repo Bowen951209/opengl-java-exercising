@@ -59,10 +59,10 @@ public class Program16_2 extends App {
 
     @Override
     protected void addCallbacks() {
+        // FrameBuffer resize
         this.getDefaultCallbacks().getDefaultFrameBufferResizeCB().addCallback(
                 () -> {
-                    updateNumXPixel();
-                    updateNumYPixel();
+                    computeRays();
                     screenQuadTexture.fill(numXPixel, numYPixel, null);
                 }
         );
@@ -85,7 +85,11 @@ public class Program16_2 extends App {
     @Override
     protected void initModels() {
         camera.setPos(0f, 0f, 5f);
+        camera.addCameraUpdateCallBack(this::computeRays);
         fullScreenQuad = new FullScreenQuad();
+
+        // init rays
+        computeRays();
     }
 
     @Override
@@ -126,8 +130,7 @@ public class Program16_2 extends App {
                 .addScrollCallBack(() -> {
                     resolutionScale = (float) Math.pow(2, -resScaleSliderVal[0]);
 
-                    updateNumXPixel();
-                    updateNumYPixel();
+                    computeRays();
                     screenQuadTexture.fill(numXPixel, numYPixel, null);
                 });
         Slider boxPositionSlider = new SliderFloat3("box_position", boxPosition,
@@ -144,8 +147,6 @@ public class Program16_2 extends App {
 
     @Override
     protected void drawScene() {
-        computeRays();
-
         computeShader.use();
 
         brickTexture.bind();
