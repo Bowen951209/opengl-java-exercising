@@ -4,12 +4,12 @@ layout(binding = 0, rgba8) uniform image2D output_texture;
 layout(binding = 0) uniform sampler2D earthTexture;
 layout(binding = 1) uniform sampler2D brickTexture;
 
-layout (binding=3) uniform sampler2D xpTex;
-layout (binding=4) uniform sampler2D xnTex;
-layout (binding=5) uniform sampler2D ypTex;
-layout (binding=6) uniform sampler2D ynTex;
-layout (binding=7) uniform sampler2D zpTex;
-layout (binding=8) uniform sampler2D znTex;
+layout (binding=2) uniform sampler2D xpTex;
+layout (binding=3) uniform sampler2D xnTex;
+layout (binding=4) uniform sampler2D ypTex;
+layout (binding=5) uniform sampler2D ynTex;
+layout (binding=6) uniform sampler2D zpTex;
+layout (binding=7) uniform sampler2D znTex;
 
 layout(binding=0) buffer inputRayStart {
     float[] input_ray_start;
@@ -172,18 +172,18 @@ Collision intersect_sky_box_object(Ray r)
     float rayStrikeY = ((c.p).y + totalHeight/2.0)/maxDimension;
     float rayStrikeZ = ((c.p).z + totalDepth/2.0)/maxDimension;
 
-    if (c.face_index == 0)
-    c.tc = vec2(rayStrikeZ, rayStrikeY);
-    else if (c.face_index == 1)
-    c.tc = vec2(1.0-rayStrikeZ, rayStrikeY);
-    else if (c.face_index == 2)
-    c.tc = vec2(rayStrikeX, rayStrikeZ);
-    else if (c.face_index == 3)
-    c.tc = vec2(rayStrikeX, 1.0-rayStrikeZ);
-    else if (c.face_index == 4)
-    c.tc = vec2(1.0-rayStrikeX, rayStrikeY);
-    else if (c.face_index == 5)
-    c.tc = vec2(rayStrikeX, rayStrikeY);
+    if (c.face_index == 0) // xn
+    c.tc = vec2(rayStrikeZ, -rayStrikeY);
+    else if (c.face_index == 1) // xp
+    c.tc = vec2(1.0-rayStrikeZ, -rayStrikeY);
+    else if (c.face_index == 2) // yn
+    c.tc = vec2(rayStrikeX, -rayStrikeZ);
+    else if (c.face_index == 3) // yp
+    c.tc = vec2(rayStrikeX, rayStrikeZ - 1.0);
+    else if (c.face_index == 4) // zn
+    c.tc = vec2(1.0-rayStrikeX, -rayStrikeY);
+    else if (c.face_index == 5) // zp
+    c.tc = vec2(rayStrikeX, -rayStrikeY);
 
     return c;
 }

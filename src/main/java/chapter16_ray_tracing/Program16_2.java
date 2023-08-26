@@ -23,6 +23,7 @@ public class Program16_2 extends App {
     private final float[] resScaleSliderVal = {0f};
     private float resolutionScale = (float) Math.pow(2, -resScaleSliderVal[0]);
     private int numPixel, numXPixel, numYPixel;
+    private Texture2D xp, xn, yp, yn, zp, zn;
 
     @Override
     protected void initGLFWWindow() {
@@ -111,12 +112,12 @@ public class Program16_2 extends App {
         earthTexture = new Texture2D(0, "assets/textures/imageTextures/earthmap1k.jpg");
 
         // skybox
-        new Texture2D(3, "assets/textures/skycubes/lakesIsland/xp.jpg");
-        new Texture2D(4, "assets/textures/skycubes/lakesIsland/xn.jpg");
-        new Texture2D(5, "assets/textures/skycubes/lakesIsland/yp.jpg");
-        new Texture2D(6, "assets/textures/skycubes/lakesIsland/yn.jpg");
-        new Texture2D(7, "assets/textures/skycubes/lakesIsland/zp.jpg");
-        new Texture2D(8, "assets/textures/skycubes/lakesIsland/zn.jpg");
+        xp = new Texture2D(2, "assets/textures/skycubes/lakesIsland/xp.jpg");
+        xn = new Texture2D(3, "assets/textures/skycubes/lakesIsland/xn.jpg");
+        yp = new Texture2D(4, "assets/textures/skycubes/lakesIsland/yp.jpg");
+        yn = new Texture2D(5, "assets/textures/skycubes/lakesIsland/yn.jpg");
+        zp = new Texture2D(6, "assets/textures/skycubes/lakesIsland/zp.jpg");
+        zn = new Texture2D(7, "assets/textures/skycubes/lakesIsland/zn.jpg");
     }
 
     @Override
@@ -159,6 +160,12 @@ public class Program16_2 extends App {
 
         brickTexture.bind();
         earthTexture.bind();
+        xp.bind();
+        xn.bind();
+        yp.bind();
+        yn.bind();
+        zp.bind();
+        zn.bind();
         glBindImageTexture(0, screenQuadTexture.getTexID(), 0, false,
                 0, GL_WRITE_ONLY, GL_RGBA8);
 
