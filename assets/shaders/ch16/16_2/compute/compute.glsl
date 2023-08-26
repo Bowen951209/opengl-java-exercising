@@ -41,7 +41,15 @@ const float PI = 3.1415926535897932384626433832795;
 const float DEG_TO_RAD = PI / 180.0;
 
 // Defining Models
-// sphere
+// Plane
+vec3 plane_pos = vec3(0, -2.5, -2.0); //0,-1.2,-2
+float plane_width = 12.0;
+float plane_depth = 12.0;
+float plane_xrot = DEG_TO_RAD * 0.0;
+float plane_yrot = DEG_TO_RAD * 45.0;
+float plane_zrot = DEG_TO_RAD * 0.0;
+
+// Sphere
 const float sphere_radius = 2.5;
 const vec3 sphere_position = vec3(0.5, 0.0, -3.0);
 const vec3 sphere_color = vec3(0.0, 0.0, 1.0);// blue
@@ -107,6 +115,52 @@ mat4 buildRotation(float xRad, float yRad, float zRad) {
     return buildRotateX(xRad) * buildRotateY(yRad) * buildRotateZ(zRad);
 }
 
+
+Collision intersect_plane_object(Ray r) {
+    // Compute the planes's local-space to world-space transform matrices, and their inverse
+	mat4 local_to_worldT = buildTranslate(plane_pos);
+	mat4 local_to_worldR = buildRotateY(plane_yrot) * buildRotateX(plane_xrot) * buildRotateZ(plane_zrot);
+	mat4 local_to_worldTR = local_to_worldT * local_to_worldR;
+	mat4 world_to_localTR = inverse(local_to_worldTR);
+	mat4 world_to_localR = inverse(local_to_worldR);
+
+	// Convert the world-space ray to the planes's local space:
+	vec3 ray_start = (world_to_localTR * vec4(r.start,1.0)).xyz;
+	vec3 ray_dir = (world_to_localR * vec4(r.dir,1.0)).xyz;
+	
+	Collision c;
+	c.isInside = false;  // there is no "inside" of a plane
+	
+	// compute intersection point of ray with plane
+	c.t = dot((vec3(0,0,0) - ray_start),vec3(0,1,0)) / dot(ray_dir, vec3(0,1,0));
+	
+	// Calculate the world-position of the intersection:
+	c.p = r.start + c.t * r.dir;
+	
+	// Calculate the position of the intersection in plane space:
+	vec3 intersectPoint = ray_start + c.t * ray_dir;
+	
+	// If the ray didn't intersect the plane object, return a negative t value
+	if ((abs(intersectPoint.x) > (plane_width/2.0)) || (abs(intersectPoint.z) > (plane_depth/2.0)))
+	{	c.t = -1.0;
+		return c;
+	}
+
+	// Create the collision normal
+	c.n = vec3(0.0, 1.0, 0.0);
+
+	// If we hit the plane from the negative axis, invert the normal
+	if(ray_dir.y > 0.0) c.n *= -1.0;
+	
+	// now convert the normal back into world space
+	c.n = transpose(inverse(mat3(local_to_worldR))) * c.n;
+
+	// Compute texture coordinates
+	float maxDimension = max(plane_width, plane_depth);
+	c.tc.x = (intersectPoint.x + plane_width/2.0)/maxDimension;
+	c.tc.y = (intersectPoint.z + plane_depth/2.0)/maxDimension;
+	return c;
+}
 
 Collision intersect_sky_box_object(Ray r)
 { // Calculate the box's world mins and maxs:
@@ -350,12 +404,13 @@ object_index == 2 -> collision with box
 */
 
 Collision get_closest_collision(Ray ray) {
-    Collision closest_collision, cSphere, cBox, cSBox;
+    Collision closest_collision, cSphere, cBox, cSBox, cPlane;
     closest_collision.object_index = -1;
 
     cSphere = intersect_sphere_object(ray);
     cBox = intersect_box_object(ray);
     cSBox = intersect_sky_box_object(ray);
+    cPlane = intersect_plane_object(ray);
 
     if ((cSphere.t > 0) && ((cSphere.t < cBox.t) || (cBox.t < 0))) {
         closest_collision = cSphere;
@@ -369,6 +424,13 @@ Collision get_closest_collision(Ray ray) {
     { closest_collision = cSBox;
         closest_collision.object_index = 3;
     }
+    if ((cPlane.t > 0) &&
+		((cPlane.t < cSphere.t) || (cSphere.t < 0))
+		&& ((cPlane.t < cBox.t) || (cBox.t < 0))
+		&& ((cPlane.t < cSBox.t) || (cSBox.t < 0)))
+	{	closest_collision = cPlane;
+		closest_collision.object_index = 4;
+	}
 
     return closest_collision;
 }
@@ -405,6 +467,12 @@ vec3 adsLighting(Ray ray, Collision collision) {
     return (ambient + diffuse + specular).rgb;
 }
 
+vec3 checkerboard(vec2 tc)
+{	float tileScale = 24.0;
+	float tile = mod(floor(tc.x * tileScale) + floor(tc.y * tileScale), 2.0);
+	return tile * vec3(1,1,1);
+}
+
 vec3 raytrace(Ray ray) {
     Collision collision = get_closest_collision(ray);
     if (collision.object_index == -1) { // no collision
@@ -423,6 +491,9 @@ vec3 raytrace(Ray ray) {
         else if (collision.face_index == 3) return texture(ypTex, collision.tc).rgb;
         else if (collision.face_index == 4) return texture(znTex, collision.tc).rgb;
         else if (collision.face_index == 5) return texture(zpTex, collision.tc).rgb;
+    }
+    if(collision.object_index == 4) {
+        return adsLighting(ray, collision) * checkerboard(collision.tc).rgb;
     }
     return vec3(1.0, 1.0, 1.0);// error white
 }
