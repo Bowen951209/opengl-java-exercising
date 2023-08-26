@@ -26,7 +26,7 @@ void main() {
 
 
     // Algorithm thanks to https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays.html
-    float aspectRatio = width / height; // assuming width > height
+    float aspectRatio = float(width) / float(height); // assuming width > height
     float Px = (2 * ((pixel.x + 0.5) / width) - 1) * aspectRatio;
     float Py = -(1 - 2 * ((pixel.y + 0.5) / height));
     vec3 rayOrigin = vec3(0f, 0f, 0f);
