@@ -14,7 +14,7 @@ import static org.lwjgl.opengl.GL43.*;
 import java.awt.*;
 
 public class Program16_2 extends App {
-    private ShaderProgram screenQuadShader, computeShader;
+    private ShaderProgram screenQuadShader, computeShader, rayComputeShader;
     private Texture2D screenQuadTexture, earthTexture, brickTexture;
     private Model fullScreenQuad;
     private float[] boxPosition;
@@ -22,9 +22,28 @@ public class Program16_2 extends App {
     private float[] boxRotation;
     private final float[] resScaleSliderVal = {0f};
     private float resolutionScale = (float) Math.pow(2, -resScaleSliderVal[0]);
+
     @Override
     protected void initGLFWWindow() {
         glfwWindow = new GLFWWindow(3000, 1500, "Ray Casting");
+        initSSBO();
+    }
+
+    private void initSSBO() {
+        int numPixels = (int) (glfwWindow.getCurrentWidth() * resolutionScale) *
+                (int) (glfwWindow.getCurrentHeight() * resolutionScale);
+
+        int bufferSize = numPixels * Float.BYTES * 3;
+
+        int ssboRayStart = glGenBuffers();
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboRayStart);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, bufferSize, GL_DYNAMIC_DRAW);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssboRayStart);
+
+        int ssboRayDir = glGenBuffers();
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboRayDir);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, bufferSize, GL_DYNAMIC_DRAW);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssboRayDir);
     }
 
     @Override
@@ -42,6 +61,9 @@ public class Program16_2 extends App {
         screenQuadShader = new ShaderProgram(
                 "assets/shaders/ch16/16_2/screen_quad/vert.glsl",
                 "assets/shaders/ch16/16_2/screen_quad/frag.glsl"
+        );
+        rayComputeShader = new ShaderProgram(
+                "assets/shaders/ch16/16_2/compute/ray.glsl"
         );
         computeShader = new ShaderProgram(
                 "assets/shaders/ch16/16_2/compute/compute.glsl"
@@ -81,12 +103,12 @@ public class Program16_2 extends App {
         userWindow.addChild(new Text(
                 """
                         Use buttons below to play with things:
-                        
+                                                
                         """
         ));
-        boxPosition = new float[] {-1.0f, -.5f, 1.0f};
-        boxRotation = new float[] {10f, 70f, 55f};
-        lightPosition = new float[] {-4.0f, 1.0f, 8.0f};
+        boxPosition = new float[]{-1.0f, -.5f, 1.0f};
+        boxRotation = new float[]{10f, 70f, 55f};
+        lightPosition = new float[]{-4.0f, 1.0f, 8.0f};
 
         Slider resolutionSlider = new SliderFloat1("resolution_scale ((1/2) ^ x)", resScaleSliderVal,
                 0f, 5f).enableMouseWheelControl().setWheelSpeed(0.5f)
@@ -113,6 +135,16 @@ public class Program16_2 extends App {
 
     @Override
     protected void drawScene() {
+        rayComputeShader.use();
+        rayComputeShader.putUniform1f("camera_pos_x", camera.getPos().x);
+        rayComputeShader.putUniform1f("camera_pos_y", camera.getPos().y);
+        rayComputeShader.putUniform1f("camera_pos_z", camera.getPos().z);
+        rayComputeShader.putUniformMatrix4f("cameraToWorld_matrix",
+                camera.getInvVMat().get(ValuesContainer.VALS_OF_16));
+        glDispatchCompute((int) (glfwWindow.getCurrentWidth() * resolutionScale),
+                (int) (glfwWindow.getCurrentHeight() * resolutionScale), 1);
+
+
         computeShader.use();
 
         brickTexture.bind();
