@@ -22,7 +22,7 @@ void main() {
     int width = int(gl_NumWorkGroups.x);
     int height = int(gl_NumWorkGroups.y);
     ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
-    uint index = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * width;
+    uint index = (gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * width) * 3;
 
 
     // Algorithm thanks to https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays.html

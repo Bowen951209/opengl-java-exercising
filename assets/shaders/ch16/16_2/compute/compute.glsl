@@ -318,7 +318,7 @@ void main() {
     ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
 
     Ray world_ray;
-    uint index = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * width;
+    uint index = (gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * width) * 3;
     world_ray.start.x = input_ray_start[index];
     world_ray.start.y = input_ray_start[index + 1];
     world_ray.start.z = input_ray_start[index + 2];
