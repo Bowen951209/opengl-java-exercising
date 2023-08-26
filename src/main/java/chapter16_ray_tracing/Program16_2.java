@@ -22,6 +22,7 @@ public class Program16_2 extends App {
     private float[] boxRotation;
     private final float[] resScaleSliderVal = {0f};
     private float resolutionScale = (float) Math.pow(2, -resScaleSliderVal[0]);
+    private int numPixel, numXPixel, numYPixel;
 
     @Override
     protected void initGLFWWindow() {
@@ -30,10 +31,8 @@ public class Program16_2 extends App {
     }
 
     private void initSSBO() {
-        int numPixels = (int) (glfwWindow.getCurrentWidth() * resolutionScale) *
-                (int) (glfwWindow.getCurrentHeight() * resolutionScale);
-
-        int bufferSize = numPixels * Float.BYTES * 3;
+        updateNumPixel();
+        int bufferSize = numPixel * Float.BYTES * 3;
 
         int ssboRayStart = glGenBuffers();
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboRayStart);
@@ -46,13 +45,26 @@ public class Program16_2 extends App {
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssboRayDir);
     }
 
+    private void updateNumXPixel() {
+        numXPixel = (int) (glfwWindow.getCurrentWidth() * resolutionScale);
+    }
+    private void updateNumYPixel() {
+        numYPixel = (int) (glfwWindow.getCurrentHeight() * resolutionScale);
+    }
+    private void updateNumPixel() {
+        updateNumXPixel();
+        updateNumYPixel();
+        numPixel = numXPixel * numYPixel;
+    }
+
     @Override
     protected void addCallbacks() {
         this.getDefaultCallbacks().getDefaultFrameBufferResizeCB().addCallback(
-                () -> screenQuadTexture.fill(
-                        (int) (glfwWindow.getCurrentWidth() * resolutionScale),
-                        (int) (glfwWindow.getCurrentHeight() * resolutionScale),
-                        null)
+                () -> {
+                    updateNumXPixel();
+                    updateNumYPixel();
+                    screenQuadTexture.fill(numXPixel, numYPixel, null);
+                }
         );
     }
 
@@ -86,11 +98,10 @@ public class Program16_2 extends App {
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             }
         };
-        screenQuadTexture.fill(
-                (int) (glfwWindow.getCurrentWidth() * resolutionScale),
-                (int) (glfwWindow.getCurrentHeight() * resolutionScale),
-                Color.PINK
-        );
+
+        updateNumXPixel();
+        updateNumYPixel();
+        screenQuadTexture.fill(numXPixel, numYPixel, Color.PINK);
 
         brickTexture = new Texture2D(1, "assets/textures/imageTextures/brick1.jpg");
         earthTexture = new Texture2D(0, "assets/textures/imageTextures/earthmap1k.jpg");
@@ -115,11 +126,9 @@ public class Program16_2 extends App {
                 .addScrollCallBack(() -> {
                     resolutionScale = (float) Math.pow(2, -resScaleSliderVal[0]);
 
-                    screenQuadTexture.fill(
-                            (int) (glfwWindow.getCurrentWidth() * resolutionScale),
-                            (int) (glfwWindow.getCurrentHeight() * resolutionScale),
-                            null
-                    );
+                    updateNumXPixel();
+                    updateNumYPixel();
+                    screenQuadTexture.fill(numXPixel, numYPixel, null);
                 });
         Slider boxPositionSlider = new SliderFloat3("box_position", boxPosition,
                 -10f, 10f).enableMouseWheelControl();
@@ -141,8 +150,9 @@ public class Program16_2 extends App {
         rayComputeShader.putUniform1f("camera_pos_z", camera.getPos().z);
         rayComputeShader.putUniformMatrix4f("cameraToWorld_matrix",
                 camera.getInvVMat().get(ValuesContainer.VALS_OF_16));
-        glDispatchCompute((int) (glfwWindow.getCurrentWidth() * resolutionScale),
-                (int) (glfwWindow.getCurrentHeight() * resolutionScale), 1);
+        updateNumXPixel();
+        updateNumYPixel();
+        glDispatchCompute(numXPixel, numYPixel, 1);
 
 
         computeShader.use();
@@ -163,8 +173,7 @@ public class Program16_2 extends App {
         computeShader.putUniformMatrix4f("cameraToWorld_matrix",
                 camera.getInvVMat().get(ValuesContainer.VALS_OF_16));
 
-        glDispatchCompute((int) (glfwWindow.getCurrentWidth() * resolutionScale),
-                (int) (glfwWindow.getCurrentHeight() * resolutionScale), 1);
+        glDispatchCompute(numXPixel, numYPixel, 1);
         glFinish();
 
 
