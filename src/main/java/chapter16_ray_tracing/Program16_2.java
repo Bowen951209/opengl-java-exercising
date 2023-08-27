@@ -8,10 +8,13 @@ import engine.sceneComponents.models.*;
 import engine.sceneComponents.textures.Texture2D;
 import engine.util.Destroyer;
 import engine.util.ValuesContainer;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
 
 import static org.lwjgl.opengl.GL43.*;
 
 import java.awt.*;
+import java.nio.IntBuffer;
 
 public class Program16_2 extends App {
     private ShaderProgram screenQuadShader, computeShader, rayComputeShader;
@@ -33,7 +36,11 @@ public class Program16_2 extends App {
     }
 
     private void initSSBO() {
-        int bufferSize = glfwWindow.getInitWidth() * glfwWindow.getCurrentHeight() * Float.BYTES * 3;
+        long monitor = GLFW.glfwGetPrimaryMonitor();
+        IntBuffer screenSizeX = BufferUtils.createIntBuffer(1);
+        IntBuffer screenSizeY = BufferUtils.createIntBuffer(1);
+        GLFW.glfwGetMonitorPhysicalSize(monitor, screenSizeX, screenSizeY);
+        int bufferSize = screenSizeX.get() * screenSizeY.get() * Float.BYTES * 3;
 
         int ssboRayStart = glGenBuffers();
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboRayStart);
