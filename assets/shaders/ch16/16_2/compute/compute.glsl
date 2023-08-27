@@ -473,14 +473,44 @@ vec3 checkerboard(vec2 tc)
 	return tile * vec3(1,1,1);
 }
 
+vec3 raytrace2(Ray ray) {
+	Collision collision = get_closest_collision(ray);
+    if (collision.object_index == -1) { // no collision
+        return vec3(0.0);// black
+    }
+    if (collision.object_index == 1) {
+		return adsLighting(ray, collision) * texture(earthTexture, collision.tc).rgb;
+	}
+    if (collision.object_index == 2) {
+        return adsLighting(ray, collision) * texture(brickTexture, collision.tc).xyz;
+    }
+    if (collision.object_index == 3) {
+        if (collision.face_index == 0) return texture(xnTex, collision.tc).rgb;
+        else if (collision.face_index == 1) return texture(xpTex, collision.tc).rgb;
+        else if (collision.face_index == 2) return texture(ynTex, collision.tc).rgb;
+        else if (collision.face_index == 3) return texture(ypTex, collision.tc).rgb;
+        else if (collision.face_index == 4) return texture(znTex, collision.tc).rgb;
+        else if (collision.face_index == 5) return texture(zpTex, collision.tc).rgb;
+    }
+    if(collision.object_index == 4) {
+        return adsLighting(ray, collision) * checkerboard(collision.tc).rgb;
+    }
+    return vec3(1.0, 1.0, 1.0);// error white
+}
+
 vec3 raytrace(Ray ray) {
     Collision collision = get_closest_collision(ray);
     if (collision.object_index == -1) { // no collision
         return vec3(0.0);// black
     }
     if (collision.object_index == 1) {
-        return adsLighting(ray, collision) * texture(earthTexture, collision.tc).xyz;
-    }
+			Ray reflected_ray;
+			reflected_ray.start = collision.p + collision.n * 0.001f;
+			reflected_ray.dir = reflect(ray.dir, collision.n);
+			vec3 reflectedColor = raytrace2(reflected_ray);
+
+			return adsLighting(ray, collision) * reflectedColor;
+	}
     if (collision.object_index == 2) {
         return adsLighting(ray, collision) * texture(brickTexture, collision.tc).xyz;
     }
