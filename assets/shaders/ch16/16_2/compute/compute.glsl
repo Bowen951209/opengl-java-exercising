@@ -47,14 +47,14 @@ struct Stack_Element {
     vec3 final_color;
     Ray ray;
     Collision colliion;
-}
+};
 
 const int RAY_TYPE_REFLECTION = 1;
 const int RAY_TYPE_REFRACTION = 2;
 
 // null values are for making it easier to tell whether a value is assigned.
 Ray null_ray = {vec3(0.0f), vec3(0.0f)};
-Collision null_collision = {-1.0f, vec3(0.0f), false, -1, vec2(0.0f), -1};
+Collision null_collision = {-1.0f, vec3(0.0f), vec3(0.0f), false, -1, vec2(0.0f), -1};
 Stack_Element null_stack_element = {0, -1, -1, vec3(0.0f), vec3(0.0f), vec3(0.0f), vec3(0.0f), null_ray, null_collision};
 
 const int stack_size = 100;
