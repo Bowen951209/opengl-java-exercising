@@ -4,17 +4,18 @@ import engine.App;
 import engine.GLFWWindow;
 import engine.ShaderProgram;
 import engine.gui.*;
-import engine.sceneComponents.models.*;
+import engine.sceneComponents.models.FullScreenQuad;
+import engine.sceneComponents.models.Model;
 import engine.sceneComponents.textures.Texture2D;
 import engine.util.Destroyer;
 import engine.util.ValuesContainer;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
-
-import static org.lwjgl.opengl.GL43.*;
+import org.lwjgl.glfw.GLFWVidMode;
 
 import java.awt.*;
-import java.nio.IntBuffer;
+import java.util.Objects;
+
+import static org.lwjgl.opengl.GL43.*;
 
 public class Program16_2 extends App {
     private ShaderProgram screenQuadShader, computeShader, rayComputeShader;
@@ -36,11 +37,12 @@ public class Program16_2 extends App {
     }
 
     private void initSSBO() {
-        long monitor = GLFW.glfwGetPrimaryMonitor();
-        IntBuffer screenSizeX = BufferUtils.createIntBuffer(1);
-        IntBuffer screenSizeY = BufferUtils.createIntBuffer(1);
-        GLFW.glfwGetMonitorPhysicalSize(monitor, screenSizeX, screenSizeY);
-        int bufferSize = screenSizeX.get() * screenSizeY.get() * Float.BYTES * 3;
+        GLFWVidMode glfwVidMode = Objects.requireNonNull(
+                GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor()));
+
+        int screenSizeX = glfwVidMode.width();
+        int screenSizeY = glfwVidMode.height();
+        int bufferSize = screenSizeX * screenSizeY * Float.BYTES * 3;
 
         int ssboRayStart = glGenBuffers();
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboRayStart);
