@@ -536,19 +536,19 @@ vec3 raytrace(Ray ray) {
     if (collision.object_index == 1) {
         // **Reflect
 
-			// Ray reflected_ray;
-			// reflected_ray.start = collision.p + collision.n * 0.001f;
-			// reflected_ray.dir = reflect(ray.dir, collision.n);
-			// vec3 reflectedColor = raytrace2(reflected_ray);
-
-			// return adsLighting(ray, collision) * reflectedColor;
+		Ray reflected_ray;
+		reflected_ray.start = collision.p + collision.n * 0.001f;
+		reflected_ray.dir = reflect(ray.dir, collision.n);
+		vec3 reflected_color = raytrace2(reflected_ray);
 
         // **Refract
         Ray refracted_ray;
         refracted_ray.start = collision.p - collision.n * 0.001f;
         refracted_ray.dir = refract(ray.dir, collision.n, .66667f); // IOR = .66667 = 1 / 1.5
         vec3 refracted_color = raytrace2(refracted_ray);
-        return 2.0f * adsLighting(ray, collision) * refracted_color;
+
+        return clamp(.3f * reflected_color + 2.0f * refracted_color , 0.0f, 1.0f);
+        // return 2.0f * adsLighting(ray, collision) * refracted_color;
 	}
     if (collision.object_index == 2) {
         return adsLighting(ray, collision) * texture(brickTexture, collision.tc).xyz;
