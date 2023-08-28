@@ -37,6 +37,34 @@ struct Collision {
     int face_index;// which box face (for room or sky box)
 };
 
+struct Stack_Element {
+    int type; // type of ray (1: reflected; 2: refracted) shadow ray will not put to stack
+    int depth; // depth of the recursive raytrace
+    int phase; // which of the 5 phases of a recursive call is currently being processed
+    vec3 phong_color;
+    vec3 reflected_color;
+    vec3 refracted_color;
+    vec3 final_color;
+    Ray ray;
+    Collision colliion;
+}
+
+const int RAY_TYPE_REFLECTION = 1;
+const int RAY_TYPE_REFRACTION = 2;
+
+// null values are for making it easier to tell whether a value is assigned.
+Ray null_ray = {vec3(0.0f), vec3(0.0f)};
+Collision null_collision = {-1.0f, vec3(0.0f), false, -1, vec2(0.0f), -1};
+Stack_Element null_stack_element = {0, -1, -1, vec3(0.0f), vec3(0.0f), vec3(0.0f), vec3(0.0f), null_ray, null_collision};
+
+const int stack_size = 100;
+Stack_Element stack[stack_size]; // holds the recursive invocations of raytrace
+const int max_depth = 6; // max sequence of rays (max recursion depth)
+int stack_pointer = -1; // points to the top of the stack (if empty -> -1)
+Stack_Element popped_stack_element; // the last popped element from the stack
+
+
+
 const float PI = 3.1415926535897932384626433832795;
 const float DEG_TO_RAD = PI / 180.0;
 
