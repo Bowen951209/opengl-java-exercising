@@ -37,6 +37,7 @@ struct Collision {
     int face_index;// which box face (for room or sky box)
 };
 
+
 const float PI = 3.1415926535897932384626433832795;
 const float DEG_TO_RAD = PI / 180.0;
 
@@ -59,6 +60,9 @@ const float sbox_side_length = 40;
 vec3 sbox_mins;
 vec3 sbox_maxs;
 
+// Room
+vec3 rbox_color = vec3(1.0f, 0.5f, 0.5f);
+
 // Box
 const vec3 box_mins = vec3(-.5, -.5, -1.0);// a corner of the box
 const vec3 box_maxs = vec3(.5, .5, 1.0);// a corner of the box
@@ -77,6 +81,31 @@ const vec4 light_ambient = vec4(.2, .2, .2, 1.0);
 const vec4 light_diffuse = vec4(.7, .7, .7, 1.0);
 const vec4 light_specular = vec4(1.0, 1.0, 1.0, 1.0);
 
+struct Stack_Element
+{	int type;		// The type of ray ( 1 = reflected, 2 = refracted )
+    int depth;		// The depth of the recursive raytrace
+    int phase;	// Keeps track of what phase each recursive call is at (each call is broken down into five phases)
+    vec3 phong_color;		// Contains the Phong ADS model color
+    vec3 reflected_color;	// Contains the reflected color
+    vec3 refracted_color;	// Contains the refracted color
+    vec3 final_color;		// Contains the final mixed output of the recursive raytrace call
+    Ray ray;				// The ray for this raytrace invocation
+    Collision collision;	// The collision for this raytrace invocation. Contains null_collision until phase 1
+};
+
+const int RAY_TYPE_REFLECTION = 1;
+const int RAY_TYPE_REFRACTION = 2;
+
+Ray null_ray = {vec3(0.0), vec3(0.0)};
+Collision null_collision = { -1.0, vec3(0.0), vec3(0.0), false, -1, vec2(0.0, 0.0), -1 };
+Stack_Element null_stack_element = {0,-1,-1,vec3(0),vec3(0),vec3(0),vec3(0),null_ray,null_collision};
+
+const int stack_size = 100;
+Stack_Element stack[stack_size];
+const int max_depth = 4;
+
+int stack_pointer = -1;			// Points to the top of the stack (-1 if empty)
+Stack_Element popped_stack_element;	// Holds the last popped element from the stack
 
 mat4 buildTranslate(vec3 position){
     return mat4(
@@ -473,98 +502,143 @@ vec3 checkerboard(vec2 tc)
 	return tile * vec3(1,1,1);
 }
 
-vec3 raytrace3(Ray ray) {
-    Collision collision = get_closest_collision(ray);
-    if (collision.object_index == -1) { // no collision
-        return vec3(0.0);// black
-    }
-    if (collision.object_index == 1) {
-		return adsLighting(ray, collision) * texture(earthTexture, collision.tc).rgb;
-	}
-    if (collision.object_index == 2) {
-        return adsLighting(ray, collision) * texture(brickTexture, collision.tc).xyz;
-    }
-    if (collision.object_index == 3) {
-        if (collision.face_index == 0) return texture(xnTex, collision.tc).rgb;
-        else if (collision.face_index == 1) return texture(xpTex, collision.tc).rgb;
-        else if (collision.face_index == 2) return texture(ynTex, collision.tc).rgb;
-        else if (collision.face_index == 3) return texture(ypTex, collision.tc).rgb;
-        else if (collision.face_index == 4) return texture(znTex, collision.tc).rgb;
-        else if (collision.face_index == 5) return texture(zpTex, collision.tc).rgb;
-    }
-    if(collision.object_index == 4) {
-        return adsLighting(ray, collision) * checkerboard(collision.tc).rgb;
-    }
-    return vec3(1.0, 1.0, 1.0);// error white
+
+
+//------------------------------------------------------------------------------
+// Schedules a new raytrace by adding it to the top of the stack
+//------------------------------------------------------------------------------
+void push(Ray r, int depth, int type)
+{	if (stack_pointer >= stack_size-1)  return;
+
+    Stack_Element element;
+    element = null_stack_element;
+    element.type = type;
+    element.depth = depth;
+    element.phase = 1;
+    element.ray = r;
+
+    stack_pointer++;
+    stack[stack_pointer] = element;
 }
 
-vec3 raytrace2(Ray ray) {
-	Collision collision = get_closest_collision(ray);
-    if (collision.object_index == -1) { // no collision
-        return vec3(0.0);// black
-    }
-    if (collision.object_index == 1) {
-        // **Refract
-        Ray refracted_ray;
-        refracted_ray.start = collision.p - collision.n * 0.001f;
-        refracted_ray.dir = refract(ray.dir, collision.n, 1.5f); // IOR = 1.5
-        vec3 refracted_color = raytrace3(refracted_ray);
-        return 2.0f * adsLighting(ray, collision) * refracted_color;
-	}
-    if (collision.object_index == 2) {
-        return adsLighting(ray, collision) * texture(brickTexture, collision.tc).xyz;
-    }
-    if (collision.object_index == 3) {
-        if (collision.face_index == 0) return texture(xnTex, collision.tc).rgb;
-        else if (collision.face_index == 1) return texture(xpTex, collision.tc).rgb;
-        else if (collision.face_index == 2) return texture(ynTex, collision.tc).rgb;
-        else if (collision.face_index == 3) return texture(ypTex, collision.tc).rgb;
-        else if (collision.face_index == 4) return texture(znTex, collision.tc).rgb;
-        else if (collision.face_index == 5) return texture(zpTex, collision.tc).rgb;
-    }
-    if(collision.object_index == 4) {
-        return adsLighting(ray, collision) * checkerboard(collision.tc).rgb;
-    }
-    return vec3(1.0, 1.0, 1.0);// error white
+//------------------------------------------------------------------------------
+// Removes the topmost stack element
+//------------------------------------------------------------------------------
+Stack_Element pop()
+{	// Store the element we're removing in top_stack_element
+    Stack_Element top_stack_element = stack[stack_pointer];
+
+    // Erase the element from the stack
+    stack[stack_pointer] = null_stack_element;
+    stack_pointer--;
+    return top_stack_element;
 }
 
-vec3 raytrace(Ray ray) {
-    Collision collision = get_closest_collision(ray);
-    if (collision.object_index == -1) { // no collision
-        return vec3(0.0);// black
+//------------------------------------------------------------------------------
+// This function processes the stack element at a given index
+// This function is guaranteed to be ran on the topmost stack element
+//------------------------------------------------------------------------------
+void process_stack_element(int index)
+{
+    // If there is a popped_stack_element that just ran, it holds one of our values
+    // Store it and delete it
+    if (popped_stack_element != null_stack_element)
+    {	if (popped_stack_element.type == RAY_TYPE_REFLECTION)
+    stack[index].reflected_color = popped_stack_element.final_color;
+    else if (popped_stack_element.type == RAY_TYPE_REFRACTION)
+    stack[index].refracted_color = popped_stack_element.final_color;
+        popped_stack_element = null_stack_element;
     }
-    if (collision.object_index == 1) {
-        // **Reflect
 
-		Ray reflected_ray;
-		reflected_ray.start = collision.p + collision.n * 0.001f;
-		reflected_ray.dir = reflect(ray.dir, collision.n);
-		vec3 reflected_color = raytrace2(reflected_ray);
+    Ray r = stack[index].ray;
+    Collision c = stack[index].collision;
 
-        // **Refract
-        Ray refracted_ray;
-        refracted_ray.start = collision.p - collision.n * 0.001f;
-        refracted_ray.dir = refract(ray.dir, collision.n, .66667f); // IOR = .66667 = 1 / 1.5
-        vec3 refracted_color = raytrace2(refracted_ray);
+    // Iterate through the raytrace phases (explained below)
+    switch (stack[index].phase)
+    {	//=================================================
+        // PHASE 1 - Raytrace Collision Detection
+        //=================================================
+        case 1:
+        c = get_closest_collision(r);	// Cast ray against the scene, store the collision result
+        if (c.object_index != -1)		// If the ray didn't hit anything, stop.
+        stack[index].collision = c;	// otherwise, store the collision result
+        break;
+        //=================================================
+        // PHASE 2 - Phong ADS Lighting Computation
+        //=================================================
+        case 2:
+        stack[index].phong_color = adsLighting(r, c);
+        break;
+        //=================================================
+        // PHASE 3 - Reflection Bounce Pass Computation
+        //=================================================
+        case 3:
+        // Only make recursive raytrace passes if we're not at max depth
+        if (stack[index].depth < max_depth)
+        {	// only the sphere and box are reflective
+            if ((c.object_index == 1) || (c.object_index == 2))
+            {	Ray reflected_ray;
+                reflected_ray.start = c.p + c.n * 0.001;
+                reflected_ray.dir = reflect(r.dir, c.n);
 
-        return clamp(.3f * reflected_color + 2.0f * refracted_color , 0.0f, 1.0f);
-        // return 2.0f * adsLighting(ray, collision) * refracted_color;
-	}
-    if (collision.object_index == 2) {
-        return adsLighting(ray, collision) * texture(brickTexture, collision.tc).xyz;
+                // Add a raytrace for that ray to the stack
+                push(reflected_ray, stack[index].depth+1, RAY_TYPE_REFLECTION);
+            }	}
+        break;
+        //=================================================
+        // PHASE 4 - Refraction Transparency Pass Computation
+        //=================================================
+        case 4:
+        // Only make recursive raytrace passes if we're not at max depth
+        if (stack[index].depth < max_depth)
+        {	// only the sphere is transparent
+            if (c.object_index == 1)
+            {	Ray refracted_ray;
+                refracted_ray.start = c.p - c.n * 0.001;
+                float refraction_ratio = 0.66667;
+                if (c.isInside) refraction_ratio = 1.0 / refraction_ratio;
+                refracted_ray.dir = refract(r.dir, c.n, refraction_ratio);
+
+                // Add a raytrace for that ray to the stack
+                push(refracted_ray, stack[index].depth+1, RAY_TYPE_REFRACTION);
+            }	}
+        break;
+        //=================================================
+        // PHASE 5 - Mixing to produce the final color
+        //=================================================
+        case 5:
+        if (c.object_index == 1)
+        {	stack[index].final_color = stack[index].phong_color *
+        ((0.3 * stack[index].reflected_color) + (2.0 * stack[index].refracted_color));
+        }
+        if (c.object_index == 2)
+        {	stack[index].final_color = stack[index].phong_color *
+        ((0.5 * stack[index].reflected_color) + (1.0 * (texture(brickTexture, c.tc)).rgb));
+        }
+        if (c.object_index == 3) stack[index].final_color = stack[index].phong_color * rbox_color;
+        if (c.object_index == 4) stack[index].final_color = stack[index].phong_color * (checkerboard(c.tc)).xyz;
+        break;
+        //=================================================
+        // when all five phases are complete, end the recursion
+        //=================================================
+        case 6: { popped_stack_element = pop(); return; }
     }
-    if (collision.object_index == 3) {
-        if (collision.face_index == 0) return texture(xnTex, collision.tc).rgb;
-        else if (collision.face_index == 1) return texture(xpTex, collision.tc).rgb;
-        else if (collision.face_index == 2) return texture(ynTex, collision.tc).rgb;
-        else if (collision.face_index == 3) return texture(ypTex, collision.tc).rgb;
-        else if (collision.face_index == 4) return texture(znTex, collision.tc).rgb;
-        else if (collision.face_index == 5) return texture(zpTex, collision.tc).rgb;
+    stack[index].phase++;
+    return;	// Only process one phase per process_stack_element() invocation
+}
+
+vec3 raytrace(Ray r){
+    // Add a raytrace to the stack
+    push(r, 0, RAY_TYPE_REFLECTION);
+
+    // Process the stack until it's empty
+    while (stack_pointer >= 0)
+    {	int element_index = stack_pointer;		// Peek at the topmost stack element
+        process_stack_element(element_index);	// Process this stack element
     }
-    if(collision.object_index == 4) {
-        return adsLighting(ray, collision) * checkerboard(collision.tc).rgb;
-    }
-    return vec3(1.0, 1.0, 1.0);// error white
+
+    // Return the final_color value of the last-popped stack element
+    return popped_stack_element.final_color;
 }
 
 void calcSkyboxCorners() {
