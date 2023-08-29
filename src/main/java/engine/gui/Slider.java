@@ -81,7 +81,7 @@ public abstract class Slider implements GuiComponents {
                 // clamping
                 if ((ImGui.getIO().getMouseWheel() > 0f && values[section] < maxValue) ||
                         (ImGui.getIO().getMouseWheel() < 0f && values[section] > minValue)) {
-                    values[section] += Math.clamp(-1f, 1f, ImGui.getIO().getMouseWheel()) * wheelSpeed;
+                    values[section] += ImGui.getIO().getMouseWheel() * wheelSpeed;
                     values[section] = Math.clamp(minValue, maxValue, values[section]);
                     scrollCallbacks.forEach(Runnable::run);
                 }
