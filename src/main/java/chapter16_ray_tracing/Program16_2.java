@@ -164,7 +164,10 @@ public class Program16_2 extends App {
     @Override
     protected void drawScene() {
         computeShader.use();
-        pixelManager.turnOn(10000);
+        if (getFps() > 0f) {
+            pixelManager.turnOn((int) (getFps() * 80));
+        }
+
         pixelManager.putPixelArrayToSSBO();
 
         brickTexture.bind();
