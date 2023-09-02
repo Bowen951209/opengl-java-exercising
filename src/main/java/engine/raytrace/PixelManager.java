@@ -1,37 +1,57 @@
 package engine.raytrace;
 
-import java.util.HashSet;
-import java.util.Set;
+import org.lwjgl.BufferUtils;
+
+import java.nio.IntBuffer;
+import java.util.Random;
+
 import static org.lwjgl.opengl.GL43.*;
 
 /*
 * This class manages what pixels should be rendered, what should not when ray tracing.
 * */
 public class PixelManager {
-    private final Set<Integer> pixelSet;
-    private int[] pixelArray;
+    private static final int STATE_NO_DRAW = 0;
+    private static final int STATE_DO_DRAW = 1;
+    private static final int STATE_DRAWN = 2;
 
-    public PixelManager() {
-        this.pixelSet = new HashSet<>();
+    private final int ssboID;
+    private final Random random;
+    private IntBuffer pixelListBuffer;
+
+    public PixelManager(int usingIndex) {
+        random = new Random();
+        ssboID = glGenBuffers();
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboID);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, usingIndex, ssboID);
     }
 
     public void turnOn(int number) {
-        pixelArray = pixelSet.stream().mapToInt(i->i).toArray();
+        pixelListBuffer.limit(pixelListBuffer.capacity());
 
         for (int i = 0; i < number; i++) {
-            pixelArray[i] = 1;
+        int randIndex = random.nextInt(pixelListBuffer.capacity());
+            if (pixelListBuffer.get(randIndex) == STATE_NO_DRAW) {
+                pixelListBuffer.put(randIndex, STATE_DO_DRAW);
+            }
         }
+        pixelListBuffer.flip();
     }
 
     public void fill(int size) {
-        pixelSet.clear();
-        for (int i = 0; i < size; i++) {
-            pixelSet.add(0);
+        pixelListBuffer = BufferUtils.createIntBuffer(size);
+        for (int i = 0; i < pixelListBuffer.capacity(); i++) {
+            pixelListBuffer.put(STATE_NO_DRAW);
         }
     }
 
-    public void putPixelArrayToSSBO(int ssboID) {
+    public void putPixelArrayToSSBO() {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboID);
-        glBufferData(GL_SHADER_STORAGE_BUFFER, pixelArray, GL_DYNAMIC_DRAW);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, pixelListBuffer, GL_DYNAMIC_DRAW);
+    }
+
+    public void getDataBack() {
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboID);
+        glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, pixelListBuffer);
     }
 }

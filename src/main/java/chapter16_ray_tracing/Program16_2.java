@@ -4,6 +4,7 @@ import engine.App;
 import engine.GLFWWindow;
 import engine.ShaderProgram;
 import engine.gui.*;
+import engine.raytrace.PixelManager;
 import engine.sceneComponents.models.FullScreenQuad;
 import engine.sceneComponents.models.Model;
 import engine.sceneComponents.textures.Texture2D;
@@ -29,6 +30,7 @@ public class Program16_2 extends App {
     private int numXPixel;
     private int numYPixel;
     private Texture2D xp, xn, yp, yn, zp, zn;
+    private PixelManager pixelManager;
 
     @Override
     protected void initGLFWWindow() {
@@ -53,6 +55,10 @@ public class Program16_2 extends App {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboRayDir);
         glBufferData(GL_SHADER_STORAGE_BUFFER, bufferSize, GL_DYNAMIC_DRAW);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssboRayDir);
+
+        pixelManager = new PixelManager(2);
+        updateNumPixelXY();
+        pixelManager.fill(numXPixel * numYPixel);
     }
 
     private void updateNumPixelXY() {
@@ -158,6 +164,8 @@ public class Program16_2 extends App {
     @Override
     protected void drawScene() {
         computeShader.use();
+        pixelManager.turnOn(10000);
+        pixelManager.putPixelArrayToSSBO();
 
         brickTexture.bind();
         earthTexture.bind();
@@ -181,6 +189,7 @@ public class Program16_2 extends App {
         updateNumPixelXY();
         glDispatchCompute(numXPixel, numYPixel, 1);
         glFinish();
+        pixelManager.getDataBack();
 
 
         screenQuadShader.use();
@@ -196,6 +205,7 @@ public class Program16_2 extends App {
         rayComputeShader.putUniformMatrix4f("cameraToWorld_matrix",
                 camera.getInvVMat().get(ValuesContainer.VALS_OF_16));
         updateNumPixelXY();
+        pixelManager.fill(numXPixel * numYPixel);
         glDispatchCompute(numXPixel, numYPixel, 1);
     }
 

@@ -21,6 +21,9 @@ layout(binding=0) buffer inputRayStart {
 layout(binding=1) buffer inputRayDir {
     float[] input_ray_dir;
 };
+layout(binding=2) buffer inputPixelList {
+    int[] pixelList;
+};
 
 struct Ray {
     vec3 start;// origin
@@ -647,23 +650,41 @@ void calcSkyboxCorners() {
     sbox_maxs = vec3(sbox_side_length_d2) + vec3(camera_pos_x, camera_pos_y, camera_pos_z);
 }
 
+const int STATE_NO_DRAW = 0;
+const int STATE_DO_DRAW = 1;
+const int STATE_DRAWN = 2;
+
+bool shouldRender(uint index) {
+    if(pixelList[index] == STATE_DO_DRAW) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void main() {
     int width = int(gl_NumWorkGroups.x);
     ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
+    uint pixelIndex = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * width;
 
     calcSkyboxCorners();
 
-    Ray world_ray;
-    uint index = (gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * width) * 3;
-    world_ray.start.x = input_ray_start[index];
-    world_ray.start.y = input_ray_start[index + 1];
-    world_ray.start.z = input_ray_start[index + 2];
+    if(shouldRender(pixelIndex)){
+        Ray world_ray;
+        uint rayInfoIndex = pixelIndex * 3;
 
-    world_ray.dir.x = input_ray_dir[index];
-    world_ray.dir.y = input_ray_dir[index + 1];
-    world_ray.dir.z = input_ray_dir[index + 2];
-    // ---------------------------------------------
+        if (shouldRender(rayInfoIndex / 3))
+        world_ray.start.x = input_ray_start[rayInfoIndex];
+        world_ray.start.y = input_ray_start[rayInfoIndex + 1];
+        world_ray.start.z = input_ray_start[rayInfoIndex + 2];
 
-    vec3 color = raytrace(world_ray);
-    imageStore(output_texture, pixel, vec4(color, 1.0));
+        world_ray.dir.x = input_ray_dir[rayInfoIndex];
+        world_ray.dir.y = input_ray_dir[rayInfoIndex + 1];
+        world_ray.dir.z = input_ray_dir[rayInfoIndex + 2];
+        // ---------------------------------------------
+
+        vec3 color = raytrace(world_ray);
+        imageStore(output_texture, pixel, vec4(color, 1.0));
+        pixelList[pixelIndex] = STATE_DRAWN;
+    }
 }
