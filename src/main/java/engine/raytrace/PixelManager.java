@@ -13,7 +13,6 @@ import static org.lwjgl.opengl.GL43.*;
 public class PixelManager {
     private static final int STATE_NO_DRAW = 0;
     private static final int STATE_DO_DRAW = 1;
-    private static final int STATE_DRAWN = 2;
 
     private final int ssboID;
     private final Random random;
