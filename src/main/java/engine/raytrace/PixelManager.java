@@ -8,8 +8,8 @@ import java.util.Random;
 import static org.lwjgl.opengl.GL43.*;
 
 /*
-* This class manages what pixels should be rendered, what should not when ray tracing.
-* */
+ * This class manages what pixels should be rendered, what should not when ray tracing.
+ * */
 public class PixelManager {
     private static final int STATE_NO_DRAW = 0;
     private static final int STATE_DO_DRAW = 1;
@@ -27,10 +27,10 @@ public class PixelManager {
     }
 
     public void turnOn(int number) {
-        pixelListBuffer.limit(pixelListBuffer.capacity());
+        pixelListBuffer.position(pixelListBuffer.capacity());
 
         for (int i = 0; i < number; i++) {
-        int randIndex = random.nextInt(pixelListBuffer.capacity());
+            int randIndex = random.nextInt(pixelListBuffer.capacity());
             if (pixelListBuffer.get(randIndex) == STATE_NO_DRAW) {
                 pixelListBuffer.put(randIndex, STATE_DO_DRAW);
             }
