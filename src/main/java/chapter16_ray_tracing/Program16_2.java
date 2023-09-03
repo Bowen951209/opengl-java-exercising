@@ -172,7 +172,7 @@ public class Program16_2 extends App {
     protected void drawScene() {
         computeShader.use();
         if (getFps() > 0f) {
-            pixelManager.turnOn((int) (getFps() * 80));
+            pixelManager.turnOn((int) (getFps() * 200));
         }
 
         pixelManager.putPixelArrayToSSBO();
