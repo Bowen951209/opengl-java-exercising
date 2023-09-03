@@ -4,6 +4,8 @@ import engine.App;
 import engine.GLFWWindow;
 import engine.ShaderProgram;
 import engine.gui.*;
+import engine.gui.Checkbox;
+import engine.raytrace.PixelManager;
 import engine.sceneComponents.models.FullScreenQuad;
 import engine.sceneComponents.models.Model;
 import engine.sceneComponents.textures.Texture2D;
@@ -29,6 +31,8 @@ public class Program16_2 extends App {
     private int numXPixel;
     private int numYPixel;
     private Texture2D xp, xn, yp, yn, zp, zn;
+    private PixelManager pixelManager;
+    private Checkbox clearScreenCheckbox;
 
     @Override
     protected void initGLFWWindow() {
@@ -53,6 +57,10 @@ public class Program16_2 extends App {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboRayDir);
         glBufferData(GL_SHADER_STORAGE_BUFFER, bufferSize, GL_DYNAMIC_DRAW);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssboRayDir);
+
+        pixelManager = new PixelManager(2);
+        updateNumPixelXY();
+        pixelManager.fill(numXPixel * numYPixel);
     }
 
     private void updateNumPixelXY() {
@@ -135,6 +143,8 @@ public class Program16_2 extends App {
         boxRotation = new float[]{10f, 70f, 55f};
         lightPosition = new float[]{-4.0f, 1.0f, 8.0f};
 
+        clearScreenCheckbox = new Checkbox("Clear screen when camera moves"
+                , true);
         Slider resolutionSlider = new SliderFloat1("resolution_scale ((1/2) ^ x)", resScaleSliderVal,
                 0f, 5f).enableMouseWheelControl().setWheelSpeed(0.5f)
                 .addScrollCallBack(() -> {
@@ -149,8 +159,11 @@ public class Program16_2 extends App {
                 -180f, 180f).enableMouseWheelControl().setWheelSpeed(5f);
         Slider lightPositionSlider = new SliderFloat3("light_position", lightPosition,
                 -10, 10).enableMouseWheelControl();
-        userWindow.addChild(resolutionSlider).addChild(boxPositionSlider)
-                .addChild(boxRotationSlider).addChild(lightPositionSlider);
+        userWindow.addChild(clearScreenCheckbox);
+        userWindow.addChild(resolutionSlider);
+        userWindow.addChild(boxPositionSlider);
+        userWindow.addChild(boxRotationSlider);
+        userWindow.addChild(lightPositionSlider);
         gui.addComponents(userWindow);
         gui.addComponents(new FpsDisplay(this));
     }
@@ -158,6 +171,11 @@ public class Program16_2 extends App {
     @Override
     protected void drawScene() {
         computeShader.use();
+        if (getFps() > 0f) {
+            pixelManager.turnOn((int) (getFps() * 200));
+        }
+
+        pixelManager.putPixelArrayToSSBO();
 
         brickTexture.bind();
         earthTexture.bind();
@@ -181,6 +199,7 @@ public class Program16_2 extends App {
         updateNumPixelXY();
         glDispatchCompute(numXPixel, numYPixel, 1);
         glFinish();
+        pixelManager.getDataBack();
 
 
         screenQuadShader.use();
@@ -196,6 +215,10 @@ public class Program16_2 extends App {
         rayComputeShader.putUniformMatrix4f("cameraToWorld_matrix",
                 camera.getInvVMat().get(ValuesContainer.VALS_OF_16));
         updateNumPixelXY();
+        pixelManager.fill(numXPixel * numYPixel);
+        if (clearScreenCheckbox != null && clearScreenCheckbox.getIsActive()) {
+            screenQuadTexture.fill(numXPixel, numYPixel, Color.black);
+        }
         glDispatchCompute(numXPixel, numYPixel, 1);
     }
 
