@@ -3,7 +3,9 @@ package engine.raytrace;
 import org.lwjgl.BufferUtils;
 
 import java.nio.IntBuffer;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import static org.lwjgl.opengl.GL43.*;
 
@@ -17,6 +19,8 @@ public class PixelManager {
     private final int ssboID;
     private final Random random;
     private IntBuffer pixelListBuffer;
+    private final Set<Boolean> stateSet = new HashSet<>();
+    private boolean isAllDrawn = false;
 
     public PixelManager(int usingIndex) {
         random = new Random();
@@ -26,18 +30,41 @@ public class PixelManager {
     }
 
     public void turnOn(int number) {
-        pixelListBuffer.position(pixelListBuffer.capacity());
+        if (!isAllDrawn()) {
+            pixelListBuffer.position(pixelListBuffer.capacity());
 
-        for (int i = 0; i < number; i++) {
-            int randIndex = random.nextInt(pixelListBuffer.capacity());
-            if (pixelListBuffer.get(randIndex) == STATE_NO_DRAW) {
-                pixelListBuffer.put(randIndex, STATE_DO_DRAW);
+            for (int i = 0; i < number; i++) {
+                int randIndex = random.nextInt(pixelListBuffer.capacity());
+                if (pixelListBuffer.get(randIndex) == STATE_NO_DRAW) {
+                    pixelListBuffer.put(randIndex, STATE_DO_DRAW);
+                }
             }
+            pixelListBuffer.flip();
         }
-        pixelListBuffer.flip();
+    }
+
+    private boolean isAllDrawn() {
+        if (!isAllDrawn) {
+            stateSet.clear();
+            for (int i = 0; i < pixelListBuffer.capacity(); i++) {
+                stateSet.add(pixelListBuffer.get(i) == STATE_NO_DRAW);
+            }
+
+            // if contain no_draw, means it's not all drawn
+            if (stateSet.contains(true)) {
+                return false;
+            } else {
+                System.out.println("All drawn!");
+                isAllDrawn = true;
+                return true;
+            }
+        } else {
+            return true;
+        }
     }
 
     public void fill(int size) {
+        isAllDrawn = false;
         pixelListBuffer = BufferUtils.createIntBuffer(size);
         for (int i = 0; i < pixelListBuffer.capacity(); i++) {
             pixelListBuffer.put(STATE_NO_DRAW);
