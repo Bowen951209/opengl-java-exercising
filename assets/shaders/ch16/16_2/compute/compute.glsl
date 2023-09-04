@@ -39,6 +39,29 @@ struct Collision {
     int face_index;// which box face (for room or sky box)
 };
 
+const int OBJ_TYPE_SKYBOX = 0, OBJ_TYPE_SPHERE = 1, OBJ_TYPE_BOX = 2, OBJ_TYPE_PLANE = 3;
+struct Object {
+    int type;// what type is the object? skybox/sphere/box/plane
+    float radius;// for OBJ_TYPE_SPHERE
+    vec3 mins;// for OBJ_TYPE_BOX / OBJ_TYPE_PLANE(x and z value are for width and height)
+    vec3 maxs;// for OBJ_TYPE_BOX
+    float xRotation;// for OBJ_TYPE_BOX / OBJ_TYPE_PLANE
+    float yRotation;// for OBJ_TYPE_BOX / OBJ_TYPE_PLANE
+    float zRotation;// for OBJ_TYPE_BOX / OBJ_TYPE_PLANE
+    vec3 position;
+    bool hasColor;
+    bool hasTexture;
+    bool isReflective;// whether the object is reflective. For type roombox, this is for enable/disable lighting.
+    bool isTransparent;
+    vec3 color;// for hasColor
+    float refelctivity;// for isReflective
+    float refractivity;// for isTransparent
+    float IOR;// for is transparent
+    vec4 ambient;
+    vec4 diffuse;
+    vec4 specular;
+    float shininess;
+};
 
 const float PI = 3.1415926535897932384626433832795;
 const float DEG_TO_RAD = PI / 180.0;
