@@ -1,8 +1,7 @@
 #version 430
 layout(local_size_x = 1) in;
 layout(binding = 0, rgba8) uniform image2D output_texture;
-layout(binding = 0) uniform sampler2D earthTexture;
-layout(binding = 1) uniform sampler2D brickTexture;
+layout(binding = 1) uniform sampler2D boxTexture;
 
 layout (binding=2) uniform sampler2D xpTex;
 layout (binding=3) uniform sampler2D xnTex;
@@ -615,7 +614,7 @@ void process_stack_element(int index)
         }
         if (c.object_index == 2)
         { stack[index].final_color = stack[index].phong_color *
-        ((0.5 * stack[index].reflected_color) + (1.0 * (texture(brickTexture, c.tc)).rgb));
+        ((0.5 * stack[index].reflected_color) + (1.0 * (texture(boxTexture, c.tc)).rgb));
         }
         if (c.object_index == 3) stack[index].final_color = stack[index].phong_color * rbox_color;
         if (c.object_index == 4) stack[index].final_color = stack[index].phong_color * (checkerboard(c.tc)).xyz;
