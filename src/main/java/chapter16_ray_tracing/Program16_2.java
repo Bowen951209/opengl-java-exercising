@@ -71,12 +71,7 @@ public class Program16_2 extends App {
     @Override
     protected void addCallbacks() {
         // FrameBuffer resize
-        this.getDefaultCallbacks().getDefaultFrameBufferResizeCB().addCallback(
-                () -> {
-                    computeRays();
-                    screenQuadTexture.fill(numXPixel, numYPixel, null);
-                }
-        );
+        this.getDefaultCallbacks().getDefaultFrameBufferResizeCB().addCallback(this::refresh);
     }
 
     @Override
@@ -149,16 +144,14 @@ public class Program16_2 extends App {
                 0f, 5f).enableMouseWheelControl().setWheelSpeed(0.5f)
                 .addScrollCallBack(() -> {
                     resolutionScale = (float) Math.pow(2, -resScaleSliderVal[0]);
-
-                    computeRays();
-                    screenQuadTexture.fill(numXPixel, numYPixel, null);
+                    refresh();
                 });
         Slider boxPositionSlider = new SliderFloat3("box_position", boxPosition,
-                -10f, 10f).enableMouseWheelControl();
+                -10f, 10f).enableMouseWheelControl().addScrollCallBack(this::refresh);
         Slider boxRotationSlider = new SliderFloat3("box_rotation", boxRotation,
-                -180f, 180f).enableMouseWheelControl().setWheelSpeed(5f);
+                -180f, 180f).enableMouseWheelControl().setWheelSpeed(5f).addScrollCallBack(this::refresh);
         Slider lightPositionSlider = new SliderFloat3("light_position", lightPosition,
-                -10, 10).enableMouseWheelControl();
+                -10, 10).enableMouseWheelControl().addScrollCallBack(this::refresh);
         userWindow.addChild(clearScreenCheckbox);
         userWindow.addChild(resolutionSlider);
         userWindow.addChild(boxPositionSlider);
@@ -166,6 +159,11 @@ public class Program16_2 extends App {
         userWindow.addChild(lightPositionSlider);
         gui.addComponents(userWindow);
         gui.addComponents(new FpsDisplay(this));
+    }
+
+    private void refresh() {
+        computeRays();
+        screenQuadTexture.fill(numXPixel, numYPixel, null);
     }
 
     @Override
