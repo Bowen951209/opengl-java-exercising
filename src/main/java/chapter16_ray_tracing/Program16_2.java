@@ -21,7 +21,7 @@ import static org.lwjgl.opengl.GL43.*;
 
 public class Program16_2 extends App {
     private ShaderProgram screenQuadShader, computeShader, rayComputeShader;
-    private Texture2D screenQuadTexture, earthTexture, brickTexture;
+    private Texture2D screenQuadTexture, brickTexture;
     private Model fullScreenQuad;
     private float[] boxPosition;
     private float[] lightPosition;
@@ -112,8 +112,7 @@ public class Program16_2 extends App {
         updateNumPixelXY();
         screenQuadTexture.fill(numXPixel, numYPixel, Color.PINK);
 
-        brickTexture = new Texture2D(1, "assets/textures/imageTextures/brick1.jpg");
-        earthTexture = new Texture2D(0, "assets/textures/imageTextures/earthmap1k.jpg");
+        brickTexture = new Texture2D(1, "assets/textures/imageTextures/marble.jfif");
 
         // skybox
         xp = new Texture2D(2, "assets/textures/skycubes/lakesIsland/xp.jpg");
@@ -176,7 +175,6 @@ public class Program16_2 extends App {
         pixelManager.putPixelArrayToSSBO();
 
         brickTexture.bind();
-        earthTexture.bind();
         xp.bind();
         xn.bind();
         yp.bind();
