@@ -40,6 +40,7 @@ struct Collision {
 };
 
 const int OBJ_TYPE_SKYBOX = 0, OBJ_TYPE_SPHERE = 1, OBJ_TYPE_BOX = 2, OBJ_TYPE_PLANE = 3;
+
 struct Object {
     int type;// what type is the object? skybox/sphere/box/plane
     float radius;// for OBJ_TYPE_SPHERE
@@ -61,6 +62,36 @@ struct Object {
     vec4 diffuse;
     vec4 specular;
     float shininess;
+};
+
+Object[] objects = {
+    // TODO: apply to my user settings
+    // Roombox (can also be applied to skybox)
+    {
+        OBJ_TYPE_SKYBOX, .0, vec3(-20.0, -20.0, -20.0), vec3(20.0, 20.0, 20.0), .0, .0, .0, vec3(0.0), true, false,
+        true, false, vec3(.25, 1.0, 1.0), .0, .0, .0, vec4(.2, .2, .2, 1.0), vec4(.9, .9, .9, 1.0),
+        vec4(1.0, 1.0, 1.0, 1.0), 50.0
+    },
+
+    // Ground plane
+    {
+        OBJ_TYPE_PLANE, .0, vec3(12.0, .0, 16.0), vec3(.0), .0, .0, .0, vec3(.0, -1.0, -2.0), false, true, false, false,
+        vec3(.0), .0, .0, .0, vec4(.2, .2, .2, 1.0), vec4(.9, .9, .9, 1.0), vec4(1.0), 50.0
+    },
+
+    // Transparent sphere with slight refection and no texture
+    {
+        OBJ_TYPE_SPHERE, 1.2, vec3(.0), vec3(.0), .0, .0, .0, vec3(.7, .2, 2.0), false, false, true, true, vec3(.0),
+        .8, .8, 1.5, vec4(.5, .5, .5, 1.0), vec4(1.0), vec4(1.0), 50.0
+    },
+
+    // Slightlly reflective box with texture
+    {
+        OBJ_TYPE_BOX, .0, vec3(-.25, -.8, -.25), vec3(.25, .8, .25), .0, 70.0, .0, vec3(-.75, -.2, 3.4), false, true,
+        true, false, vec3(.0), .5, .0, .0, vec4(.5, .5, .5, 1.0), vec4(1.0, 1.0, 1.0, 1.0), vec4(1.0, 1.0, 1.0, 1.0),
+        50.0
+    }
+
 };
 
 const float PI = 3.1415926535897932384626433832795;
