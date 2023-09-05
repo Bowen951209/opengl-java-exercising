@@ -87,18 +87,18 @@ const int RAY_MAX_DEPTH = 4;
 
 // Uniforms
 // TODO: rename
-uniform float camera_pos_x;
-uniform float camera_pos_y;
-uniform float camera_pos_z;
-uniform vec3 box_position;
-uniform vec3 box_rotation;
-uniform vec3 light_position;
+uniform float cameraPosX;
+uniform float cameraPosY;
+uniform float cameraPosZ;
+uniform vec3 boxPosition;
+uniform vec3 boxRotation;
+uniform vec3 lightPosition;
 
 // Variables
 // TODO: rename
 Stack_Element stack[STACK_SIZE];
-int stack_pointer = -1;// Points to the top of the stack (-1 if empty)
-Stack_Element popped_stack_element;// Holds the last popped element from the stack
+int stackPointer = -1;// Points to the top of the stack (-1 if empty)
+Stack_Element poppedStackElement;// Holds the last popped element from the stack
 
 // Definations
 // plane
@@ -317,9 +317,9 @@ Collision intersect_sky_box_object(Ray r){
     float maxDimension = max(totalWidth, max(totalHeight, totalDepth));
 
     // select tex coordinates depending on box face
-    float rayStrikeX = ((c.p).x  - camera_pos_x + totalWidth/2.0)/maxDimension;
-    float rayStrikeY = ((c.p).y  - camera_pos_y+ totalHeight/2.0)/maxDimension;
-    float rayStrikeZ = ((c.p).z - camera_pos_z + totalDepth/2.0)/maxDimension;
+    float rayStrikeX = ((c.p).x  - cameraPosX + totalWidth/2.0)/maxDimension;
+    float rayStrikeY = ((c.p).y  - cameraPosY+ totalHeight/2.0)/maxDimension;
+    float rayStrikeZ = ((c.p).z - cameraPosZ + totalDepth/2.0)/maxDimension;
 
     if (c.face_index == 0)// xn
     c.tc = vec2(rayStrikeZ, -rayStrikeY);
@@ -338,11 +338,11 @@ Collision intersect_sky_box_object(Ray r){
 }
 
 Collision intersect_box_object(Ray ray) {
-    mat4 model_translation = buildTranslate(box_position);
+    mat4 model_translation = buildTranslate(boxPosition);
     mat4 model_rotation = buildRotation(
-    box_rotation.x * DEG_TO_RAD,
-    box_rotation.y * DEG_TO_RAD,
-    box_rotation.z * DEG_TO_RAD
+    boxRotation.x * DEG_TO_RAD,
+    boxRotation.y * DEG_TO_RAD,
+    boxRotation.z * DEG_TO_RAD
     );
 
     mat4 local_to_world_matrix = model_translation * model_rotation;
@@ -529,18 +529,18 @@ vec3 adsLighting(Ray ray, Collision collision) {
     // Check if is in shadow
     Ray lightRay;
     lightRay.start = collision.p + collision.n * 0.01;//small offset along normal. Without it, it may bump into the object itself.
-    lightRay.dir = normalize(light_position - collision.p);
+    lightRay.dir = normalize(lightPosition - collision.p);
     bool isInShadow = false;
 
     // Cast the ray against the scene
     Collision collision_shadow = get_closest_collision(lightRay);
 
     // if ray hit an object && hit between surface and light's position
-    if (collision_shadow.object_index != -1 && collision_shadow.t < length(light_position - collision.p)) {
+    if (collision_shadow.object_index != -1 && collision_shadow.t < length(lightPosition - collision.p)) {
         isInShadow = true;
     }
 
-    vec3 lightDir = normalize(light_position - collision.p);
+    vec3 lightDir = normalize(lightPosition - collision.p);
     vec3 lightReflect = normalize(reflect(-lightDir, collision.n));
     float cosTheta = dot(lightDir, collision.n);
     float cosPhi = dot(normalize(-ray.dir), lightReflect);
@@ -560,8 +560,8 @@ vec3 checkerboard(vec2 tc) {
 
 void calcSkyboxCorners() {
     float sbox_side_length_d2 = sbox_side_length / 2.0;
-    sbox_mins = vec3(-sbox_side_length_d2) + vec3(camera_pos_x, camera_pos_y, camera_pos_z);
-    sbox_maxs = vec3(sbox_side_length_d2) + vec3(camera_pos_x, camera_pos_y, camera_pos_z);
+    sbox_mins = vec3(-sbox_side_length_d2) + vec3(cameraPosX, cameraPosY, cameraPosZ);
+    sbox_maxs = vec3(sbox_side_length_d2) + vec3(cameraPosX, cameraPosY, cameraPosZ);
 }
 
 bool shouldRender(uint index) {
@@ -573,7 +573,7 @@ bool shouldRender(uint index) {
 }
 
 void push(Ray r, int depth, int type) {
-    if (stack_pointer >= STACK_SIZE-1)  return;
+    if (stackPointer >= STACK_SIZE-1)  return;
 
     Stack_Element element;
     element = null_stack_element;
@@ -582,29 +582,29 @@ void push(Ray r, int depth, int type) {
     element.phase = 1;
     element.ray = r;
 
-    stack_pointer++;
-    stack[stack_pointer] = element;
+    stackPointer++;
+    stack[stackPointer] = element;
 }
 
 Stack_Element pop() {
     // Store the element we're removing in top_stack_element
-    Stack_Element top_stack_element = stack[stack_pointer];
+    Stack_Element top_stack_element = stack[stackPointer];
 
     // Erase the element from the stack
-    stack[stack_pointer] = null_stack_element;
-    stack_pointer--;
+    stack[stackPointer] = null_stack_element;
+    stackPointer--;
     return top_stack_element;
 }
 
 void process_stack_element(int index) {
     // If there is a popped_stack_element that just ran, it holds one of our values
     // Store it and delete it
-    if (popped_stack_element != null_stack_element)
-    { if (popped_stack_element.type == RAY_TYPE_REFLECTION)
-    stack[index].reflected_color = popped_stack_element.final_color;
-    else if (popped_stack_element.type == RAY_TYPE_REFRACTION)
-    stack[index].refracted_color = popped_stack_element.final_color;
-        popped_stack_element = null_stack_element;
+    if (poppedStackElement != null_stack_element)
+    { if (poppedStackElement.type == RAY_TYPE_REFLECTION)
+    stack[index].reflected_color = poppedStackElement.final_color;
+    else if (poppedStackElement.type == RAY_TYPE_REFRACTION)
+    stack[index].refracted_color = poppedStackElement.final_color;
+        poppedStackElement = null_stack_element;
     }
 
     Ray r = stack[index].ray;
@@ -678,7 +678,7 @@ void process_stack_element(int index) {
         //=================================================
         // when all five phases are complete, end the recursion
         //=================================================
-        case 6: { popped_stack_element = pop(); return; }
+        case 6: { poppedStackElement = pop(); return; }
     }
     stack[index].phase++;
     return;// Only process one phase per process_stack_element() invocation
@@ -689,13 +689,13 @@ vec3 raytrace(Ray r){
     push(r, 0, RAY_TYPE_REFLECTION);
 
     // Process the stack until it's empty
-    while (stack_pointer >= 0)
-    { int element_index = stack_pointer;// Peek at the topmost stack element
+    while (stackPointer >= 0)
+    { int element_index = stackPointer;// Peek at the topmost stack element
         process_stack_element(element_index);// Process this stack element
     }
 
     // Return the final_color value of the last-popped stack element
-    return popped_stack_element.final_color;
+    return poppedStackElement.final_color;
 }
 
 
