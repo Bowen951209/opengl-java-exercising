@@ -56,8 +56,8 @@ struct Object {
     float shininess;
 };
 
-struct Stack_Element
-{ int type;// The type of ray ( 1 = reflected, 2 = refracted )
+struct Stack_Element{
+    int type;// The type of ray ( 1 = reflected, 2 = refracted )
     int depth;// The depth of the recursive raytrace
     int phase;// Keeps track of what phase each recursive call is at (each call is broken down into five phases)
     vec3 phong_color;// Contains the Phong ADS model color
@@ -79,13 +79,14 @@ const int RAY_TYPE_REFLECTION = 1, RAY_TYPE_REFRACTION = 2;
 const Ray null_ray = {vec3(0.0), vec3(0.0)};
 const Collision null_collision = {-1.0, vec3(0.0), vec3(0.0), false, -1, vec2(0.0, 0.0), -1};
 const Stack_Element null_stack_element = {
-0, -1, -1, vec3(0.0), vec3(0.0), vec3(0.0), vec3(0.0), null_ray, null_collision
+    0, -1, -1, vec3(0.0), vec3(0.0), vec3(0.0), vec3(0.0), null_ray, null_collision
 };
-const int stack_size = 100;
-const int max_depth = 4;
+const int STACK_SIZE = 100;
+const int RAY_MAX_DEPTH = 4;
 
 
 // Uniforms
+// TODO: rename
 uniform float camera_pos_x;
 uniform float camera_pos_y;
 uniform float camera_pos_z;
@@ -94,7 +95,8 @@ uniform vec3 box_rotation;
 uniform vec3 light_position;
 
 // Variables
-Stack_Element stack[stack_size];
+// TODO: rename
+Stack_Element stack[STACK_SIZE];
 int stack_pointer = -1;// Points to the top of the stack (-1 if empty)
 Stack_Element popped_stack_element;// Holds the last popped element from the stack
 
@@ -571,7 +573,7 @@ bool shouldRender(uint index) {
 }
 
 void push(Ray r, int depth, int type) {
-    if (stack_pointer >= stack_size-1)  return;
+    if (stack_pointer >= STACK_SIZE-1)  return;
 
     Stack_Element element;
     element = null_stack_element;
@@ -629,7 +631,7 @@ void process_stack_element(int index) {
         //=================================================
         case 3:
         // Only make recursive raytrace passes if we're not at max depth
-        if (stack[index].depth < max_depth)
+        if (stack[index].depth < RAY_MAX_DEPTH)
         { // only the sphere and box are reflective
             if ((c.object_index == 1) || (c.object_index == 2))
             { Ray reflected_ray;
@@ -645,7 +647,7 @@ void process_stack_element(int index) {
         //=================================================
         case 4:
         // Only make recursive raytrace passes if we're not at max depth
-        if (stack[index].depth < max_depth)
+        if (stack[index].depth < RAY_MAX_DEPTH)
         { // only the sphere is transparent
             if (c.object_index == 1)
             { Ray refracted_ray;
