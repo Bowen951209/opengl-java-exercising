@@ -1,19 +1,12 @@
 #version 430
+
 layout(local_size_x = 1) in;
+
+// Texture & Image
 layout(binding = 0, rgba8) uniform image2D output_texture;
 layout(binding = 1) uniform sampler2D boxTexture;
 
-layout (binding=2) uniform sampler2D xpTex;
-layout (binding=3) uniform sampler2D xnTex;
-layout (binding=4) uniform sampler2D ypTex;
-layout (binding=5) uniform sampler2D ynTex;
-layout (binding=6) uniform sampler2D zpTex;
-layout (binding=7) uniform sampler2D znTex;
-
-uniform float camera_pos_x;
-uniform float camera_pos_y;
-uniform float camera_pos_z;
-
+// The input ray info from ray shader
 layout(binding=0) buffer inputRayStart {
     float[] input_ray_start;
 };
@@ -24,6 +17,7 @@ layout(binding=2) buffer inputPixelList {
     int[] pixelList;
 };
 
+// Structures
 struct Ray {
     vec3 start;// origin
     vec3 dir;// normalized direction
@@ -38,8 +32,6 @@ struct Collision {
     vec2 tc;// texture coordinate of the collision point
     int face_index;// which box face (for room or sky box)
 };
-
-const int OBJ_TYPE_SKYBOX = 0, OBJ_TYPE_SPHERE = 1, OBJ_TYPE_BOX = 2, OBJ_TYPE_PLANE = 3;
 
 struct Object {
     int type;// what type is the object? skybox/sphere/box/plane
@@ -64,79 +56,6 @@ struct Object {
     float shininess;
 };
 
-Object[] objects = {
-    // TODO: apply to my user settings
-    // Roombox (can also be applied to skybox)
-    {
-        OBJ_TYPE_SKYBOX, .0, vec3(-20.0, -20.0, -20.0), vec3(20.0, 20.0, 20.0), .0, .0, .0, vec3(0.0), true, false,
-        true, false, vec3(.25, 1.0, 1.0), .0, .0, .0, vec4(.2, .2, .2, 1.0), vec4(.9, .9, .9, 1.0),
-        vec4(1.0, 1.0, 1.0, 1.0), 50.0
-    },
-
-    // Ground plane
-    {
-        OBJ_TYPE_PLANE, .0, vec3(12.0, .0, 16.0), vec3(.0), .0, .0, .0, vec3(.0, -1.0, -2.0), false, true, false, false,
-        vec3(.0), .0, .0, .0, vec4(.2, .2, .2, 1.0), vec4(.9, .9, .9, 1.0), vec4(1.0), 50.0
-    },
-
-    // Transparent sphere with slight refection and no texture
-    {
-        OBJ_TYPE_SPHERE, 1.2, vec3(.0), vec3(.0), .0, .0, .0, vec3(.7, .2, 2.0), false, false, true, true, vec3(.0),
-        .8, .8, 1.5, vec4(.5, .5, .5, 1.0), vec4(1.0), vec4(1.0), 50.0
-    },
-
-    // Slightlly reflective box with texture
-    {
-        OBJ_TYPE_BOX, .0, vec3(-.25, -.8, -.25), vec3(.25, .8, .25), .0, 70.0, .0, vec3(-.75, -.2, 3.4), false, true,
-        true, false, vec3(.0), .5, .0, .0, vec4(.5, .5, .5, 1.0), vec4(1.0, 1.0, 1.0, 1.0), vec4(1.0, 1.0, 1.0, 1.0),
-        50.0
-    }
-
-};
-
-const float PI = 3.1415926535897932384626433832795;
-const float DEG_TO_RAD = PI / 180.0;
-
-// Defining Models
-// Plane
-vec3 plane_pos = vec3(0, -2.5, -2.0);//0,-1.2,-2
-float plane_width = 12.0;
-float plane_depth = 12.0;
-float plane_xrot = DEG_TO_RAD * 0.0;
-float plane_yrot = DEG_TO_RAD * 45.0;
-float plane_zrot = DEG_TO_RAD * 0.0;
-
-// Sphere
-const float sphere_radius = 2.5;
-const vec3 sphere_position = vec3(0.5, 0.0, -3.0);
-const vec3 sphere_color = vec3(0.0, 0.0, 1.0);// blue
-
-// Skybox
-const float sbox_side_length = 40;
-vec3 sbox_mins;
-vec3 sbox_maxs;
-
-// Room
-vec3 rbox_color = vec3(1.0f, 0.5f, 0.5f);
-
-// Box
-const vec3 box_mins = vec3(-.5, -.5, -1.0);// a corner of the box
-const vec3 box_maxs = vec3(.5, .5, 1.0);// a corner of the box
-const vec3 box_color = vec3(1.0, 0.0, 0.0);// red
-uniform vec3 box_position;
-uniform vec3 box_rotation;
-
-// Light
-const vec4 global_ambient = vec4(.3, .3, .3, 1.0);
-const vec4 material_ambient = vec4(.2, .2, .2, 1.0);
-const vec4 material_diffuse = vec4(.7, .7, .7, 1.0);
-const vec4 material_specular = vec4(1.0, 1.0, 1.0, 1.0);
-const float material_shininess = 50.0;
-uniform vec3 light_position;
-const vec4 light_ambient = vec4(.2, .2, .2, 1.0);
-const vec4 light_diffuse = vec4(.7, .7, .7, 1.0);
-const vec4 light_specular = vec4(1.0, 1.0, 1.0, 1.0);
-
 struct Stack_Element
 { int type;// The type of ray ( 1 = reflected, 2 = refracted )
     int depth;// The depth of the recursive raytrace
@@ -149,20 +68,105 @@ struct Stack_Element
     Collision collision;// The collision for this raytrace invocation. Contains null_collision until phase 1
 };
 
-const int RAY_TYPE_REFLECTION = 1;
-const int RAY_TYPE_REFRACTION = 2;
-
-Ray null_ray = { vec3(0.0), vec3(0.0) };
-Collision null_collision = { -1.0, vec3(0.0), vec3(0.0), false, -1, vec2(0.0, 0.0), -1 };
-Stack_Element null_stack_element = { 0, -1, -1, vec3(0), vec3(0), vec3(0), vec3(0), null_ray, null_collision };
-
+// Constants
+const int STATE_NO_DRAW = 0;
+const int STATE_DO_DRAW = 1;
+const int STATE_DRAWN = 2;
+const int OBJ_TYPE_SKYBOX = 0, OBJ_TYPE_SPHERE = 1, OBJ_TYPE_BOX = 2, OBJ_TYPE_PLANE = 3;
+const float PI = 3.1415926535897932384626433832795;
+const float DEG_TO_RAD = PI / 180.0;
+const int RAY_TYPE_REFLECTION = 1, RAY_TYPE_REFRACTION = 2;
+const Ray null_ray = {vec3(0.0), vec3(0.0)};
+const Collision null_collision = {-1.0, vec3(0.0), vec3(0.0), false, -1, vec2(0.0, 0.0), -1};
+const Stack_Element null_stack_element = {
+0, -1, -1, vec3(0.0), vec3(0.0), vec3(0.0), vec3(0.0), null_ray, null_collision
+};
 const int stack_size = 100;
-Stack_Element stack[stack_size];
 const int max_depth = 4;
 
+
+// Uniforms
+uniform float camera_pos_x;
+uniform float camera_pos_y;
+uniform float camera_pos_z;
+uniform vec3 box_position;
+uniform vec3 box_rotation;
+uniform vec3 light_position;
+
+// Variables
+Stack_Element stack[stack_size];
 int stack_pointer = -1;// Points to the top of the stack (-1 if empty)
 Stack_Element popped_stack_element;// Holds the last popped element from the stack
 
+// Definations
+// plane
+vec3 plane_pos = vec3(0, -2.5, -2.0);//0,-1.2,-2
+float plane_width = 12.0;
+float plane_depth = 12.0;
+float plane_xrot = DEG_TO_RAD * 0.0;
+float plane_yrot = DEG_TO_RAD * 45.0;
+float plane_zrot = DEG_TO_RAD * 0.0;
+
+// sphere
+const float sphere_radius = 2.5;
+const vec3 sphere_position = vec3(0.5, 0.0, -3.0);
+const vec3 sphere_color = vec3(0.0, 0.0, 1.0);// blue
+
+// skybox
+const float sbox_side_length = 40;
+vec3 sbox_mins;
+vec3 sbox_maxs;
+
+// room
+vec3 rbox_color = vec3(1.0f, 0.5f, 0.5f);
+
+// box
+const vec3 box_mins = vec3(-.5, -.5, -1.0);// a corner of the box
+const vec3 box_maxs = vec3(.5, .5, 1.0);// a corner of the box
+const vec3 box_color = vec3(1.0, 0.0, 0.0);// red
+
+// light
+const vec4 global_ambient = vec4(.3, .3, .3, 1.0);
+const vec4 material_ambient = vec4(.2, .2, .2, 1.0);
+const vec4 material_diffuse = vec4(.7, .7, .7, 1.0);
+const vec4 material_specular = vec4(1.0, 1.0, 1.0, 1.0);
+const float material_shininess = 50.0;
+const vec4 light_ambient = vec4(.2, .2, .2, 1.0);
+const vec4 light_diffuse = vec4(.7, .7, .7, 1.0);
+const vec4 light_specular = vec4(1.0, 1.0, 1.0, 1.0);
+
+Object[] objects = {
+// TODO: apply to my user settings
+// Roombox (can also be applied to skybox)
+{
+OBJ_TYPE_SKYBOX, .0, vec3(-20.0, -20.0, -20.0), vec3(20.0, 20.0, 20.0), .0, .0, .0, vec3(0.0), true, false,
+true, false, vec3(.25, 1.0, 1.0), .0, .0, .0, vec4(.2, .2, .2, 1.0), vec4(.9, .9, .9, 1.0),
+vec4(1.0, 1.0, 1.0, 1.0), 50.0
+},
+
+// Ground plane
+{
+OBJ_TYPE_PLANE, .0, vec3(12.0, .0, 16.0), vec3(.0), .0, .0, .0, vec3(.0, -1.0, -2.0), false, true, false, false,
+vec3(.0), .0, .0, .0, vec4(.2, .2, .2, 1.0), vec4(.9, .9, .9, 1.0), vec4(1.0), 50.0
+},
+
+// Transparent sphere with slight refection and no texture
+{
+OBJ_TYPE_SPHERE, 1.2, vec3(.0), vec3(.0), .0, .0, .0, vec3(.7, .2, 2.0), false, false, true, true, vec3(.0),
+.8, .8, 1.5, vec4(.5, .5, .5, 1.0), vec4(1.0), vec4(1.0), 50.0
+},
+
+// Slightlly reflective box with texture
+{
+OBJ_TYPE_BOX, .0, vec3(-.25, -.8, -.25), vec3(.25, .8, .25), .0, 70.0, .0, vec3(-.75, -.2, 3.4), false, true,
+true, false, vec3(.0), .5, .0, .0, vec4(.5, .5, .5, 1.0), vec4(1.0, 1.0, 1.0, 1.0), vec4(1.0, 1.0, 1.0, 1.0),
+50.0
+}
+
+};
+
+// Useful Methods
+// TODO: I should build these matrxi just once in the CPU, not for every pixel in GPU
 mat4 buildTranslate(vec3 position){
     return mat4(
     1.0, 0.0, 0.0, 0.0,
@@ -199,7 +203,6 @@ mat4 buildRotateZ(float rad){
 mat4 buildRotation(float xRad, float yRad, float zRad) {
     return buildRotateX(xRad) * buildRotateY(yRad) * buildRotateZ(zRad);
 }
-
 
 Collision intersect_plane_object(Ray r) {
     // Compute the planes's local-space to world-space transform matrices, and their inverse
@@ -247,8 +250,8 @@ Collision intersect_plane_object(Ray r) {
     return c;
 }
 
-Collision intersect_sky_box_object(Ray r)
-{ // Calculate the box's world mins and maxs:
+Collision intersect_sky_box_object(Ray r){
+    // Calculate the box's world mins and maxs:
     vec3 t_min = (sbox_mins - r.start) / r.dir;
     vec3 t_max = (sbox_maxs - r.start) / r.dir;
     vec3 t_minDist = min(t_min, t_max);
@@ -332,7 +335,6 @@ Collision intersect_sky_box_object(Ray r)
     return c;
 }
 
-// ----------------------------Check if the ray hit the box----------------------------
 Collision intersect_box_object(Ray ray) {
     mat4 model_translation = buildTranslate(box_position);
     mat4 model_rotation = buildRotation(
@@ -431,7 +433,7 @@ Collision intersect_box_object(Ray ray) {
 
     return collision;
 }
-// ---------------------------- Check if ray hit the sphere ----------------------------
+
 Collision intersect_sphere_object(Ray ray) {
     float qa = dot(ray.dir, ray.dir);
     float qb = dot(2.0 * ray.dir, ray.start - sphere_position);
@@ -479,15 +481,12 @@ Collision intersect_sphere_object(Ray ray) {
     return collision;
 }
 
-
-
-/*
-Returns the closet collision of the ray
-object_index == -1 -> no collision
-object_index == 1 -> collision with sphere
-object_index == 2 -> collision with box
-*/
-
+/**
+ * Returns the closet collision of the ray
+ * object_index == -1 -> no collision
+ * object_index == 1 -> collision with sphere
+ * object_index == 2 -> collision with box
+ */
 Collision get_closest_collision(Ray ray) {
     Collision closest_collision, cSphere, cBox, cSBox, cPlane;
     closest_collision.object_index = -1;
@@ -520,7 +519,6 @@ Collision get_closest_collision(Ray ray) {
     return closest_collision;
 }
 
-
 vec3 adsLighting(Ray ray, Collision collision) {
     vec4 ambient = global_ambient + light_ambient * material_ambient;
     vec4 diffuse = vec4(0.0);
@@ -552,18 +550,28 @@ vec3 adsLighting(Ray ray, Collision collision) {
     return (ambient + diffuse + specular).rgb;
 }
 
-vec3 checkerboard(vec2 tc)
-{ float tileScale = 24.0;
+vec3 checkerboard(vec2 tc) {
+    float tileScale = 24.0;
     float tile = mod(floor(tc.x * tileScale) + floor(tc.y * tileScale), 2.0);
     return tile * vec3(1, 1, 1);
 }
 
+void calcSkyboxCorners() {
+    float sbox_side_length_d2 = sbox_side_length / 2.0;
+    sbox_mins = vec3(-sbox_side_length_d2) + vec3(camera_pos_x, camera_pos_y, camera_pos_z);
+    sbox_maxs = vec3(sbox_side_length_d2) + vec3(camera_pos_x, camera_pos_y, camera_pos_z);
+}
 
-//------------------------------------------------------------------------------
-// Schedules a new raytrace by adding it to the top of the stack
-//------------------------------------------------------------------------------
-void push(Ray r, int depth, int type)
-{ if (stack_pointer >= stack_size-1)  return;
+bool shouldRender(uint index) {
+    if (pixelList[index] == STATE_DO_DRAW) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void push(Ray r, int depth, int type) {
+    if (stack_pointer >= stack_size-1)  return;
 
     Stack_Element element;
     element = null_stack_element;
@@ -576,11 +584,8 @@ void push(Ray r, int depth, int type)
     stack[stack_pointer] = element;
 }
 
-//------------------------------------------------------------------------------
-// Removes the topmost stack element
-//------------------------------------------------------------------------------
-Stack_Element pop()
-{ // Store the element we're removing in top_stack_element
+Stack_Element pop() {
+    // Store the element we're removing in top_stack_element
     Stack_Element top_stack_element = stack[stack_pointer];
 
     // Erase the element from the stack
@@ -589,12 +594,7 @@ Stack_Element pop()
     return top_stack_element;
 }
 
-//------------------------------------------------------------------------------
-// This function processes the stack element at a given index
-// This function is guaranteed to be ran on the topmost stack element
-//------------------------------------------------------------------------------
-void process_stack_element(int index)
-{
+void process_stack_element(int index) {
     // If there is a popped_stack_element that just ran, it holds one of our values
     // Store it and delete it
     if (popped_stack_element != null_stack_element)
@@ -696,24 +696,10 @@ vec3 raytrace(Ray r){
     return popped_stack_element.final_color;
 }
 
-void calcSkyboxCorners() {
-    float sbox_side_length_d2 = sbox_side_length / 2.0;
-    sbox_mins = vec3(-sbox_side_length_d2) + vec3(camera_pos_x, camera_pos_y, camera_pos_z);
-    sbox_maxs = vec3(sbox_side_length_d2) + vec3(camera_pos_x, camera_pos_y, camera_pos_z);
-}
 
-const int STATE_NO_DRAW = 0;
-const int STATE_DO_DRAW = 1;
-const int STATE_DRAWN = 2;
 
-bool shouldRender(uint index) {
-    if (pixelList[index] == STATE_DO_DRAW) {
-        return true;
-    } else {
-        return false;
-    }
-}
 
+// Main Method
 void main() {
     int width = int(gl_NumWorkGroups.x);
     ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
