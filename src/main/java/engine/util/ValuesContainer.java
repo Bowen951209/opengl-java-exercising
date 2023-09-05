@@ -8,6 +8,7 @@ import java.nio.FloatBuffer;
 public class ValuesContainer {
     public static final Vector3f VEC3_FOR_UTILS = new Vector3f();
     public static final FloatBuffer VALS_OF_16 = BufferUtils.createFloatBuffer(16);
+    public static final FloatBuffer VALS_OF_3 = BufferUtils.createFloatBuffer(3);
 
     public static void printFloatBuffer(FloatBuffer buffer) {
         System.out.print("{");

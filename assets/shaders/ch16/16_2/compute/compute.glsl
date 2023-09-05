@@ -87,9 +87,7 @@ const int RAY_MAX_DEPTH = 4;
 
 // Uniforms
 // TODO: rename
-uniform float cameraPosX;
-uniform float cameraPosY;
-uniform float cameraPosZ;
+uniform vec3 cameraPosition;
 uniform vec3 boxPosition;
 uniform vec3 boxRotation;
 uniform vec3 lightPosition;
@@ -317,9 +315,9 @@ Collision intersect_sky_box_object(Ray r){
     float maxDimension = max(totalWidth, max(totalHeight, totalDepth));
 
     // select tex coordinates depending on box face
-    float rayStrikeX = ((c.p).x  - cameraPosX + totalWidth/2.0)/maxDimension;
-    float rayStrikeY = ((c.p).y  - cameraPosY+ totalHeight/2.0)/maxDimension;
-    float rayStrikeZ = ((c.p).z - cameraPosZ + totalDepth/2.0)/maxDimension;
+    float rayStrikeX = ((c.p).x  - cameraPosition.x + totalWidth/2.0)/maxDimension;
+    float rayStrikeY = ((c.p).y  - cameraPosition.y+ totalHeight/2.0)/maxDimension;
+    float rayStrikeZ = ((c.p).z - cameraPosition.z + totalDepth/2.0)/maxDimension;
 
     if (c.face_index == 0)// xn
     c.tc = vec2(rayStrikeZ, -rayStrikeY);
@@ -560,8 +558,8 @@ vec3 checkerboard(vec2 tc) {
 
 void calcSkyboxCorners() {
     float sbox_side_length_d2 = sbox_side_length / 2.0;
-    sbox_mins = vec3(-sbox_side_length_d2) + vec3(cameraPosX, cameraPosY, cameraPosZ);
-    sbox_maxs = vec3(sbox_side_length_d2) + vec3(cameraPosX, cameraPosY, cameraPosZ);
+    sbox_mins = vec3(-sbox_side_length_d2) + vec3(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+    sbox_maxs = vec3(sbox_side_length_d2) + vec3(cameraPosition.x, cameraPosition.y, cameraPosition.z);
 }
 
 bool shouldRender(uint index) {
