@@ -84,56 +84,40 @@ const StackElement nullStackElement = {
 const int STACK_SIZE = 100;
 const int RAY_MAX_DEPTH = 4;
 
+const vec3 PLANE_POSITION = vec3(0, -2.5, -2.0);//0,-1.2,-2
+const float PLANE_WIDTH = 12.0;
+const float PLANE_DEPTH = 12.0;
+const float PLANE_ROTATION_X = DEG_TO_RAD * 0.0;
+const float PLANE_ROTATION_Y = DEG_TO_RAD * 45.0;
+const float PLANE_ROTATION_Z = DEG_TO_RAD * 0.0;
+const float SPHERE_RADIUS = 2.5;
+const vec3 SPHERE_POSITION = vec3(0.5, 0.0, -3.0);
+const float SKYBOX_SIDE_LENGTH = 40;
+const vec3 BOX_MINS = vec3(-.5, -.5, -1.0);// a corner of the box
+const vec3 BOX_MAXS = vec3(.5, .5, 1.0);// a corner of the box
+const vec4 GLOBAL_AMBIENT = vec4(.3, .3, .3, 1.0);
+const vec4 MATERIAL_AMBIENT = vec4(.2, .2, .2, 1.0);
+const vec4 MATERIAL_DIFFUSE = vec4(.7, .7, .7, 1.0);
+const vec4 MATERIAL_SPECULAR = vec4(1.0, 1.0, 1.0, 1.0);
+const float MATERIAL_SHININESS = 50.0;
+const vec4 LIGHT_AMBIENT = vec4(.2, .2, .2, 1.0);
+const vec4 LIGHT_DIFFUSE = vec4(.7, .7, .7, 1.0);
+const vec4 LIGHT_SPECULAR = vec4(1.0, 1.0, 1.0, 1.0);
+const vec3 ROOOM_BOX_COLOR = vec3(1.0, .5, .5);
+
 
 // Uniforms
-// TODO: rename
 uniform vec3 cameraPosition;
 uniform vec3 boxPosition;
 uniform vec3 boxRotation;
 uniform vec3 lightPosition;
 
 // Variables
-// TODO: rename
 StackElement stack[STACK_SIZE];
 int stackPointer = -1;// Points to the top of the stack (-1 if empty)
 StackElement poppedStackElement;// Holds the last popped element from the stack
-
-// Definations
-// plane
-vec3 plane_pos = vec3(0, -2.5, -2.0);//0,-1.2,-2
-float plane_width = 12.0;
-float plane_depth = 12.0;
-float plane_xrot = DEG_TO_RAD * 0.0;
-float plane_yrot = DEG_TO_RAD * 45.0;
-float plane_zrot = DEG_TO_RAD * 0.0;
-
-// sphere
-const float sphere_radius = 2.5;
-const vec3 sphere_position = vec3(0.5, 0.0, -3.0);
-const vec3 sphere_color = vec3(0.0, 0.0, 1.0);// blue
-
-// skybox
-const float sbox_side_length = 40;
-vec3 sbox_mins;
-vec3 sbox_maxs;
-
-// room
-vec3 rbox_color = vec3(1.0f, 0.5f, 0.5f);
-
-// box
-const vec3 box_mins = vec3(-.5, -.5, -1.0);// a corner of the box
-const vec3 box_maxs = vec3(.5, .5, 1.0);// a corner of the box
-const vec3 box_color = vec3(1.0, 0.0, 0.0);// red
-
-// light
-const vec4 global_ambient = vec4(.3, .3, .3, 1.0);
-const vec4 material_ambient = vec4(.2, .2, .2, 1.0);
-const vec4 material_diffuse = vec4(.7, .7, .7, 1.0);
-const vec4 material_specular = vec4(1.0, 1.0, 1.0, 1.0);
-const float material_shininess = 50.0;
-const vec4 light_ambient = vec4(.2, .2, .2, 1.0);
-const vec4 light_diffuse = vec4(.7, .7, .7, 1.0);
-const vec4 light_specular = vec4(1.0, 1.0, 1.0, 1.0);
+vec3 skyboxMins;
+vec3 skyboxMaxs;
 
 Object[] objects = {
     // TODO: apply to my user settings
@@ -206,8 +190,8 @@ mat4 buildRotation(float xRad, float yRad, float zRad) {
 
 Collision intersectPlaneObject(Ray r) {
     // Compute the planes's local-space to world-space transform matrices, and their inverse
-    mat4 localToWorldT = buildTranslate(plane_pos);
-    mat4 localToWorldR = buildRotateY(plane_yrot) * buildRotateX(plane_xrot) * buildRotateZ(plane_zrot);
+    mat4 localToWorldT = buildTranslate(PLANE_POSITION);
+    mat4 localToWorldR = buildRotateY(PLANE_ROTATION_Y) * buildRotateX(PLANE_ROTATION_X) * buildRotateZ(PLANE_ROTATION_Z);
     mat4 localToWorldTR = localToWorldT * localToWorldR;
     mat4 worldToLocalTR = inverse(localToWorldTR);
     mat4 worldToLocalR = inverse(localToWorldR);
@@ -229,7 +213,7 @@ Collision intersectPlaneObject(Ray r) {
     vec3 intersectPoint = rayStart + c.t * rayDir;
 
     // If the ray didn't intersect the plane object, return a negative t value
-    if ((abs(intersectPoint.x) > (plane_width/2.0)) || (abs(intersectPoint.z) > (plane_depth/2.0))) {
+    if ((abs(intersectPoint.x) > (PLANE_WIDTH/2.0)) || (abs(intersectPoint.z) > (PLANE_DEPTH/2.0))) {
         c.t = -1.0;
         return c;
     }
@@ -244,16 +228,16 @@ Collision intersectPlaneObject(Ray r) {
     c.n = transpose(inverse(mat3(localToWorldR))) * c.n;
 
     // Compute texture coordinates
-    float maxDimension = max(plane_width, plane_depth);
-    c.tc.x = (intersectPoint.x + plane_width/2.0)/maxDimension;
-    c.tc.y = (intersectPoint.z + plane_depth/2.0)/maxDimension;
+    float maxDimension = max(PLANE_WIDTH, PLANE_DEPTH);
+    c.tc.x = (intersectPoint.x + PLANE_WIDTH/2.0)/maxDimension;
+    c.tc.y = (intersectPoint.z + PLANE_DEPTH/2.0)/maxDimension;
     return c;
 }
 
 Collision intersectSkyboxObject(Ray r){
     // Calculate the box's world mins and maxs:
-    vec3 tMin = (sbox_mins - r.start) / r.dir;
-    vec3 tMax = (sbox_maxs - r.start) / r.dir;
+    vec3 tMin = (skyboxMins - r.start) / r.dir;
+    vec3 tMax = (skyboxMaxs - r.start) / r.dir;
     vec3 tMinDist = min(tMin, tMax);
     vec3 tMaxDist = max(tMin, tMax);
     float tNear = max(max(tMinDist.x, tMinDist.y), tMinDist.z);
@@ -309,9 +293,9 @@ Collision intersectSkyboxObject(Ray r){
 
     // Compute texture coordinates
     // compute largest box dimension
-    float totalWidth = sbox_maxs.x - sbox_mins.x;
-    float totalHeight = sbox_maxs.y - sbox_mins.y;
-    float totalDepth = sbox_maxs.z - sbox_mins.z;
+    float totalWidth = skyboxMaxs.x - skyboxMins.x;
+    float totalHeight = skyboxMaxs.y - skyboxMins.y;
+    float totalDepth = skyboxMaxs.z - skyboxMins.z;
     float maxDimension = max(totalWidth, max(totalHeight, totalDepth));
 
     // select tex coordinates depending on box face
@@ -352,8 +336,8 @@ Collision intersectBoxObject(Ray ray) {
 
 
     // calculate the box's mins and maxs
-    vec3 tMin = (box_mins - rayStart) / rayDir;
-    vec3 tMax = (box_maxs - rayStart) / rayDir;
+    vec3 tMin = (BOX_MINS - rayStart) / rayDir;
+    vec3 tMax = (BOX_MAXS - rayStart) / rayDir;
     vec3 tMinDist = min(tMin, tMax);
     vec3 tMaxDist = max(tMin, tMax);
     float tNear = max(max(tMinDist.x, tMinDist.y), tMinDist.z);
@@ -409,9 +393,9 @@ Collision intersectBoxObject(Ray ray) {
     vec3 collisionPoint = (worldToLocalMatrix * vec4(collision.p, 1.0)).xyz;
 
     // compute largest box dimension
-    float totalWidth = box_maxs.x - box_mins.x;
-    float totalHeight = box_maxs.y - box_mins.y;
-    float totalDepth = box_maxs.z - box_mins.z;
+    float totalWidth = BOX_MAXS.x - BOX_MINS.x;
+    float totalHeight = BOX_MAXS.y - BOX_MINS.y;
+    float totalDepth = BOX_MAXS.z - BOX_MINS.z;
     float maxDimesion = max(totalWidth, max(totalHeight, totalDepth));
 
     // convert X/Y/Z coordinate to range [0, 1], and devide by largest box dimension
@@ -436,9 +420,9 @@ Collision intersectBoxObject(Ray ray) {
 
 Collision intersectSphereObject(Ray ray) {
     float qa = dot(ray.dir, ray.dir);
-    float qb = dot(2.0 * ray.dir, ray.start - sphere_position);
-    float qc = dot(ray.start - sphere_position, ray.start - sphere_position)
-    - sphere_radius * sphere_radius;
+    float qb = dot(2.0 * ray.dir, ray.start - SPHERE_POSITION);
+    float qc = dot(ray.start - SPHERE_POSITION, ray.start - SPHERE_POSITION)
+    - SPHERE_RADIUS * SPHERE_RADIUS;
 
     // solving for qa * t * t + qb * t + qc = 0
     float qd = qb * qb - 4 * qa * qc;
@@ -468,7 +452,7 @@ Collision intersectSphereObject(Ray ray) {
     }
 
     collision.p = ray.start + collision.t * ray.dir;// world position if the hit point
-    collision.n = normalize(collision.p - sphere_position);
+    collision.n = normalize(collision.p - SPHERE_POSITION);
 
     if (collision.isInside) { // if ray is inside, flip the normal
         collision.n *= -1.0;
@@ -520,7 +504,7 @@ Collision getClosestCollision(Ray ray) {
 }
 
 vec3 adsLighting(Ray ray, Collision collision) {
-    vec4 ambient = global_ambient + light_ambient * material_ambient;
+    vec4 ambient = GLOBAL_AMBIENT + LIGHT_AMBIENT * MATERIAL_AMBIENT;
     vec4 diffuse = vec4(0.0);
     vec4 specular = vec4(0.0);
 
@@ -544,8 +528,8 @@ vec3 adsLighting(Ray ray, Collision collision) {
     float cosPhi = dot(normalize(-ray.dir), lightReflect);
 
     if (!isInShadow) {
-        diffuse = light_diffuse * material_diffuse * max(cosTheta, 0.0);
-        specular = light_specular * material_specular * pow(max(cosPhi, 0.0), material_shininess);
+        diffuse = LIGHT_DIFFUSE * MATERIAL_DIFFUSE * max(cosTheta, 0.0);
+        specular = LIGHT_SPECULAR * MATERIAL_SPECULAR * pow(max(cosPhi, 0.0), MATERIAL_SHININESS);
     }
     return (ambient + diffuse + specular).rgb;
 }
@@ -557,9 +541,9 @@ vec3 checkerboard(vec2 tc) {
 }
 
 void calcSkyboxCorners() {
-    float skyboxSideLengthD2 = sbox_side_length / 2.0;
-    sbox_mins = vec3(-skyboxSideLengthD2) + vec3(cameraPosition.x, cameraPosition.y, cameraPosition.z);
-    sbox_maxs = vec3(skyboxSideLengthD2) + vec3(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+    float skyboxSideLengthD2 = SKYBOX_SIDE_LENGTH / 2.0;
+    skyboxMins = vec3(-skyboxSideLengthD2) + vec3(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+    skyboxMaxs = vec3(skyboxSideLengthD2) + vec3(cameraPosition.x, cameraPosition.y, cameraPosition.z);
 }
 
 bool shouldRender(uint index) {
@@ -672,7 +656,7 @@ void processStackElement(int index) {
             stack[index].finalColor = stack[index].lightingColor *
                 ((0.5 * stack[index].reflectedColor) + (1.0 * (texture(boxTexture, c.tc)).rgb));
         }
-        if (c.objectIndex == 3) stack[index].finalColor = stack[index].lightingColor * rbox_color;
+        if (c.objectIndex == 3) stack[index].finalColor = stack[index].lightingColor * ROOOM_BOX_COLOR;
         if (c.objectIndex == 4) stack[index].finalColor = stack[index].lightingColor * (checkerboard(c.tc)).xyz;
         break;
         //=================================================
