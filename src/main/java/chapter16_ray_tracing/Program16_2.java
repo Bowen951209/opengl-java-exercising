@@ -187,10 +187,8 @@ public class Program16_2 extends App {
 
     private void computeRays() {
         rayComputeShader.use();
-        rayComputeShader.putUniform1f("camera_pos_x", camera.getPos().x);
-        rayComputeShader.putUniform1f("camera_pos_y", camera.getPos().y);
-        rayComputeShader.putUniform1f("camera_pos_z", camera.getPos().z);
-        rayComputeShader.putUniformMatrix4f("cameraToWorld_matrix",
+        rayComputeShader.putUniform3f("cameraPosition", camera.getPos().get(ValuesContainer.VALS_OF_3));
+        rayComputeShader.putUniformMatrix4f("cameraToWorldMatrix",
                 camera.getInvVMat().get(ValuesContainer.VALS_OF_16));
         updateNumPixelXY();
         pixelManager.fill(numXPixel * numYPixel);

@@ -2,16 +2,14 @@
 
 layout (local_size_x=1) in;
 layout(binding=0) buffer outputRayStart {
-    float[] output_ray_start;
+    float[] rayStart;
 };
 layout(binding=1) buffer outputRayDir {
-    float[] output_ray_dir;
+    float[] rayDir;
 };
 
-uniform float camera_pos_x;
-uniform float camera_pos_y;
-uniform float camera_pos_z;
-uniform mat4 cameraToWorld_matrix;
+uniform vec3 cameraPosition;
+uniform mat4 cameraToWorldMatrix;
 
 struct Ray {
     vec3 start;// origin
@@ -31,19 +29,19 @@ void main() {
     float Py = -(1 - 2 * ((pixel.y + 0.5) / height));
     vec3 rayOrigin = vec3(0f, 0f, 0f);
 
-    vec3 rayOriginWorld = mat3(cameraToWorld_matrix) * rayOrigin;
-    vec3 rayPWorld = mat3(cameraToWorld_matrix) * vec3(Px, Py, -1f);
+    vec3 rayOriginWorld = mat3(cameraToWorldMatrix) * rayOrigin;
+    vec3 rayPWorld = mat3(cameraToWorldMatrix) * vec3(Px, Py, -1f);
 
-    Ray world_ray;
-    world_ray.start = vec3(camera_pos_x, camera_pos_y, camera_pos_z);
-    world_ray.dir = rayPWorld - rayOriginWorld;
+    Ray worldRay;
+    worldRay.start = vec3(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+    worldRay.dir = rayPWorld - rayOriginWorld;
 
 
-    output_ray_start[index] = world_ray.start.x;
-    output_ray_start[index + 1] = world_ray.start.y;
-    output_ray_start[index + 2] = world_ray.start.z;
+    rayStart[index] = worldRay.start.x;
+    rayStart[index + 1] = worldRay.start.y;
+    rayStart[index + 2] = worldRay.start.z;
 
-    output_ray_dir[index] = world_ray.dir.x;
-    output_ray_dir[index + 1] = world_ray.dir.y;
-    output_ray_dir[index + 2] = world_ray.dir.z;
+    rayDir[index] = worldRay.dir.x;
+    rayDir[index + 1] = worldRay.dir.y;
+    rayDir[index + 2] = worldRay.dir.z;
 }
