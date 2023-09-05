@@ -30,7 +30,6 @@ public class Program16_2 extends App {
     private float resolutionScale = (float) Math.pow(2, -resScaleSliderVal[0]);
     private int numXPixel;
     private int numYPixel;
-    private Texture2D xp, xn, yp, yn, zp, zn;
     private PixelManager pixelManager;
     private Checkbox clearScreenCheckbox;
 
@@ -113,14 +112,6 @@ public class Program16_2 extends App {
         screenQuadTexture.fill(numXPixel, numYPixel, Color.PINK);
 
         brickTexture = new Texture2D(1, "assets/textures/imageTextures/marble.jfif");
-
-        // skybox
-        xp = new Texture2D(2, "assets/textures/skycubes/lakesIsland/xp.jpg");
-        xn = new Texture2D(3, "assets/textures/skycubes/lakesIsland/xn.jpg");
-        yp = new Texture2D(4, "assets/textures/skycubes/lakesIsland/yp.jpg");
-        yn = new Texture2D(5, "assets/textures/skycubes/lakesIsland/yn.jpg");
-        zp = new Texture2D(6, "assets/textures/skycubes/lakesIsland/zp.jpg");
-        zn = new Texture2D(7, "assets/textures/skycubes/lakesIsland/zn.jpg");
     }
 
     @Override
@@ -175,22 +166,16 @@ public class Program16_2 extends App {
         pixelManager.putPixelArrayToSSBO();
 
         brickTexture.bind();
-        xp.bind();
-        xn.bind();
-        yp.bind();
-        yn.bind();
-        zp.bind();
-        zn.bind();
         glBindImageTexture(0, screenQuadTexture.getTexID(), 0, false,
                 0, GL_WRITE_ONLY, GL_RGBA8);
 
-        computeShader.putUniform3f("box_position", boxPosition);
-        computeShader.putUniform3f("box_rotation", boxRotation);
-        computeShader.putUniform3f("light_position", lightPosition);
+        computeShader.putUniform3f("boxPosition", boxPosition);
+        computeShader.putUniform3f("boxRotation", boxRotation);
+        computeShader.putUniform3f("lightPosition", lightPosition);
 
-        computeShader.putUniform1f("camera_pos_x", camera.getPos().x);
-        computeShader.putUniform1f("camera_pos_y", camera.getPos().y);
-        computeShader.putUniform1f("camera_pos_z", camera.getPos().z);
+        computeShader.putUniform1f("cameraPosX", camera.getPos().x);
+        computeShader.putUniform1f("cameraPosY", camera.getPos().y);
+        computeShader.putUniform1f("cameraPosZ", camera.getPos().z);
 
         updateNumPixelXY();
         glDispatchCompute(numXPixel, numYPixel, 1);
