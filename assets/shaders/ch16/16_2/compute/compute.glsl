@@ -191,7 +191,7 @@ mat4 buildRotation(float xRad, float yRad, float zRad) {
 Collision intersectPlaneObject(Ray r) {
     // Compute the planes's local-space to world-space transform matrices, and their inverse
     mat4 localToWorldT = buildTranslate(PLANE_POSITION);
-    mat4 localToWorldR = buildRotateY(PLANE_ROTATION_Y) * buildRotateX(PLANE_ROTATION_X) * buildRotateZ(PLANE_ROTATION_Z);
+    mat4 localToWorldR = buildRotation(PLANE_ROTATION_X, PLANE_ROTATION_Y, PLANE_ROTATION_Z);
     mat4 localToWorldTR = localToWorldT * localToWorldR;
     mat4 worldToLocalTR = inverse(localToWorldTR);
     mat4 worldToLocalR = inverse(localToWorldR);
