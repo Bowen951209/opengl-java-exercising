@@ -153,43 +153,6 @@ Object[] objects = {
 };
 
 // Useful Methods
-// TODO: I should build these matrxi just once in the CPU, not for every pixel in GPU
-mat4 buildTranslate(vec3 position){
-    return mat4(
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        position.x, position.y, position.z, 1.0
-    );
-}
-mat4 buildRotateX(float rad){
-    return mat4(
-        1.0, 0.0, 0.0, 0.0,
-        0.0, cos(rad), sin(rad), 0.0,
-        0.0, -sin(rad), cos(rad), 0.0,
-        0.0, 0.0, 0.0, 1.0
-    );
-}
-mat4 buildRotateY(float rad){
-    return mat4(
-        cos(rad), 0.0, -sin(rad), 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        sin(rad), 0.0, cos(rad), 0.0,
-        0.0, 0.0, 0.0, 1.0
-    );
-}
-mat4 buildRotateZ(float rad){
-    return mat4(
-        cos(rad), sin(rad), 0.0, 0.0,
-        -sin(rad), cos(rad), 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, 0.0, 0.0, 1.0
-    );
-}
-
-mat4 buildRotation(float xRad, float yRad, float zRad) {
-    return buildRotateX(xRad) * buildRotateY(yRad) * buildRotateZ(zRad);
-}
 
 Collision intersectPlaneObject(Ray r, mat4 localToWorldR, mat4 worldToLocalTR, mat4 worldToLocalR) {
     // Convert the world-space ray to the planes's local space:
