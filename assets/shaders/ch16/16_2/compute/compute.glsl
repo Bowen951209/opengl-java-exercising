@@ -154,7 +154,9 @@ Object[] objects = {
 
 // Useful Methods
 
-Collision intersectPlaneObject(Ray r, mat4 localToWorldR, mat4 worldToLocalTR, mat4 worldToLocalR) {
+Collision intersectPlaneObject(Ray r, mat4 localToWorldR, mat4 worldToLocalTR, mat4 worldToLocalR,
+    float planeWidth, float planeDepth)
+{
     // Convert the world-space ray to the planes's local space:
     vec3 rayStart = (worldToLocalTR * vec4(r.start, 1.0)).xyz;
     vec3 rayDir = (worldToLocalR * vec4(r.dir, 1.0)).xyz;
@@ -172,7 +174,7 @@ Collision intersectPlaneObject(Ray r, mat4 localToWorldR, mat4 worldToLocalTR, m
     vec3 intersectPoint = rayStart + c.t * rayDir;
 
     // If the ray didn't intersect the plane object, return a negative t value
-    if ((abs(intersectPoint.x) > (PLANE_WIDTH/2.0)) || (abs(intersectPoint.z) > (PLANE_DEPTH/2.0))) {
+    if ((abs(intersectPoint.x) > (planeWidth/2.0)) || (abs(intersectPoint.z) > (planeDepth/2.0))) {
         c.t = -1.0;
         return c;
     }
@@ -187,9 +189,9 @@ Collision intersectPlaneObject(Ray r, mat4 localToWorldR, mat4 worldToLocalTR, m
     c.n = transpose(inverse(mat3(localToWorldR))) * c.n;
 
     // Compute texture coordinates
-    float maxDimension = max(PLANE_WIDTH, PLANE_DEPTH);
-    c.tc.x = (intersectPoint.x + PLANE_WIDTH/2.0)/maxDimension;
-    c.tc.y = (intersectPoint.z + PLANE_DEPTH/2.0)/maxDimension;
+    float maxDimension = max(planeWidth, planeDepth);
+    c.tc.x = (intersectPoint.x + planeWidth/2.0)/maxDimension;
+    c.tc.y = (intersectPoint.z + planeDepth/2.0)/maxDimension;
     return c;
 }
 
@@ -278,14 +280,14 @@ Collision intersectSkyboxObject(Ray r){
     return c;
 }
 
-Collision intersectBoxObject(Ray ray, mat4 worldToLocalTR, mat4 worldToLocalR) {
+Collision intersectBoxObject(Ray ray, mat4 worldToLocalTR, mat4 worldToLocalR, vec3 mins, vec3 maxs) {
     vec3 rayStart = (worldToLocalTR * vec4(ray.start, 1.0)).xyz;
     vec3 rayDir = (worldToLocalR * vec4(ray.dir, 1.0)).xyz;
 
 
     // calculate the box's mins and maxs
-    vec3 tMin = (BOX_MINS - rayStart) / rayDir;
-    vec3 tMax = (BOX_MAXS - rayStart) / rayDir;
+    vec3 tMin = (mins - rayStart) / rayDir;
+    vec3 tMax = (maxs - rayStart) / rayDir;
     vec3 tMinDist = min(tMin, tMax);
     vec3 tMaxDist = max(tMin, tMax);
     float tNear = max(max(tMinDist.x, tMinDist.y), tMinDist.z);
@@ -341,9 +343,9 @@ Collision intersectBoxObject(Ray ray, mat4 worldToLocalTR, mat4 worldToLocalR) {
     vec3 collisionPoint = (worldToLocalTR * vec4(collision.p, 1.0)).xyz;
 
     // compute largest box dimension
-    float totalWidth = BOX_MAXS.x - BOX_MINS.x;
-    float totalHeight = BOX_MAXS.y - BOX_MINS.y;
-    float totalDepth = BOX_MAXS.z - BOX_MINS.z;
+    float totalWidth = maxs.x - mins.x;
+    float totalHeight = maxs.y - mins.y;
+    float totalDepth = maxs.z - mins.z;
     float maxDimesion = max(totalWidth, max(totalHeight, totalDepth));
 
     // convert X/Y/Z coordinate to range [0, 1], and devide by largest box dimension
@@ -366,11 +368,11 @@ Collision intersectBoxObject(Ray ray, mat4 worldToLocalTR, mat4 worldToLocalR) {
     return collision;
 }
 
-Collision intersectSphereObject(Ray ray) {
+Collision intersectSphereObject(Ray ray, vec3 position, float radius) {
     float qa = dot(ray.dir, ray.dir);
-    float qb = dot(2.0 * ray.dir, ray.start - SPHERE_POSITION);
-    float qc = dot(ray.start - SPHERE_POSITION, ray.start - SPHERE_POSITION)
-    - SPHERE_RADIUS * SPHERE_RADIUS;
+    float qb = dot(2.0 * ray.dir, ray.start - position);
+    float qc = dot(ray.start - position, ray.start - position)
+    - radius * radius;
 
     // solving for qa * t * t + qb * t + qc = 0
     float qd = qb * qb - 4 * qa * qc;
@@ -400,7 +402,7 @@ Collision intersectSphereObject(Ray ray) {
     }
 
     collision.p = ray.start + collision.t * ray.dir;// world position if the hit point
-    collision.n = normalize(collision.p - SPHERE_POSITION);
+    collision.n = normalize(collision.p - position);
 
     if (collision.isInside) { // if ray is inside, flip the normal
         collision.n *= -1.0;
@@ -423,10 +425,10 @@ Collision getClosestCollision(Ray ray) {
     Collision closestCollision, cSphere, cBox, cSBox, cPlane;
     closestCollision.objectIndex = -1;
 
-    cSphere = intersectSphereObject(ray);
-    cBox = intersectBoxObject(ray, invBoxMMat, invBoxMMatRotate);;
+    cSphere = intersectSphereObject(ray, SPHERE_POSITION, SPHERE_RADIUS);
+    cBox = intersectBoxObject(ray, invBoxMMat, invBoxMMatRotate, BOX_MINS, BOX_MAXS);
+    cPlane = intersectPlaneObject(ray, planeMMatRotate, invPlaneMMat, invPlaneMMatRotate, PLANE_WIDTH, PLANE_DEPTH);
     cSBox = intersectSkyboxObject(ray);
-    cPlane = intersectPlaneObject(ray, planeMMatRotate, invPlaneMMat, invPlaneMMatRotate);
 
     if ((cSphere.t > 0) && ((cSphere.t < cBox.t) || (cBox.t < 0))) {
         closestCollision = cSphere;
