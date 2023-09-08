@@ -3,14 +3,16 @@ package chapter16_ray_tracing;
 import engine.App;
 import engine.GLFWWindow;
 import engine.ShaderProgram;
-import engine.gui.*;
 import engine.gui.Checkbox;
+import engine.gui.*;
 import engine.raytrace.PixelManager;
 import engine.sceneComponents.models.FullScreenQuad;
 import engine.sceneComponents.models.Model;
 import engine.sceneComponents.textures.Texture2D;
 import engine.util.Destroyer;
 import engine.util.ValuesContainer;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 
@@ -23,13 +25,13 @@ public class Program16_2 extends App {
     private ShaderProgram screenQuadShader, computeShader, rayComputeShader;
     private Texture2D screenQuadTexture, brickTexture;
     private Model fullScreenQuad;
-    private float[] boxPosition;
-    private float[] lightPosition;
-    private float[] boxRotation;
+    private float[] lightPosition, boxPosition, boxRotation;
+    private final Matrix4f invBoxMMat = new Matrix4f();
+    private final Matrix4f boxMMatRotate = new Matrix4f();
+    private final Matrix4f invBoxMMatRotate = new Matrix4f();
     private final float[] resScaleSliderVal = {2f};
     private float resolutionScale = (float) Math.pow(2, -resScaleSliderVal[0]);
-    private int numXPixel;
-    private int numYPixel;
+    private int numXPixel, numYPixel;
     private PixelManager pixelManager;
     private Checkbox clearScreenCheckbox;
 
@@ -93,6 +95,22 @@ public class Program16_2 extends App {
         camera.addCameraUpdateCallBack(this::computeRays);
         fullScreenQuad = new FullScreenQuad();
 
+        final Vector3f PLANE_POSITION = new Vector3f(0f, -2.5f, -2.0f);
+        final float PLANE_ROTATION_Y = (float) (Math.PI * 0.25); // 45 deg
+        final Matrix4f PLANE_MMAT_TRANS = new Matrix4f().translate(PLANE_POSITION);
+        final Matrix4f PLANE_MMAT_ROT = new Matrix4f().rotateY(PLANE_ROTATION_Y);
+        final Matrix4f INV_PLANE_MMAT_ROT = new Matrix4f(PLANE_MMAT_ROT).invert();
+        final Matrix4f PLANE_MMAT = new Matrix4f(PLANE_MMAT_ROT).mul(PLANE_MMAT_TRANS);
+        final Matrix4f INV_PLANE_MMAT = new Matrix4f(PLANE_MMAT).invert();
+
+        computeShader.use();
+        computeShader.putUniformMatrix4f("invPlaneMMat",
+                INV_PLANE_MMAT.get(ValuesContainer.VALS_OF_16));
+        computeShader.putUniformMatrix4f("planeMMatRotate",
+                PLANE_MMAT_ROT.get(ValuesContainer.VALS_OF_16));
+        computeShader.putUniformMatrix4f("invPlaneMMatRotate",
+                INV_PLANE_MMAT_ROT.get(ValuesContainer.VALS_OF_16));
+
         // init rays
         computeRays();
     }
@@ -149,11 +167,33 @@ public class Program16_2 extends App {
         userWindow.addChild(lightPositionSlider);
         gui.addComponents(userWindow);
         gui.addComponents(new FpsDisplay(this));
+
+        refresh();
     }
 
+    /**
+     * This one is called when the camera moves
+     */
     private void refresh() {
         computeRays();
         screenQuadTexture.fill(numXPixel, numYPixel, null);
+        updateBoxMatrices();
+    }
+
+    private void updateBoxMatrices() {
+        boxMMatRotate.identity().rotateX(boxRotation[0]).rotateY(boxRotation[1])
+                .rotateZ(boxRotation[2]);
+        invBoxMMatRotate.set(boxMMatRotate).invert();
+
+        invBoxMMat.identity().translate(boxPosition[0], boxPosition[1], boxPosition[2]).mul(boxMMatRotate).invert();
+
+
+        computeShader.use();
+        computeShader.putUniformMatrix4f("invBoxMMat",
+                invBoxMMat.get(ValuesContainer.VALS_OF_16));
+        computeShader.putUniformMatrix4f("invBoxMMatRotate",
+                invBoxMMatRotate.get(ValuesContainer.VALS_OF_16));
+
     }
 
     @Override
@@ -169,8 +209,6 @@ public class Program16_2 extends App {
         glBindImageTexture(0, screenQuadTexture.getTexID(), 0, false,
                 0, GL_WRITE_ONLY, GL_RGBA8);
 
-        computeShader.putUniform3f("boxPosition", boxPosition);
-        computeShader.putUniform3f("boxRotation", boxRotation);
         computeShader.putUniform3f("lightPosition", lightPosition);
         computeShader.putUniform3f("cameraPosition", camera.getPos().get(ValuesContainer.VALS_OF_3));
 

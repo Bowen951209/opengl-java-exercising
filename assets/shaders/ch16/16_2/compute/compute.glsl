@@ -84,12 +84,8 @@ const StackElement nullStackElement = {
 const int STACK_SIZE = 100;
 const int RAY_MAX_DEPTH = 4;
 
-const vec3 PLANE_POSITION = vec3(0, -2.5, -2.0);//0,-1.2,-2
 const float PLANE_WIDTH = 12.0;
 const float PLANE_DEPTH = 12.0;
-const float PLANE_ROTATION_X = DEG_TO_RAD * 0.0;
-const float PLANE_ROTATION_Y = DEG_TO_RAD * 45.0;
-const float PLANE_ROTATION_Z = DEG_TO_RAD * 0.0;
 const float SPHERE_RADIUS = 2.5;
 const vec3 SPHERE_POSITION = vec3(0.5, 0.0, -3.0);
 const float SKYBOX_SIDE_LENGTH = 40;
@@ -108,9 +104,16 @@ const vec3 ROOOM_BOX_COLOR = vec3(1.0, .5, .5);
 
 // Uniforms
 uniform vec3 cameraPosition;
-uniform vec3 boxPosition;
-uniform vec3 boxRotation;
 uniform vec3 lightPosition;
+
+uniform mat4 planeMMat;
+uniform mat4 invPlaneMMat;
+uniform mat4 planeMMatRotate;
+uniform mat4 invPlaneMMatRotate;
+
+uniform mat4 invBoxMMat;
+uniform mat4 invBoxMMatRotate;
+
 
 // Variables
 StackElement stack[STACK_SIZE];
@@ -188,14 +191,7 @@ mat4 buildRotation(float xRad, float yRad, float zRad) {
     return buildRotateX(xRad) * buildRotateY(yRad) * buildRotateZ(zRad);
 }
 
-Collision intersectPlaneObject(Ray r) {
-    // Compute the planes's local-space to world-space transform matrices, and their inverse
-    mat4 localToWorldT = buildTranslate(PLANE_POSITION);
-    mat4 localToWorldR = buildRotation(PLANE_ROTATION_X, PLANE_ROTATION_Y, PLANE_ROTATION_Z);
-    mat4 localToWorldTR = localToWorldT * localToWorldR;
-    mat4 worldToLocalTR = inverse(localToWorldTR);
-    mat4 worldToLocalR = inverse(localToWorldR);
-
+Collision intersectPlaneObject(Ray r, mat4 localToWorldR, mat4 worldToLocalTR, mat4 worldToLocalR) {
     // Convert the world-space ray to the planes's local space:
     vec3 rayStart = (worldToLocalTR * vec4(r.start, 1.0)).xyz;
     vec3 rayDir = (worldToLocalR * vec4(r.dir, 1.0)).xyz;
@@ -319,20 +315,9 @@ Collision intersectSkyboxObject(Ray r){
     return c;
 }
 
-Collision intersectBoxObject(Ray ray) {
-    mat4 modelTranslation = buildTranslate(boxPosition);
-    mat4 modelRotation = buildRotation(
-    boxRotation.x * DEG_TO_RAD,
-    boxRotation.y * DEG_TO_RAD,
-    boxRotation.z * DEG_TO_RAD
-    );
-
-    mat4 localToWorldMatrix = modelTranslation * modelRotation;
-    mat4 worldToLocalMatrix = inverse(localToWorldMatrix);
-    mat4 worldToLocalRotationMatrix = inverse(modelRotation);
-
-    vec3 rayStart = (worldToLocalMatrix * vec4(ray.start, 1.0)).xyz;
-    vec3 rayDir = (worldToLocalRotationMatrix * vec4(ray.dir, 1.0)).xyz;
+Collision intersectBoxObject(Ray ray, mat4 worldToLocalTR, mat4 worldToLocalR) {
+    vec3 rayStart = (worldToLocalTR * vec4(ray.start, 1.0)).xyz;
+    vec3 rayDir = (worldToLocalR * vec4(ray.dir, 1.0)).xyz;
 
 
     // calculate the box's mins and maxs
@@ -381,7 +366,7 @@ Collision intersectBoxObject(Ray ray) {
     }
 
     // convert normal back into world space
-    mat4 invTrMatrix = transpose(worldToLocalRotationMatrix);
+    mat4 invTrMatrix = transpose(worldToLocalR);
     collision.n = mat3(invTrMatrix) * collision.n;
 
     // calculate the world position of the hit point
@@ -390,7 +375,7 @@ Collision intersectBoxObject(Ray ray) {
     // Texture coordinate
 
     // collision point in local space
-    vec3 collisionPoint = (worldToLocalMatrix * vec4(collision.p, 1.0)).xyz;
+    vec3 collisionPoint = (worldToLocalTR * vec4(collision.p, 1.0)).xyz;
 
     // compute largest box dimension
     float totalWidth = BOX_MAXS.x - BOX_MINS.x;
@@ -476,9 +461,9 @@ Collision getClosestCollision(Ray ray) {
     closestCollision.objectIndex = -1;
 
     cSphere = intersectSphereObject(ray);
-    cBox = intersectBoxObject(ray);
+    cBox = intersectBoxObject(ray, invBoxMMat, invBoxMMatRotate);;
     cSBox = intersectSkyboxObject(ray);
-    cPlane = intersectPlaneObject(ray);
+    cPlane = intersectPlaneObject(ray, planeMMatRotate, invPlaneMMat, invPlaneMMatRotate);
 
     if ((cSphere.t > 0) && ((cSphere.t < cBox.t) || (cBox.t < 0))) {
         closestCollision = cSphere;
@@ -698,17 +683,17 @@ void main() {
         uint rayInfoIndex = pixelIndex * 3;
 
         if (shouldRender(rayInfoIndex / 3))
-        worldRay.start.x = rayStart[rayInfoIndex];
-        worldRay.start.y = rayStart[rayInfoIndex + 1];
-        worldRay.start.z = rayStart[rayInfoIndex + 2];
+            worldRay.start.x = rayStart[rayInfoIndex];
+            worldRay.start.y = rayStart[rayInfoIndex + 1];
+            worldRay.start.z = rayStart[rayInfoIndex + 2];
 
-        worldRay.dir.x = rayDir[rayInfoIndex];
-        worldRay.dir.y = rayDir[rayInfoIndex + 1];
-        worldRay.dir.z = rayDir[rayInfoIndex + 2];
-        // ---------------------------------------------
+            worldRay.dir.x = rayDir[rayInfoIndex];
+            worldRay.dir.y = rayDir[rayInfoIndex + 1];
+            worldRay.dir.z = rayDir[rayInfoIndex + 2];
+            // ---------------------------------------------
 
-        vec3 color = raytrace(worldRay);
-        imageStore(outputTexture, pixel, vec4(color, 1.0));
-        pixelList[pixelIndex] = STATE_DRAWN;
+            vec3 color = raytrace(worldRay);
+            imageStore(outputTexture, pixel, vec4(color, 1.0));
+            pixelList[pixelIndex] = STATE_DRAWN;
     }
 }
