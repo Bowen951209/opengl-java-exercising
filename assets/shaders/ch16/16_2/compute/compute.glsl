@@ -47,9 +47,9 @@ struct Object {
     bool isReflective;// whether the object is reflective. For type roombox, this is for enable/disable lighting.
     bool isTransparent;
     vec3 color;// for hasColor
-    float refelctivity;// for isReflective
+    float reflectivity;// for isReflective
     float refractivity;// for isTransparent
-    float IOR;// for is transparent
+    float IOR;// for isTransparent
     vec4 ambient;
     vec4 diffuse;
     vec4 specular;
