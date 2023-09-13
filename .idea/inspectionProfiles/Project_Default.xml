@@ -8,6 +8,9 @@
       <option name="REPORT_CONSTANT_REFERENCE_VALUES" value="false" />
     </inspection_tool>
     <inspection_tool class="DeprecatedIsStillUsed" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="JavadocDeclaration" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ADDITIONAL_TAGS" value="&lt;code&gt;if&lt;/code&gt;" />
+    </inspection_tool>
     <inspection_tool class="ThreadWithDefaultRunMethod" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="unused" enabled="false" level="WARNING" enabled_by_default="false" checkParameterExcludingHierarchy="false">
       <option name="LOCAL_VARIABLE" value="true" />
