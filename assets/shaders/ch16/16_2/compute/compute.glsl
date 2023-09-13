@@ -112,6 +112,8 @@ uniform mat4 invPlaneMMatRotate;
 uniform mat4 invBoxMMat;
 uniform mat4 invBoxMMatRotate;
 
+layout(std140, binding = 2) uniform ObjectsBlock{Object objects[10];};
+
 
 // Variables
 StackElement stack[STACK_SIZE];
