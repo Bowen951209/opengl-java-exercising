@@ -6,10 +6,13 @@ import engine.ShaderProgram;
 import engine.gui.Checkbox;
 import engine.gui.*;
 import engine.raytrace.PixelManager;
+import engine.raytrace.modelObjects.ModelObject;
+import engine.raytrace.modelObjects.RoomBox;
 import engine.sceneComponents.models.FullScreenQuad;
 import engine.sceneComponents.models.Model;
 import engine.sceneComponents.textures.Texture2D;
 import engine.util.Destroyer;
+import engine.util.Material;
 import engine.util.ValuesContainer;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -94,6 +97,14 @@ public class Program16_2 extends App {
         camera.setPos(0f, 0f, 5f);
         camera.addCameraUpdateCallBack(this::computeRays);
         fullScreenQuad = new FullScreenQuad();
+
+
+        ModelObject[] modelObjects = {
+                new RoomBox(Material.goldAmbient(), Material.goldDiffuse(),
+                        Material.goldSpecular(), Material.goldShininess(), true),
+        };
+        ModelObject.putToShader(computeShader, 2, modelObjects);
+
 
         final Vector3f PLANE_POSITION = new Vector3f(0f, -2.5f, -2.0f);
         final float PLANE_ROTATION_Y = (float) (Math.PI * 0.25); // 45 deg
@@ -211,7 +222,8 @@ public class Program16_2 extends App {
                 0, GL_WRITE_ONLY, GL_RGBA8);
 
         computeShader.putUniform3f("lightPosition", lightPosition);
-        computeShader.putUniform3f("cameraPosition", camera.getPos().get(ValuesContainer.VALS_OF_3));
+        computeShader.putUniform3f("cameraPosition", camera.getPos()
+                .get(ValuesContainer.VALS_OF_3));
 
         updateNumPixelXY();
         glDispatchCompute(numXPixel, numYPixel, 1);
