@@ -52,7 +52,6 @@ struct Object {
     vec4 ambient;
     vec4 diffuse;
     vec4 specular;
-    float shininess;
 };
 
 struct StackElement{
@@ -71,7 +70,7 @@ struct StackElement{
 const int STATE_NO_DRAW = 0;
 const int STATE_DO_DRAW = 1;
 const int STATE_DRAWN = 2;
-const int OBJ_TYPE_SKYBOX = 0, OBJ_TYPE_SPHERE = 1, OBJ_TYPE_BOX = 2, OBJ_TYPE_PLANE = 3;
+const int OBJ_TYPE_ROOMBOX = 0, OBJ_TYPE_SPHERE = 1, OBJ_TYPE_BOX = 2, OBJ_TYPE_PLANE = 3;
 const float PI = 3.1415926535897932384626433832795;
 const float DEG_TO_RAD = PI / 180.0;
 const int RAY_TYPE_REFLECTION = 1, RAY_TYPE_REFRACTION = 2;
