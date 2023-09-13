@@ -27,6 +27,9 @@ public class PixelManager {
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, usingIndex, ssboID);
     }
 
+    /**
+     * This method should be called when the frame buffer size update.
+     */
     public void resizeTurnOnOrder(int size) {
         turnOnOrder.clear();
         numTurnedOnPixels = 0;
@@ -44,9 +47,7 @@ public class PixelManager {
 
             for (int i = 0; i < number; i++) {
                 int randIndex = turnOnOrder.get(numTurnedOnPixels);
-                if (pixelListBuffer.get(randIndex) == STATE_NO_DRAW) {
-                    pixelListBuffer.put(randIndex, STATE_DO_DRAW);
-                }
+                pixelListBuffer.put(randIndex, STATE_DO_DRAW);
 
                 numTurnedOnPixels++;
                 if (numTurnedOnPixels == turnOnOrder.size()) {
@@ -68,6 +69,9 @@ public class PixelManager {
         }
     }
 
+    /**
+     * This method should be called whenever you want to refresh.
+     */
     public void fill(int size) {
         numTurnedOnPixels = 0;
         isAllDrawn = false;
