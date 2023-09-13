@@ -177,6 +177,7 @@ public class Program16_2 extends App {
     private void refresh() {
         computeRays();
         screenQuadTexture.fill(numXPixel, numYPixel, null);
+        pixelManager.resizeTurnOnOrder(numXPixel * numYPixel);
         updateBoxMatrices();
     }
 
