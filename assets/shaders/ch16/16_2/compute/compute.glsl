@@ -611,24 +611,23 @@ void main() {
     ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
     uint pixelIndex = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * width;
 
+    if(!shouldRender(pixelIndex))
+        return;
 
-    if (shouldRender(pixelIndex)){
-        calcSkyboxCorners();
-        Ray worldRay;
-        uint rayInfoIndex = pixelIndex * 3;
+    calcSkyboxCorners();
+    Ray worldRay;
+    uint rayInfoIndex = pixelIndex * 3;
 
-        if (shouldRender(rayInfoIndex / 3))
-            worldRay.start.x = rayStart[rayInfoIndex];
-            worldRay.start.y = rayStart[rayInfoIndex + 1];
-            worldRay.start.z = rayStart[rayInfoIndex + 2];
+    worldRay.start.x = rayStart[rayInfoIndex];
+    worldRay.start.y = rayStart[rayInfoIndex + 1];
+    worldRay.start.z = rayStart[rayInfoIndex + 2];
 
-            worldRay.dir.x = rayDir[rayInfoIndex];
-            worldRay.dir.y = rayDir[rayInfoIndex + 1];
-            worldRay.dir.z = rayDir[rayInfoIndex + 2];
-            // ---------------------------------------------
+    worldRay.dir.x = rayDir[rayInfoIndex];
+    worldRay.dir.y = rayDir[rayInfoIndex + 1];
+    worldRay.dir.z = rayDir[rayInfoIndex + 2];
+    // ---------------------------------------------
 
-            vec3 color = raytrace(worldRay);
-            imageStore(outputTexture, pixel, vec4(color, 1.0));
-            pixelList[pixelIndex] = STATE_DRAWN;
-    }
+    vec3 color = raytrace(worldRay);
+    imageStore(outputTexture, pixel, vec4(color, 1.0));
+    pixelList[pixelIndex] = STATE_DRAWN;
 }
