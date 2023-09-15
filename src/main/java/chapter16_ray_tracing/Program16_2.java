@@ -13,7 +13,6 @@ import engine.sceneComponents.models.Model;
 import engine.sceneComponents.textures.Texture2D;
 import engine.util.Destroyer;
 import engine.util.Material;
-import engine.util.Timer;
 import engine.util.ValuesContainer;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
