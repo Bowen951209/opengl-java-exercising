@@ -25,6 +25,7 @@ import java.util.Objects;
 import static org.lwjgl.opengl.GL43.*;
 
 public class Program16_2 extends App {
+    private static final Color COLOR_DARK_BLUE = new Color(.0f, .0f, .05f);
     private ShaderProgram screenQuadShader, computeShader, rayComputeShader;
     private Texture2D screenQuadTexture, brickTexture;
     private Model fullScreenQuad;
@@ -138,7 +139,7 @@ public class Program16_2 extends App {
         };
 
         updateNumPixelXY();
-        screenQuadTexture.fill(numXPixel, numYPixel, Color.PINK);
+        screenQuadTexture.fill(numXPixel, numYPixel, COLOR_DARK_BLUE);
 
         brickTexture = new Texture2D(1, "assets/textures/imageTextures/marble.jfif");
     }
@@ -187,7 +188,7 @@ public class Program16_2 extends App {
      */
     private void refresh() {
         computeRays();
-        screenQuadTexture.fill(numXPixel, numYPixel, null);
+        screenQuadTexture.fill(numXPixel, numYPixel, COLOR_DARK_BLUE);
         pixelManager.resizeTurnOnOrder(numXPixel * numYPixel);
         updateBoxMatrices();
     }
@@ -244,7 +245,7 @@ public class Program16_2 extends App {
         updateNumPixelXY();
         pixelManager.fill(numXPixel * numYPixel);
         if (clearScreenCheckbox != null && clearScreenCheckbox.getIsActive()) {
-            screenQuadTexture.fill(numXPixel, numYPixel, Color.black);
+            screenQuadTexture.fill(numXPixel, numYPixel, COLOR_DARK_BLUE);
         }
         glDispatchCompute(numXPixel, numYPixel, 1);
     }
