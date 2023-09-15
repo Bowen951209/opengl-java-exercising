@@ -26,8 +26,38 @@ public abstract class ModelObject {
     protected final float shininess;
 
 
+    // TODO: 2023/9/16 For hasTexture, add a texture binding element in struct.
     protected boolean hasColor, hasTexture, isReflective, isTransparent;
     protected float reflectivity, refractivity, ior, radius;
+
+    public ModelObject setColor(Vector3f color) {
+        hasColor = true;
+        this.color.set(color);
+        return this;
+    }
+
+    public ModelObject setPosition(Vector3f position) {
+        this.position.set(position);
+        return this;
+    }
+
+    public ModelObject setRotation(Vector3f rotation) {
+        this.rotation.set(rotation);
+        return this;
+    }
+
+    public ModelObject setReflectivity(float reflectivity) {
+        isReflective = true;
+        this.reflectivity = reflectivity;
+        return this;
+    }
+
+    public ModelObject setRefraction(float refractivity, float ior) {
+        isTransparent = true;
+        this.refractivity = refractivity;
+        this.ior = ior;
+        return this;
+    }
 
     protected ModelObject(float[] ambient, float[] diffuse,
                           float[] specular, float shininess) {
