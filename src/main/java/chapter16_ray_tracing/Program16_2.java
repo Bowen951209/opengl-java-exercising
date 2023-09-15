@@ -188,11 +188,10 @@ public class Program16_2 extends App {
     }
 
     /**
-     * This one is called when the camera moves
-     */
+     * This method is called when you want to update the state.
+     * */
     private void refresh() {
         computeRays();
-        screenQuadTexture.fill(numXPixel, numYPixel, COLOR_DARK_BLUE);
         pixelManager.resizeTurnOnOrder(numXPixel * numYPixel);
         updateBoxMatrices();
     }
