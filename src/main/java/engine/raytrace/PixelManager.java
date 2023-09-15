@@ -61,6 +61,7 @@ public class PixelManager {
         if (!isAllDrawn) {
             if (numTurnedOnPixels == turnOnOrder.size()) {
                 isAllDrawn = true;
+                System.out.println("Full resolution!");
             }
             return isAllDrawn;
         } else {
