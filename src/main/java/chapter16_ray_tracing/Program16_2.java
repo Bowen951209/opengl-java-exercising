@@ -230,6 +230,7 @@ public class Program16_2 extends App {
                 .get(ValuesContainer.VALS_OF_3));
 
         updateNumPixelXY();
+        // TODO: 2023/9/16 Use the new method mentioned in my notebook.
         glDispatchCompute(numXPixel, numYPixel, 1);
         glFinish();
 
