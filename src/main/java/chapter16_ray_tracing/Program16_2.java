@@ -240,6 +240,9 @@ public class Program16_2 extends App {
         fullScreenQuad.draw(GL_TRIANGLES);
     }
 
+    /**
+     * This method is fast.
+     * */
     private void computeRays() {
         rayComputeShader.use();
         rayComputeShader.putUniform3f("cameraPosition", camera.getPos().get(ValuesContainer.VALS_OF_3));
