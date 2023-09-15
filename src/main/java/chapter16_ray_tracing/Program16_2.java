@@ -34,22 +34,22 @@ public class Program16_2 extends App {
     private final Matrix4f invBoxMMatRotate = new Matrix4f();
     private final float[] resScaleSliderVal = {2f};
     private float resolutionScale = (float) Math.pow(2, -resScaleSliderVal[0]);
-    private int numXPixel, numYPixel;
+    private int numXPixel, numYPixel, screenSizeX, screenSizeY;
     private PixelManager pixelManager;
     private Checkbox clearScreenCheckbox;
 
     @Override
     protected void initGLFWWindow() {
         glfwWindow = new GLFWWindow(3000, 1500, "Ray Casting");
+        GLFWVidMode glfwVidMode = Objects.requireNonNull(
+                GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor()));
+
+        screenSizeX = glfwVidMode.width();
+        screenSizeY = glfwVidMode.height();
         initSSBO();
     }
 
     private void initSSBO() {
-        GLFWVidMode glfwVidMode = Objects.requireNonNull(
-                GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor()));
-
-        int screenSizeX = glfwVidMode.width();
-        int screenSizeY = glfwVidMode.height();
         int bufferSize = screenSizeX * screenSizeY * Float.BYTES * 3;
 
         int ssboRayStart = glGenBuffers();
@@ -145,7 +145,7 @@ public class Program16_2 extends App {
 
     @Override
     protected void initGUI() {
-        gui = new GUI(glfwWindow, 3f);
+        gui = new GUI(glfwWindow, screenSizeX * screenSizeY * .0000004f);
         GuiWindow userWindow = new GuiWindow("Hello! User", false);
         userWindow.addChild(new Text(
                 """
