@@ -13,6 +13,7 @@ import engine.sceneComponents.models.Model;
 import engine.sceneComponents.textures.Texture2D;
 import engine.util.Destroyer;
 import engine.util.Material;
+import engine.util.Timer;
 import engine.util.ValuesContainer;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -229,8 +230,8 @@ public class Program16_2 extends App {
         updateNumPixelXY();
         glDispatchCompute(numXPixel, numYPixel, 1);
         glFinish();
-        pixelManager.getDataBack();
 
+        pixelManager.updateBuffer();
 
         screenQuadShader.use();
         screenQuadTexture.bind();

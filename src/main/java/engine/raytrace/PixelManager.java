@@ -11,8 +11,7 @@ import static org.lwjgl.opengl.GL43.*;
  * This class manages what pixels should be rendered, what should not when ray tracing.
  * */
 public class PixelManager {
-    private static final int STATE_NO_DRAW = 0;
-    private static final int STATE_DO_DRAW = 1;
+    private static final int STATE_NO_DRAW = 0, STATE_DO_DRAW = 1, STATE_DRAWN = 2;
     private final List<Integer> turnOnOrder = new ArrayList<>();
     private int numTurnedOnPixels;
 
@@ -86,8 +85,11 @@ public class PixelManager {
         glBufferData(GL_SHADER_STORAGE_BUFFER, pixelListBuffer, GL_DYNAMIC_DRAW);
     }
 
-    public void getDataBack() {
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboID);
-        glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, pixelListBuffer);
+    public void updateBuffer() {
+        for (int i = 0; i < pixelListBuffer.capacity(); i++) {
+            if (pixelListBuffer.get(i) == STATE_DO_DRAW) {
+                pixelListBuffer.put(i, STATE_DRAWN);
+            }
+        }
     }
 }
