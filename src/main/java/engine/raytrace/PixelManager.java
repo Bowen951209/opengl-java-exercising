@@ -85,6 +85,9 @@ public class PixelManager {
         glBufferData(GL_SHADER_STORAGE_BUFFER, pixelListBuffer, GL_DYNAMIC_DRAW);
     }
 
+    /**
+     * This method should be called every time after executing compute shader.
+     * */
     public void updateBuffer() {
         for (int i = 0; i < pixelListBuffer.capacity(); i++) {
             if (pixelListBuffer.get(i) == STATE_DO_DRAW) {

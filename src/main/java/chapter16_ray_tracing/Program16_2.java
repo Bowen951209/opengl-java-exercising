@@ -8,6 +8,7 @@ import engine.gui.*;
 import engine.raytrace.PixelManager;
 import engine.raytrace.modelObjects.ModelObject;
 import engine.raytrace.modelObjects.RoomBox;
+import engine.raytrace.modelObjects.Sphere;
 import engine.sceneComponents.models.FullScreenQuad;
 import engine.sceneComponents.models.Model;
 import engine.sceneComponents.textures.Texture2D;
@@ -103,6 +104,9 @@ public class Program16_2 extends App {
         ModelObject[] modelObjects = {
                 new RoomBox(Material.goldAmbient(), Material.goldDiffuse(),
                         Material.goldSpecular(), Material.goldShininess(), true),
+                new Sphere(Material.goldAmbient(), Material.silverDiffuse(),
+                        Material.silverSpecular(), Material.silverShininess(), 10
+                        )
         };
         ModelObject.putToShader(computeShader, 2, modelObjects);
 
