@@ -127,8 +127,8 @@ vec3 skyboxMaxs;
 
 // Useful Methods
 
-Collision intersectPlaneObject(Ray r, mat4 localToWorldR, mat4 worldToLocalTR, mat4 worldToLocalR,
-    float planeWidth, float planeDepth)
+Collision intersectPlaneObject(Ray r, mat4 localToWorldR, mat4 invTrLocalToWorldR, mat4 worldToLocalTR,
+    mat4 worldToLocalR, float planeWidth, float planeDepth)
 {
     // Convert the world-space ray to the planes's local space:
     vec3 rayStart = (worldToLocalTR * vec4(r.start, 1.0)).xyz;
@@ -159,7 +159,7 @@ Collision intersectPlaneObject(Ray r, mat4 localToWorldR, mat4 worldToLocalTR, m
     if (rayDir.y > 0.0) c.n *= -1.0;
 
     // now convert the normal back into world space
-    c.n = transpose(inverse(mat3(localToWorldR))) * c.n;
+    c.n = mat3(invTrLocalToWorldR) * c.n;
 
     // Compute texture coordinates
     float maxDimension = max(planeWidth, planeDepth);
@@ -400,7 +400,7 @@ Collision getClosestCollision(Ray ray) {
 
     cSphere = intersectSphereObject(ray, SPHERE_POSITION, SPHERE_RADIUS);
     cBox = intersectBoxObject(ray, invBoxMMat, invBoxMMatRotate, BOX_MINS, BOX_MAXS);
-    cPlane = intersectPlaneObject(ray, planeMMatRotate, invPlaneMMat, invPlaneMMatRotate, PLANE_WIDTH, PLANE_DEPTH);
+    cPlane = intersectPlaneObject(ray, planeMMatRotate, transpose(inverse(planeMMatRotate)), invPlaneMMat, invPlaneMMatRotate, PLANE_WIDTH, PLANE_DEPTH);
     cSBox = intersectSkyboxObject(ray);
 
     if ((cSphere.t > 0) && ((cSphere.t < cBox.t) || (cBox.t < 0))) {
