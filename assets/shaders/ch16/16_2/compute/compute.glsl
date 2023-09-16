@@ -52,6 +52,9 @@ struct Object {
     vec4 ambient;
     vec4 diffuse;
     vec4 specular;
+    mat4 localToWorldR;// for OBJ_TYPE_PLANE
+    mat4 worldToLocalR;// for OBJ_TYPE_BOX / OBJ_TYPE_PLANE
+    mat4 worldToLocalTR;// for OBJ_TYPE_BOX / OBJ_TYPE_PLANE
 };
 
 struct StackElement{
