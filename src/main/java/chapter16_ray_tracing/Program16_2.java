@@ -6,9 +6,7 @@ import engine.ShaderProgram;
 import engine.gui.Checkbox;
 import engine.gui.*;
 import engine.raytrace.PixelManager;
-import engine.raytrace.modelObjects.ModelObject;
-import engine.raytrace.modelObjects.RoomBox;
-import engine.raytrace.modelObjects.Sphere;
+import engine.raytrace.modelObjects.*;
 import engine.sceneComponents.models.FullScreenQuad;
 import engine.sceneComponents.models.Model;
 import engine.sceneComponents.textures.Texture2D;
@@ -103,10 +101,15 @@ public class Program16_2 extends App {
 
         ModelObject[] modelObjects = {
                 new RoomBox(Material.goldAmbient(), Material.goldDiffuse(),
-                        Material.goldSpecular(), Material.goldShininess(), true),
+                        Material.goldSpecular(), Material.goldShininess(), true).setColor(1, .5f, .5f),
+                new Plane(Material.jadeAmbient(), Material.jadeDiffuse(), Material.jadeSpecular(),
+                        Material.jadeShininess(), .5f, 12, 12),
                 new Sphere(Material.goldAmbient(), Material.silverDiffuse(),
-                        Material.silverSpecular(), Material.silverShininess(), 10
-                        )
+                        Material.silverSpecular(), Material.silverShininess(), 2.5f
+                        ).setPosition(.5f, 0, -3).setRefraction(.8f, 1.5f),
+                new Box(Material.silverAmbient(), Material.silverDiffuse(), Material.silverSpecular(),
+                        Material.silverShininess(), new Vector3f(-.5f, -.5f, -1),
+                        new Vector3f(.5f, .5f, 1))
         };
         ModelObject.putToShader(computeShader, 2, modelObjects);
 
