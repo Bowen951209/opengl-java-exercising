@@ -463,6 +463,12 @@ vec3 checkerboard(vec2 tc) {
     return tile * vec3(1, 1, 1);
 }
 
+vec3 getTextureColor(int index, vec2 tc) {
+    if (index == 1) return checkerboard(tc);            // plane
+    else if (index == 3) return texture(boxTexture, tc).rgb;// box
+    else return vec3(1.0, 0.0, 0.0);                    // error color
+}
+
 void calcSkyboxCorners() {
     float skyboxSideLengthD2 = SKYBOX_SIDE_LENGTH / 2.0;
     skyboxMins = vec3(-skyboxSideLengthD2) + vec3(cameraPosition.x, cameraPosition.y, cameraPosition.z);
