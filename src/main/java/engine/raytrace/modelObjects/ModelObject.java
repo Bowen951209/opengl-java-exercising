@@ -30,14 +30,14 @@ public abstract class ModelObject {
     protected boolean hasColor, hasTexture, isReflective, isTransparent;
     protected float reflectivity, refractivity, ior, radius;
 
-    public ModelObject setColor(Vector3f color) {
+    public ModelObject setColor(float r, float g, float b) {
         hasColor = true;
-        this.color.set(color);
+        this.color.set(r, g, b);
         return this;
     }
 
-    public ModelObject setPosition(Vector3f position) {
-        this.position.set(position);
+    public ModelObject setPosition(float x, float y, float z) {
+        this.position.set(x, y, z);
         return this;
     }
 
