@@ -101,14 +101,15 @@ public class Program16_2 extends App {
 
         ModelObject[] modelObjects = {
                 new RoomBox(Material.goldAmbient(), Material.goldDiffuse(),
-                        Material.goldSpecular(), Material.goldShininess(), true).setColor(1, .5f, .5f),
+                        Material.goldSpecular(), Material.goldShininess(), true)
+                        .setColor(1, .5f, .5f),
                 new Plane(Material.jadeAmbient(), Material.jadeDiffuse(), Material.jadeSpecular(),
                         Material.jadeShininess(), .5f, 12, 12),
-                new Sphere(Material.goldAmbient(), Material.silverDiffuse(),
+                new Sphere(Material.silverAmbient(), Material.silverDiffuse(),
                         Material.silverSpecular(), Material.silverShininess(), 2.5f
-                        ).setPosition(.5f, 0, -3).setRefraction(.8f, 1.5f),
-                new Box(Material.silverAmbient(), Material.silverDiffuse(), Material.silverSpecular(),
-                        Material.silverShininess(), new Vector3f(-.5f, -.5f, -1),
+                ).setPosition(.5f, 0, -3).setRefraction(.8f, 1.5f),
+                new Box(Material.bronzeAmbient(), Material.bronzeDiffuse(), Material.bronzeSpecular(),
+                        Material.bronzeShininess(), new Vector3f(-.5f, -.5f, -1),
                         new Vector3f(.5f, .5f, 1))
         };
         ModelObject.putToShader(computeShader, 2, modelObjects);
@@ -192,7 +193,7 @@ public class Program16_2 extends App {
 
     /**
      * This method is called when you want to update the state.
-     * */
+     */
     private void refresh() {
         computeRays();
         pixelManager.resizeTurnOnOrder(numXPixel * numYPixel);
@@ -246,7 +247,7 @@ public class Program16_2 extends App {
 
     /**
      * This method is fast.
-     * */
+     */
     private void computeRays() {
         rayComputeShader.use();
         rayComputeShader.putUniform3f("cameraPosition", camera.getPos().get(ValuesContainer.VALS_OF_3));
