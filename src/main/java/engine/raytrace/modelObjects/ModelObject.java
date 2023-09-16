@@ -1,10 +1,12 @@
 package engine.raytrace.modelObjects;
 
 import engine.ShaderProgram;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
+
 import static org.lwjgl.opengl.GL43.*;
 
 public abstract class ModelObject {
@@ -13,8 +15,8 @@ public abstract class ModelObject {
      * It is ONLY compatible with the structure described in the package-info.
      *
      * @see <a href="https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL">LearnOpenGL Page</a>
-     * */
-    private static final int STRUCT_MEMORY_SPACE = 44;
+     */
+    private static final int STRUCT_MEMORY_SPACE = 92;
     private static final int OBJ_TYPE_ROOMBOX = 0, OBJ_TYPE_SPHERE = 1,
             OBJ_TYPE_BOX = 2, OBJ_TYPE_PLANE = 3;
     protected static final int UTIL_GL_UNIFORM_BUFFER = glGenBuffers();
@@ -22,7 +24,12 @@ public abstract class ModelObject {
 
     protected final Vector3f position = new Vector3f(), color = new Vector3f(),
             mins = new Vector3f(), maxs = new Vector3f(), rotation = new Vector3f();
+
+    protected final Matrix4f localToWorldR = new Matrix4f(), worldToLocalR = new Matrix4f(),
+            worldToLocalTR = new Matrix4f();
+
     protected final float[] ambient, diffuse, specular;
+
     protected final float shininess;
 
 
@@ -137,12 +144,26 @@ public abstract class ModelObject {
             dataBuffer.put(modelObject.specular[1]);
             dataBuffer.put(modelObject.specular[2]);
             dataBuffer.put(modelObject.specular[3]);
+            // localToWorldR
+            addMatrixToBuffer(dataBuffer, modelObject.localToWorldR);
+            // worldToLocalR
+            addMatrixToBuffer(dataBuffer, modelObject.worldToLocalR);
+            // worldToLocalTR
+            addMatrixToBuffer(dataBuffer, modelObject.worldToLocalTR);
         }
 
         dataBuffer.flip();
         glBindBuffer(GL_UNIFORM_BUFFER, UTIL_GL_UNIFORM_BUFFER);
         glBufferData(GL_UNIFORM_BUFFER, dataBuffer, GL_DYNAMIC_DRAW);
         glBindBufferBase(GL_UNIFORM_BUFFER, uniformBinding, UTIL_GL_UNIFORM_BUFFER);
+    }
+
+    private static void addMatrixToBuffer(FloatBuffer buffer, Matrix4f matrix) {
+        for (int row = 0; row < 4; row++) {
+            for (int column = 0; column < 4; column++) {
+                buffer.put(matrix.get(column, row));
+            }
+        }
     }
 
     private static int getObjType(ModelObject object) {
