@@ -48,16 +48,35 @@ public class ShaderProgram {
         glUniform1f(getUniformLoc(uniformName), value);
     }
 
+    /**
+     * This method doesn't mean you can only pass in buffer/array whose length is 1.
+     * <pre>
+     * For example, we have a array uniform:
+     *     uniform float[50] a;
+     * You can pass in a buffer/array of length 50, it'll be translated to the uniform
+     * and each index matches.
+     * </pre>
+     */
+    public void putUniform1fv(String uniformName, FloatBuffer value) {
+        glUniform1fv(getUniformLoc(uniformName), value);
+    }
+
     public void putUniform1i(String uniformName, int value) {
         glUniform1i(getUniformLoc(uniformName), value);
     }
-    public void putUniform3f(String uniformName, float[] values) {
-        glUniform3f(getUniformLoc(uniformName), values[0], values[1], values[2]);
+
+    public void putUniform3f(String uniformName, float[] value) {
+        glUniform3fv(getUniformLoc(uniformName), value);
+    }
+
+    public void putUniform3f(String uniformName, FloatBuffer value) {
+        glUniform3fv(getUniformLoc(uniformName), value);
     }
 
     public void putUniform4f(String uniformName, float[] value) {
         glUniform4fv(getUniformLoc(uniformName), value);
     }
+
 
     // Compute shader
     public ShaderProgram(String computeShaderPath) {
