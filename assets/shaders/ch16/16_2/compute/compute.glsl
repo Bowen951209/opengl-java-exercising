@@ -107,8 +107,6 @@ layout(std140, binding = 2) uniform ObjectsBlock{Object objects[4];};
 StackElement stack[STACK_SIZE];
 int stackPointer = -1;// Points to the top of the stack (-1 if empty)
 StackElement poppedStackElement;// Holds the last popped element from the stack
-vec3 skyboxMins;
-vec3 skyboxMaxs;
 
 // Useful Methods
 
