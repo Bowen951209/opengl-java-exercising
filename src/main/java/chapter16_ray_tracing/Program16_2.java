@@ -13,8 +13,6 @@ import engine.sceneComponents.textures.Texture2D;
 import engine.util.Destroyer;
 import engine.util.Material;
 import engine.util.ValuesContainer;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 
@@ -28,15 +26,16 @@ public class Program16_2 extends App {
     private ShaderProgram screenQuadShader, computeShader, rayComputeShader;
     private Texture2D screenQuadTexture, brickTexture;
     private Model fullScreenQuad;
-    private float[] lightPosition, boxPosition, boxRotation;
-    private final Matrix4f invBoxMMat = new Matrix4f();
-    private final Matrix4f boxMMatRotate = new Matrix4f();
-    private final Matrix4f invBoxMMatRotate = new Matrix4f();
+    private final float[] lightPosition = {-4.0f, 1.0f, 6.0f},
+            boxPosition = {-1.0f, -.5f, 1.0f}, boxRotation = {10f, 70f, 55f};
     private final float[] resScaleSliderVal = {2f};
     private float resolutionScale = (float) Math.pow(2, -resScaleSliderVal[0]);
     private int numXPixel, numYPixel, screenSizeX, screenSizeY;
     private PixelManager pixelManager;
     private Checkbox clearScreenCheckbox;
+    private ModelObject box;
+    private RoomBox roomBox;
+    private ModelObject[] modelObjects;
 
     @Override
     protected void initGLFWWindow() {
@@ -99,37 +98,29 @@ public class Program16_2 extends App {
         fullScreenQuad = new FullScreenQuad();
 
 
-        ModelObject[] modelObjects = {
-                new RoomBox(Material.goldAmbient(), Material.goldDiffuse(),
-                        Material.goldSpecular(), Material.goldShininess(), true)
-                        .setColor(1, .5f, .5f),
+        box = new Box(Material.bronzeAmbient(), Material.bronzeDiffuse(), Material.bronzeSpecular(),
+                Material.bronzeShininess(), -.5f, -.5f, -1, .5f,
+                .5f, 1)
+                .setRotation(boxRotation)
+                .setPosition(boxPosition);
+
+        roomBox = (RoomBox) new RoomBox(Material.goldAmbient(), Material.goldDiffuse(),
+                Material.goldSpecular(), Material.goldShininess(), true,
+                20).setColor(1, .5f, .5f);
+        modelObjects = new ModelObject[]{
+                roomBox,
+
                 new Plane(Material.jadeAmbient(), Material.jadeDiffuse(), Material.jadeSpecular(),
-                        Material.jadeShininess(), .5f, 12, 12),
+                        Material.jadeShininess(), -2.5f, 12, 12)
+                        .setRotation(0, (float) (Math.PI / 4f), 0), // 45deg on Y
+
                 new Sphere(Material.silverAmbient(), Material.silverDiffuse(),
                         Material.silverSpecular(), Material.silverShininess(), 2.5f
                 ).setPosition(.5f, 0, -3).setRefraction(.8f, 1.5f),
-                new Box(Material.bronzeAmbient(), Material.bronzeDiffuse(), Material.bronzeSpecular(),
-                        Material.bronzeShininess(), new Vector3f(-.5f, -.5f, -1),
-                        new Vector3f(.5f, .5f, 1))
+
+                box
         };
-        ModelObject.putToShader(computeShader, 2, modelObjects);
-
-
-        final Vector3f PLANE_POSITION = new Vector3f(0f, -2.5f, -2.0f);
-        final float PLANE_ROTATION_Y = (float) (Math.PI * 0.25); // 45 deg
-        final Matrix4f PLANE_MMAT_TRANS = new Matrix4f().translate(PLANE_POSITION);
-        final Matrix4f PLANE_MMAT_ROT = new Matrix4f().rotateY(PLANE_ROTATION_Y);
-        final Matrix4f INV_PLANE_MMAT_ROT = new Matrix4f(PLANE_MMAT_ROT).invert();
-        final Matrix4f PLANE_MMAT = new Matrix4f(PLANE_MMAT_ROT).mul(PLANE_MMAT_TRANS);
-        final Matrix4f INV_PLANE_MMAT = new Matrix4f(PLANE_MMAT).invert();
-
-        computeShader.use();
-        computeShader.putUniformMatrix4f("invPlaneMMat",
-                INV_PLANE_MMAT.get(ValuesContainer.VALS_OF_16));
-        computeShader.putUniformMatrix4f("planeMMatRotate",
-                PLANE_MMAT_ROT.get(ValuesContainer.VALS_OF_16));
-        computeShader.putUniformMatrix4f("invPlaneMMatRotate",
-                INV_PLANE_MMAT_ROT.get(ValuesContainer.VALS_OF_16));
+        ModelObject.putToShader(2, modelObjects);
 
         // init rays
         computeRays();
@@ -162,9 +153,6 @@ public class Program16_2 extends App {
                                                 
                         """
         ));
-        boxPosition = new float[]{-1.0f, -.5f, 1.0f};
-        boxRotation = new float[]{10f, 70f, 55f};
-        lightPosition = new float[]{-4.0f, 1.0f, 8.0f};
 
         clearScreenCheckbox = new Checkbox("Clear screen when camera moves"
                 , true);
@@ -197,23 +185,16 @@ public class Program16_2 extends App {
     private void refresh() {
         computeRays();
         pixelManager.resizeTurnOnOrder(numXPixel * numYPixel);
-        updateBoxMatrices();
+        updateModels();
     }
 
-    private void updateBoxMatrices() {
-        boxMMatRotate.identity().rotateX(boxRotation[0]).rotateY(boxRotation[1])
-                .rotateZ(boxRotation[2]);
-        invBoxMMatRotate.set(boxMMatRotate).invert();
-
-        invBoxMMat.identity().translate(boxPosition[0], boxPosition[1], boxPosition[2]).mul(boxMMatRotate).invert();
-
+    private void updateModels() {
+        box.setRotation(boxRotation);
+        box.setPosition(boxPosition);
+        roomBox.centerToCamera(camera);
+        ModelObject.putToShader(2, modelObjects);
 
         computeShader.use();
-        computeShader.putUniformMatrix4f("invBoxMMat",
-                invBoxMMat.get(ValuesContainer.VALS_OF_16));
-        computeShader.putUniformMatrix4f("invBoxMMatRotate",
-                invBoxMMatRotate.get(ValuesContainer.VALS_OF_16));
-
     }
 
     @Override

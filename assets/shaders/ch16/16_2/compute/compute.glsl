@@ -52,7 +52,7 @@ struct Object {
     vec4 ambient;
     vec4 diffuse;
     vec4 specular;
-    mat4 localToWorldR;// for OBJ_TYPE_PLANE
+    mat4 invTrLocalToWorldR;// for OBJ_TYPE_PLANE
     mat4 worldToLocalR;// for OBJ_TYPE_BOX / OBJ_TYPE_PLANE
     mat4 worldToLocalTR;// for OBJ_TYPE_BOX / OBJ_TYPE_PLANE
 };
@@ -85,13 +85,6 @@ const StackElement nullStackElement = {
 const int STACK_SIZE = 100;
 const int RAY_MAX_DEPTH = 4;
 
-const float PLANE_WIDTH = 12.0;
-const float PLANE_DEPTH = 12.0;
-const float SPHERE_RADIUS = 2.5;
-const vec3 SPHERE_POSITION = vec3(0.5, 0.0, -3.0);
-const float SKYBOX_SIDE_LENGTH = 40;
-const vec3 BOX_MINS = vec3(-.5, -.5, -1.0);// a corner of the box
-const vec3 BOX_MAXS = vec3(.5, .5, 1.0);// a corner of the box
 const vec4 GLOBAL_AMBIENT = vec4(.3, .3, .3, 1.0);
 const vec4 MATERIAL_AMBIENT = vec4(.2, .2, .2, 1.0);
 const vec4 MATERIAL_DIFFUSE = vec4(.7, .7, .7, 1.0);
@@ -107,15 +100,7 @@ const vec3 ROOOM_BOX_COLOR = vec3(1.0, .5, .5);
 uniform vec3 cameraPosition;
 uniform vec3 lightPosition;
 
-uniform mat4 planeMMat;
-uniform mat4 invPlaneMMat;
-uniform mat4 planeMMatRotate;
-uniform mat4 invPlaneMMatRotate;
-
-uniform mat4 invBoxMMat;
-uniform mat4 invBoxMMatRotate;
-
-layout(std140, binding = 2) uniform ObjectsBlock{Object objects[10];};
+layout(std140, binding = 2) uniform ObjectsBlock{Object objects[4];};
 
 
 // Variables
@@ -127,12 +112,10 @@ vec3 skyboxMaxs;
 
 // Useful Methods
 
-Collision intersectPlaneObject(Ray r, mat4 localToWorldR, mat4 invTrLocalToWorldR, mat4 worldToLocalTR,
-    mat4 worldToLocalR, float planeWidth, float planeDepth)
-{
+Collision intersectPlaneObject(Ray r, Object o) {
     // Convert the world-space ray to the planes's local space:
-    vec3 rayStart = (worldToLocalTR * vec4(r.start, 1.0)).xyz;
-    vec3 rayDir = (worldToLocalR * vec4(r.dir, 1.0)).xyz;
+    vec3 rayStart = (o.worldToLocalTR * vec4(r.start, 1.0)).xyz;
+    vec3 rayDir = (o.worldToLocalR * vec4(r.dir, 1.0)).xyz;
 
     Collision c;
     c.isInside = false;// there is no "inside" of a plane
@@ -147,7 +130,7 @@ Collision intersectPlaneObject(Ray r, mat4 localToWorldR, mat4 invTrLocalToWorld
     vec3 intersectPoint = rayStart + c.t * rayDir;
 
     // If the ray didn't intersect the plane object, return a negative t value
-    if ((abs(intersectPoint.x) > (planeWidth/2.0)) || (abs(intersectPoint.z) > (planeDepth/2.0))) {
+    if ((abs(intersectPoint.x) > (o.mins.x/2.0)) || (abs(intersectPoint.z) > (o.mins.z/2.0))) {
         c.t = -1.0;
         return c;
     }
@@ -159,19 +142,19 @@ Collision intersectPlaneObject(Ray r, mat4 localToWorldR, mat4 invTrLocalToWorld
     if (rayDir.y > 0.0) c.n *= -1.0;
 
     // now convert the normal back into world space
-    c.n = mat3(invTrLocalToWorldR) * c.n;
+    c.n = mat3(o.invTrLocalToWorldR) * c.n;
 
     // Compute texture coordinates
-    float maxDimension = max(planeWidth, planeDepth);
-    c.tc.x = (intersectPoint.x + planeWidth/2.0)/maxDimension;
-    c.tc.y = (intersectPoint.z + planeDepth/2.0)/maxDimension;
+    float maxDimension = max(o.mins.x, o.mins.z);
+    c.tc.x = (intersectPoint.x + o.mins.x/2.0)/maxDimension;
+    c.tc.y = (intersectPoint.z + o.mins.z/2.0)/maxDimension;
     return c;
 }
 
-Collision intersectSkyboxObject(Ray r){
+Collision intersectSkyboxObject(Ray r, Object o){
     // Calculate the box's world mins and maxs:
-    vec3 tMin = (skyboxMins - r.start) / r.dir;
-    vec3 tMax = (skyboxMaxs - r.start) / r.dir;
+    vec3 tMin = (o.mins - r.start) / r.dir;
+    vec3 tMax = (o.maxs - r.start) / r.dir;
     vec3 tMinDist = min(tMin, tMax);
     vec3 tMaxDist = max(tMin, tMax);
     float tNear = max(max(tMinDist.x, tMinDist.y), tMinDist.z);
@@ -227,9 +210,9 @@ Collision intersectSkyboxObject(Ray r){
 
     // Compute texture coordinates
     // compute largest box dimension
-    float totalWidth = skyboxMaxs.x - skyboxMins.x;
-    float totalHeight = skyboxMaxs.y - skyboxMins.y;
-    float totalDepth = skyboxMaxs.z - skyboxMins.z;
+    float totalWidth = o.maxs.x - o.mins.x;
+    float totalHeight = o.maxs.y - o.mins.y;
+    float totalDepth = o.maxs.z - o.mins.z;
     float maxDimension = max(totalWidth, max(totalHeight, totalDepth));
 
     // select tex coordinates depending on box face
@@ -253,14 +236,14 @@ Collision intersectSkyboxObject(Ray r){
     return c;
 }
 
-Collision intersectBoxObject(Ray ray, mat4 worldToLocalTR, mat4 worldToLocalR, vec3 mins, vec3 maxs) {
-    vec3 rayStart = (worldToLocalTR * vec4(ray.start, 1.0)).xyz;
-    vec3 rayDir = (worldToLocalR * vec4(ray.dir, 1.0)).xyz;
+Collision intersectBoxObject(Ray ray, Object o) {
+    vec3 rayStart = (o.worldToLocalTR * vec4(ray.start, 1.0)).xyz;
+    vec3 rayDir = (o.worldToLocalR * vec4(ray.dir, 1.0)).xyz;
 
 
     // calculate the box's mins and maxs
-    vec3 tMin = (mins - rayStart) / rayDir;
-    vec3 tMax = (maxs - rayStart) / rayDir;
+    vec3 tMin = (o.mins - rayStart) / rayDir;
+    vec3 tMax = (o.maxs - rayStart) / rayDir;
     vec3 tMinDist = min(tMin, tMax);
     vec3 tMaxDist = max(tMin, tMax);
     float tNear = max(max(tMinDist.x, tMinDist.y), tMinDist.z);
@@ -304,7 +287,7 @@ Collision intersectBoxObject(Ray ray, mat4 worldToLocalTR, mat4 worldToLocalR, v
     }
 
     // convert normal back into world space
-    mat4 invTrMatrix = transpose(worldToLocalR);
+    mat4 invTrMatrix = transpose(o.worldToLocalR);
     collision.n = mat3(invTrMatrix) * collision.n;
 
     // calculate the world position of the hit point
@@ -313,12 +296,12 @@ Collision intersectBoxObject(Ray ray, mat4 worldToLocalTR, mat4 worldToLocalR, v
     // Texture coordinate
 
     // collision point in local space
-    vec3 collisionPoint = (worldToLocalTR * vec4(collision.p, 1.0)).xyz;
+    vec3 collisionPoint = (o.worldToLocalTR * vec4(collision.p, 1.0)).xyz;
 
     // compute largest box dimension
-    float totalWidth = maxs.x - mins.x;
-    float totalHeight = maxs.y - mins.y;
-    float totalDepth = maxs.z - mins.z;
+    float totalWidth = o.maxs.x - o.mins.x;
+    float totalHeight = o.maxs.y - o.mins.y;
+    float totalDepth = o.maxs.z - o.mins.z;
     float maxDimesion = max(totalWidth, max(totalHeight, totalDepth));
 
     // convert X/Y/Z coordinate to range [0, 1], and devide by largest box dimension
@@ -341,11 +324,11 @@ Collision intersectBoxObject(Ray ray, mat4 worldToLocalTR, mat4 worldToLocalR, v
     return collision;
 }
 
-Collision intersectSphereObject(Ray ray, vec3 position, float radius) {
+Collision intersectSphereObject(Ray ray, Object o) {
     float qa = dot(ray.dir, ray.dir);
-    float qb = dot(2.0 * ray.dir, ray.start - position);
-    float qc = dot(ray.start - position, ray.start - position)
-    - radius * radius;
+    float qb = dot(2.0 * ray.dir, ray.start - o.position);
+    float qc = dot(ray.start - o.position, ray.start - o.position)
+    - o.radius * o.radius;
 
     // solving for qa * t * t + qb * t + qc = 0
     float qd = qb * qb - 4 * qa * qc;
@@ -375,7 +358,7 @@ Collision intersectSphereObject(Ray ray, vec3 position, float radius) {
     }
 
     collision.p = ray.start + collision.t * ray.dir;// world position if the hit point
-    collision.n = normalize(collision.p - position);
+    collision.n = normalize(collision.p - o.position);
 
     if (collision.isInside) { // if ray is inside, flip the normal
         collision.n *= -1.0;
@@ -398,10 +381,10 @@ Collision getClosestCollision(Ray ray) {
     Collision closestCollision, cSphere, cBox, cSBox, cPlane;
     closestCollision.objectIndex = -1;
 
-    cSphere = intersectSphereObject(ray, SPHERE_POSITION, SPHERE_RADIUS);
-    cBox = intersectBoxObject(ray, invBoxMMat, invBoxMMatRotate, BOX_MINS, BOX_MAXS);
-    cPlane = intersectPlaneObject(ray, planeMMatRotate, transpose(inverse(planeMMatRotate)), invPlaneMMat, invPlaneMMatRotate, PLANE_WIDTH, PLANE_DEPTH);
-    cSBox = intersectSkyboxObject(ray);
+    cSphere = intersectSphereObject(ray, objects[2]);
+    cBox = intersectBoxObject(ray, objects[3]);
+    cPlane = intersectPlaneObject(ray, objects[1]);
+    cSBox = intersectSkyboxObject(ray, objects[0]);
 
     if ((cSphere.t > 0) && ((cSphere.t < cBox.t) || (cBox.t < 0))) {
         closestCollision = cSphere;
@@ -467,12 +450,6 @@ vec3 getTextureColor(int index, vec2 tc) {
     if (index == 1) return checkerboard(tc);            // plane
     else if (index == 3) return texture(boxTexture, tc).rgb;// box
     else return vec3(1.0, 0.0, 0.0);                    // error color
-}
-
-void calcSkyboxCorners() {
-    float skyboxSideLengthD2 = SKYBOX_SIDE_LENGTH / 2.0;
-    skyboxMins = vec3(-skyboxSideLengthD2) + vec3(cameraPosition.x, cameraPosition.y, cameraPosition.z);
-    skyboxMaxs = vec3(skyboxSideLengthD2) + vec3(cameraPosition.x, cameraPosition.y, cameraPosition.z);
 }
 
 bool shouldRender(uint index) {
@@ -623,7 +600,6 @@ void main() {
     if(!shouldRender(pixelIndex))
         return;
 
-    calcSkyboxCorners();
     Ray worldRay;
     uint rayInfoIndex = pixelIndex * 3;
 
