@@ -13,10 +13,12 @@ import engine.sceneComponents.textures.Texture2D;
 import engine.util.Destroyer;
 import engine.util.Material;
 import engine.util.ValuesContainer;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 
 import java.awt.*;
+import java.nio.FloatBuffer;
 import java.util.Objects;
 
 import static org.lwjgl.opengl.GL43.*;
@@ -35,6 +37,7 @@ public class Program16_2 extends App {
     private Checkbox clearScreenCheckbox;
     private ModelObject box;
     private ModelObject[] modelObjects;
+    private FloatBuffer structUniformBuffer;
 
     @Override
     protected void initGLFWWindow() {
@@ -118,7 +121,9 @@ public class Program16_2 extends App {
 
                 box
         };
-        ModelObject.putToShader(2, modelObjects);
+        structUniformBuffer =
+                BufferUtils.createFloatBuffer(modelObjects.length * ModelObject.STRUCT_MEMORY_SPACE);
+        ModelObject.putToShader(2, modelObjects, structUniformBuffer);
 
         // init rays
         computeRays();
@@ -189,7 +194,7 @@ public class Program16_2 extends App {
     private void updateModels() {
         box.setRotation(boxRotation);
         box.setPosition(boxPosition);
-        ModelObject.putToShader(2, modelObjects);
+        ModelObject.putToShader(2, modelObjects, structUniformBuffer);
 
         computeShader.use();
     }

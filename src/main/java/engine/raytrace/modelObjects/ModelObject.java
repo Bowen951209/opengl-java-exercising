@@ -15,7 +15,7 @@ public abstract class ModelObject {
      *
      * @see <a href="https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL">LearnOpenGL Page</a>
      */
-    private static final int STRUCT_MEMORY_SPACE = 92;
+    public static final int STRUCT_MEMORY_SPACE = 92;
     private static final int OBJ_TYPE_ROOMBOX = 0;
     private static final int OBJ_TYPE_SPHERE = 1;
     private static final int OBJ_TYPE_BOX = 2;
@@ -174,20 +174,29 @@ public abstract class ModelObject {
         addMatrixToBuffer(dataBuffer, modelObject.worldToLocalTR);
     }
 
-    public static void putToShader(int uniformBinding, ModelObject[] modelObjects) {
-        // TODO: 2023/9/28 use fixed buffer.
-        FloatBuffer dataBuffer = BufferUtils.
-                createFloatBuffer(STRUCT_MEMORY_SPACE * modelObjects.length);
-
+    public static void putToShader(int uniformBinding, ModelObject[] modelObjects,
+                                   FloatBuffer buffer) {
         for (ModelObject modelObject : modelObjects) {
             modelObject.updateMatrices();
-            putData(dataBuffer, modelObject);
+            putData(buffer, modelObject);
         }
 
-        dataBuffer.flip();
+        buffer.flip();
         glBindBuffer(GL_UNIFORM_BUFFER, UTIL_GL_UNIFORM_BUFFER);
-        glBufferData(GL_UNIFORM_BUFFER, dataBuffer, GL_DYNAMIC_DRAW);
+        glBufferData(GL_UNIFORM_BUFFER, buffer, GL_DYNAMIC_DRAW);
         glBindBufferBase(GL_UNIFORM_BUFFER, uniformBinding, UTIL_GL_UNIFORM_BUFFER);
+    }
+
+    /**
+     * Create a new buffer, and use it to put into UBO.
+     * This is just for convenience and not recommended because each time you call it, it'll
+     * create a new instance, resource-consuming.
+     * @see ModelObject#putToShader(int, ModelObject[], FloatBuffer)
+     * */
+    public static void putToShader(int uniformBinding, ModelObject[] modelObjects) {
+        FloatBuffer dataBuffer = BufferUtils.
+                createFloatBuffer(STRUCT_MEMORY_SPACE * modelObjects.length);
+        putToShader(uniformBinding, modelObjects, dataBuffer);
     }
 
     private void updateMatrices() {
