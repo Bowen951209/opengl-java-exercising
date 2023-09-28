@@ -9,7 +9,6 @@ import java.nio.FloatBuffer;
 import static org.lwjgl.opengl.GL43.*;
 
 public abstract class ModelObject {
-    // TODO: 2023/9/28 Do this class using "T"
     /**
      * The value is calculated according to the "std140 layout" rule.
      * It is ONLY compatible with the structure described in the package-info.
