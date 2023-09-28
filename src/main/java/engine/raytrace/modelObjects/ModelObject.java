@@ -48,8 +48,6 @@ public abstract class ModelObject {
 
     protected final float shininess;
 
-
-    // TODO: 2023/9/16 For hasTexture, add a texture binding element in struct.
     protected boolean hasColor, hasTexture, isReflective, isTransparent;
     protected float reflectivity, refractivity, ior, radius;
 
