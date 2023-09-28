@@ -34,7 +34,6 @@ public class Program16_2 extends App {
     private PixelManager pixelManager;
     private Checkbox clearScreenCheckbox;
     private ModelObject box;
-    private RoomBox roomBox;
     private ModelObject[] modelObjects;
 
     @Override
@@ -104,11 +103,10 @@ public class Program16_2 extends App {
                 .setRotation(boxRotation)
                 .setPosition(boxPosition);
 
-        roomBox = (RoomBox) new RoomBox(Material.goldAmbient(), Material.goldDiffuse(),
-                Material.goldSpecular(), Material.goldShininess(), true,
-                20).setColor(1, .5f, .5f);
         modelObjects = new ModelObject[]{
-                roomBox,
+                new RoomBox(Material.goldAmbient(), Material.goldDiffuse(),
+                        Material.goldSpecular(), Material.goldShininess(), true,
+                        20).setColor(1, .5f, .5f),
 
                 new Plane(Material.jadeAmbient(), Material.jadeDiffuse(), Material.jadeSpecular(),
                         Material.jadeShininess(), -2.5f, 12, 12)
@@ -191,7 +189,6 @@ public class Program16_2 extends App {
     private void updateModels() {
         box.setRotation(boxRotation);
         box.setPosition(boxPosition);
-        roomBox.centerToCamera(camera);
         ModelObject.putToShader(2, modelObjects);
 
         computeShader.use();
