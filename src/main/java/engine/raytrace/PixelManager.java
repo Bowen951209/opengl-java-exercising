@@ -13,12 +13,11 @@ import static org.lwjgl.opengl.GL43.*;
 public class PixelManager {
     private static final int STATE_NO_DRAW = 0, STATE_DO_DRAW = 1, STATE_DRAWN = 2;
     private final List<Integer> turnOnOrder = new ArrayList<>();
-    private int numTurnedOnPixels;
-
-    private final int ssboID;
-    private IntBuffer pixelListBuffer;
     private final Set<Boolean> stateSet = new HashSet<>();
+    private final int ssboID;
+    private int numTurnedOnPixels;
     private boolean isAllDrawn = false;
+    private IntBuffer pixelListBuffer;
 
     public PixelManager(int usingIndex) {
         ssboID = glGenBuffers();
