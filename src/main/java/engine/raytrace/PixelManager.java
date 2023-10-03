@@ -32,7 +32,7 @@ public class PixelManager {
         Collections.shuffle(yList);
 
         // Combine 2 lists and store into buffer.
-        IntBuffer buffer = BufferUtils.createIntBuffer(numX * numY);
+        IntBuffer buffer = BufferUtils.createIntBuffer(numX * numY * 2);
         for (Integer x : xList) {
             for (Integer y : yList) {
                 buffer.put(x);
