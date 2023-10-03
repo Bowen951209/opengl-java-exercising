@@ -99,6 +99,7 @@ const vec3 ROOOM_BOX_COLOR = vec3(1.0, .5, .5);
 // Uniforms
 uniform vec3 cameraPosition;
 uniform vec3 lightPosition;
+uniform int[] test;
 
 layout(std140, binding = 2) uniform ObjectsBlock{Object objects[4];};
 

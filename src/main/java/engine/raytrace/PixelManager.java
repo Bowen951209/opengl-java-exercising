@@ -19,7 +19,7 @@ public class PixelManager {
      * Generate X/Y pixels random turn on order.
      * (Should be called when program start up or numX/numY value resized.)
      */
-    public void generateList(int numX, int numY) {
+    public IntBuffer generateList(int numX, int numY) {
         List<Integer> xList = new ArrayList<>();
         List<Integer> yList = new ArrayList<>();
 
@@ -40,5 +40,6 @@ public class PixelManager {
             }
         }
         buffer.flip();
+        return buffer;
     }
 }
