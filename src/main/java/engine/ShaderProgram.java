@@ -6,6 +6,7 @@ import engine.exceptions.ShaderCompiledFailedException;
 import engine.readers.GLSLReader;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.util.HashMap;
 
@@ -63,6 +64,10 @@ public class ShaderProgram {
 
     public void putUniform1i(String uniformName, int value) {
         glUniform1i(getUniformLoc(uniformName), value);
+    }
+
+    public void putUniform1iv(String uniformName, IntBuffer value) {
+        glUniform1iv(getUniformLoc(uniformName), value);
     }
 
     public void putUniform3f(String uniformName, float[] value) {
