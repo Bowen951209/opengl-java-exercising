@@ -81,17 +81,13 @@ public class PixelManager {
 
         // Combine 2 lists and store into buffer.
         IntBuffer buffer = BufferUtils.createIntBuffer(numX * numY * 2);
-//        buffer.position(buffer.capacity());
+        // FIXME: 2023/10/5 2023/10/5 pixel order now goes vertical lines.
         for (Integer x : xList) {
             for (Integer y : yList) {
                 buffer.put(x);
                 buffer.put(y);
             }
         }
-//        for (int i = 0; i < numX; i++)
-//            buffer.put(i * 2, xList.get(i));
-//        for (int i = 0; i < numY; i++)
-//            buffer.put(i * 2 + 1, yList.get(i));
 
         buffer.flip();
         System.out.println("Pixel order size = " + buffer.capacity());
