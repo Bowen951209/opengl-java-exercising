@@ -72,7 +72,7 @@ public class Program16_2 extends App {
     @Override
     protected void addCallbacks() {
         // FrameBuffer resize
-        this.getDefaultCallbacks().getDefaultFrameBufferResizeCB().addCallback(this::refresh);
+        this.getDefaultCallbacks().getDefaultFrameBufferResizeCB().addCallback(this::resolutionResizeCallback);
     }
 
     @Override
@@ -123,8 +123,9 @@ public class Program16_2 extends App {
                 BufferUtils.createFloatBuffer(modelObjects.length * ModelObject.STRUCT_MEMORY_SPACE);
         ModelObject.putToShader(2, modelObjects, structUniformBuffer);
 
-        // init rays
+        // init
         computeRays();
+        resolutionResizeCallback();
     }
 
     @Override
@@ -161,7 +162,7 @@ public class Program16_2 extends App {
                 0f, 5f).enableMouseWheelControl().setWheelSpeed(0.5f)
                 .addScrollCallBack(() -> {
                     resolutionScale = (float) Math.pow(2, -resScaleSliderVal[0]);
-                    refresh();
+                    resolutionResizeCallback();
                 });
         Slider boxPositionSlider = new SliderFloat3("box_position", boxPosition,
                 -10f, 10f).enableMouseWheelControl().addScrollCallBack(this::refresh);
@@ -183,9 +184,14 @@ public class Program16_2 extends App {
     private void refresh() {
         computeRays();
         pixelManager.zeroNumRendered();
+        updateModels();
+    }
+
+    private void resolutionResizeCallback() {
+        computeRays();
+        pixelManager.zeroNumRendered();
         pixelManager.putListToShader(pixelManager.generateList(numXPixel, numYPixel));
         pixelManager.putNumXToShader();
-        updateModels();
     }
 
     private void updateModels() {

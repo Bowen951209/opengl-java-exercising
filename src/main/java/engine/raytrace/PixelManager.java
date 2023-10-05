@@ -29,11 +29,10 @@ public class PixelManager {
     }
 
     public void addNumRendered(int number) {
-        if (numRenderedPixel + number >= numX * numY){
+        if (numRenderedPixel + number >= numX * numY) {
             numRenderedPixel = numX * numY;
             return;
-        }
-        else
+        } else
             this.numRenderedPixel += number;
         shader.putUniform1i(numRenderedPixelName, numRenderedPixel);
     }
@@ -82,10 +81,10 @@ public class PixelManager {
         // Combine 2 lists and store into buffer.
         IntBuffer buffer = BufferUtils.createIntBuffer(numX * numY * 2);
         // FIXME: 2023/10/5 2023/10/5 pixel order now goes vertical lines.
-        for (Integer x : xList) {
-            for (Integer y : yList) {
-                buffer.put(x);
-                buffer.put(y);
+        for (int i = 0; i < xList.size(); i++) {
+            for (int j = 0; j < yList.size(); j++) {
+                buffer.put(xList.get((i + j) % xList.size()));
+                buffer.put(yList.get(j));
             }
         }
 
