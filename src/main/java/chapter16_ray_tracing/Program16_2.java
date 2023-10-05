@@ -224,8 +224,6 @@ public class Program16_2 extends App {
      * Compute rays based on camera.
      */
     private void computeRays() {
-        // TODO: 2023/10/5 this method should also use the pixel order list,  or when at high
-        //  resolution, fps drops.
         rayComputeShader.use();
         rayComputeShader.putUniform3f("cameraPosition", camera.getPos().get(ValuesContainer.VALS_OF_3));
         rayComputeShader.putUniformMatrix4f("cameraToWorldMatrix",
