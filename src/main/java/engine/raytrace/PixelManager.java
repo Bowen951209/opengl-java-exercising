@@ -80,7 +80,6 @@ public class PixelManager {
 
         // Combine 2 lists and store into buffer.
         IntBuffer buffer = BufferUtils.createIntBuffer(numX * numY * 2);
-        // FIXME: 2023/10/5 2023/10/5 pixel order now goes vertical lines.
         for (int i = 0; i < xList.size(); i++) {
             for (int j = 0; j < yList.size(); j++) {
                 buffer.put(xList.get((i + j) % xList.size()));
