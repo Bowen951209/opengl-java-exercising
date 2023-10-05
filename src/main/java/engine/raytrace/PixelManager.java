@@ -90,7 +90,6 @@ public class PixelManager {
         }
 
         buffer.flip();
-        System.out.println("Pixel order size = " + buffer.capacity());
         return buffer;
     }
 }

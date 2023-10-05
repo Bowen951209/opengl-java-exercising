@@ -183,8 +183,6 @@ public class Program16_2 extends App {
     private void refresh() {
         computeRays();
         pixelManager.zeroNumRendered();
-        // FIXME: 2023/10/5 pixel order list should only regenerate when resolution is changed, but
-        //  this method is also called when the camera moves
         pixelManager.putListToShader(pixelManager.generateList(numXPixel, numYPixel));
         pixelManager.putNumXToShader();
         updateModels();
