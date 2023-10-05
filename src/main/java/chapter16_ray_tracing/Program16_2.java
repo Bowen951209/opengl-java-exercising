@@ -219,7 +219,7 @@ public class Program16_2 extends App {
     }
 
     /**
-     * This method is fast.
+     * Compute rays based on camera.
      */
     private void computeRays() {
         rayComputeShader.use();
