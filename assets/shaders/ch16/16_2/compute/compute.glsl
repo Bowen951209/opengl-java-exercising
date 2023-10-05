@@ -13,8 +13,8 @@ layout(binding=0) buffer inputRayStart {
 layout(binding=1) buffer inputRayDir {
     float[] rayDir;
 };
-layout(binding=2) buffer inputPixelList {
-    int[] pixelList;
+layout(binding=3) buffer pixelOrder {
+    int[] orders;
 };
 
 // Structures
@@ -99,8 +99,8 @@ const vec3 ROOOM_BOX_COLOR = vec3(1.0, .5, .5);
 // Uniforms
 uniform vec3 cameraPosition;
 uniform vec3 lightPosition;
-uniform int[] test;
-
+uniform int numXPixel;
+uniform int numRenderedPixel;
 layout(std140, binding = 2) uniform ObjectsBlock{Object objects[4];};
 
 
@@ -451,14 +451,6 @@ vec3 getTextureColor(int index, vec2 tc) {
     else return vec3(1.0, 0.0, 0.0);                    // error color
 }
 
-bool shouldRender(uint index) {
-    if (pixelList[index] == STATE_DO_DRAW) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 void push(Ray r, int depth, int type) {
     if (stackPointer >= STACK_SIZE-1)  return;
 
@@ -592,12 +584,12 @@ vec3 raytrace(Ray r){
 
 // Main Method
 void main() {
-    int width = int(gl_NumWorkGroups.x);
-    ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
-    uint pixelIndex = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * width;
-
-    if(!shouldRender(pixelIndex))
+    int width = numXPixel;
+    uint thisIndex = (numRenderedPixel + gl_GlobalInvocationID.x) * 2;
+    if(orders[thisIndex] <= 0 || orders[thisIndex + 1] <= 0)
         return;
+    ivec2 pixel = ivec2(orders[thisIndex], orders[thisIndex + 1]);
+    uint pixelIndex = pixel.x + pixel.y * width;
 
     Ray worldRay;
     uint rayInfoIndex = pixelIndex * 3;
@@ -612,6 +604,6 @@ void main() {
     // ---------------------------------------------
 
     vec3 color = raytrace(worldRay);
+
     imageStore(outputTexture, pixel, vec4(color, 1.0));
-    pixelList[pixelIndex] = STATE_DRAWN;
 }

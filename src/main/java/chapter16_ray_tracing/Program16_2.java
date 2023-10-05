@@ -62,10 +62,6 @@ public class Program16_2 extends App {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboRayDir);
         glBufferData(GL_SHADER_STORAGE_BUFFER, bufferSize, GL_DYNAMIC_DRAW);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssboRayDir);
-
-        pixelManager = new PixelManager(2);
-        updateNumPixelXY();
-        pixelManager.fill(numXPixel * numYPixel);
     }
 
     private void updateNumPixelXY() {
@@ -91,12 +87,14 @@ public class Program16_2 extends App {
         computeShader = new ShaderProgram(
                 "assets/shaders/ch16/16_2/compute/compute.glsl"
         );
+
+        pixelManager = new PixelManager(computeShader, "numXPixel", "numRenderedPixel",  3, 2000);
     }
 
     @Override
     protected void initModels() {
         camera.setPos(0f, 0f, 5f);
-        camera.addCameraUpdateCallBack(this::computeRays);
+        camera.addCameraUpdateCallBack(this::refresh);
         fullScreenQuad = new FullScreenQuad();
 
 
@@ -182,12 +180,11 @@ public class Program16_2 extends App {
         refresh();
     }
 
-    /**
-     * This method is called when you want to update the state.
-     */
     private void refresh() {
         computeRays();
-        pixelManager.resizeTurnOnOrder(numXPixel * numYPixel);
+        pixelManager.zeroNumRendered();
+        pixelManager.putListToShader(pixelManager.generateList(numXPixel, numYPixel));
+        pixelManager.putNumXToShader();
         updateModels();
     }
 
@@ -202,11 +199,6 @@ public class Program16_2 extends App {
     @Override
     protected void drawScene() {
         computeShader.use();
-        if (getFps() > 0f) {
-            pixelManager.turnOn((int) (getFps() * 200));
-        }
-
-        pixelManager.putPixelArrayToSSBO();
 
         brickTexture.bind();
         glBindImageTexture(0, screenQuadTexture.getTexID(), 0, false,
@@ -217,11 +209,9 @@ public class Program16_2 extends App {
                 .get(ValuesContainer.VALS_OF_3));
 
         updateNumPixelXY();
-        // TODO: 2023/9/16 Use the new method mentioned in my notebook.
-        glDispatchCompute(numXPixel, numYPixel, 1);
+        glDispatchCompute(pixelManager.getNumDispatchCall(), 1, 1);
+        pixelManager.addNumRendered(pixelManager.getNumDispatchCall());
         glFinish();
-
-        pixelManager.updateBuffer();
 
         screenQuadShader.use();
         screenQuadTexture.bind();
@@ -237,7 +227,6 @@ public class Program16_2 extends App {
         rayComputeShader.putUniformMatrix4f("cameraToWorldMatrix",
                 camera.getInvVMat().get(ValuesContainer.VALS_OF_16));
         updateNumPixelXY();
-        pixelManager.fill(numXPixel * numYPixel);
         if (clearScreenCheckbox != null && clearScreenCheckbox.getIsActive()) {
             screenQuadTexture.fill(numXPixel, numYPixel, COLOR_DARK_BLUE);
         }
