@@ -586,8 +586,6 @@ vec3 raytrace(Ray r){
 void main() {
     int width = numXPixel;
     uint thisIndex = (numRenderedPixel + gl_GlobalInvocationID.x) * 2;
-    if(orders[thisIndex] <= 0 || orders[thisIndex + 1] <= 0)
-        return;
     ivec2 pixel = ivec2(orders[thisIndex], orders[thisIndex + 1]);
     uint pixelIndex = pixel.x + pixel.y * width;
 
