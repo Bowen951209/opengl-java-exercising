@@ -88,7 +88,7 @@ public class Program16_2 extends App {
                 "assets/shaders/ch16/16_2/compute/compute.glsl"
         );
 
-        pixelManager = new PixelManager(computeShader, "numXPixel", "numRenderedPixel",  3, 2000);
+        pixelManager = new PixelManager(computeShader, "numXPixel", "numRenderedPixel",  3, 50000);
     }
 
     @Override
