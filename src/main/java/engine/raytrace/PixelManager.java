@@ -20,6 +20,10 @@ public class PixelManager {
 
     private int numX, numY, numRenderedPixel;
 
+    public boolean isAllRendered() {
+        return numRenderedPixel >= numX * numY;
+    }
+
     public int getNumDispatchCall() {
         return numDispatchCall;
     }

@@ -88,7 +88,7 @@ public class Program16_2 extends App {
                 "assets/shaders/ch16/16_2/compute/compute.glsl"
         );
 
-        pixelManager = new PixelManager(computeShader, "numXPixel", "numRenderedPixel",  3, 50000);
+        pixelManager = new PixelManager(computeShader, "numXPixel", "numRenderedPixel", 3, 50000);
     }
 
     @Override
@@ -214,10 +214,12 @@ public class Program16_2 extends App {
         computeShader.putUniform3f("cameraPosition", camera.getPos()
                 .get(ValuesContainer.VALS_OF_3));
 
-        updateNumPixelXY();
-        glDispatchCompute(pixelManager.getNumDispatchCall(), 1, 1);
-        pixelManager.addNumRendered(pixelManager.getNumDispatchCall());
-        glFinish();
+        if (!pixelManager.isAllRendered()) {
+            updateNumPixelXY();
+            glDispatchCompute(pixelManager.getNumDispatchCall(), 1, 1);
+            pixelManager.addNumRendered(pixelManager.getNumDispatchCall());
+            glFinish();
+        }
 
         screenQuadShader.use();
         screenQuadTexture.bind();
