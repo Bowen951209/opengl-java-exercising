@@ -597,6 +597,8 @@ void main() {
     int height = numYPixel;
     uint thisIndex = (numRenderedPixel + gl_GlobalInvocationID.x) * 2;
     ivec2 pixel = ivec2(orders[thisIndex], orders[thisIndex + 1]);
+    if(orders[thisIndex] <= 0 || orders[thisIndex + 1] <= 0)
+        return;
     vec3 color = raytrace(calcRay(width, height, pixel));
 
     imageStore(outputTexture, pixel, vec4(color, 1.0));
