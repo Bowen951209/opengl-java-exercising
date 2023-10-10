@@ -15,7 +15,7 @@ import static org.lwjgl.opengl.GL43.*;
  * */
 public class PixelManager {
     private final int ssbo, numDispatchCall;
-    private final String numXUniformName, numRenderedPixelName;
+    private final String numXUniformName, numYUniformName, numRenderedPixelName;
     private final ShaderProgram shader;
 
     private int numX, numY, numRenderedPixel;
@@ -41,10 +41,10 @@ public class PixelManager {
         shader.putUniform1i(numRenderedPixelName, numRenderedPixel);
     }
 
-    public PixelManager(ShaderProgram shader, String numXUniformName, String numRenderedPixelName,
-                        int ssboBinding, int numDispatchCall) {
+    public PixelManager(ShaderProgram shader, String numXUniformName, String numYUniformName, int ssboBinding, int numDispatchCall, String numRenderedPixelName) {
         this.shader = shader;
         this.numXUniformName = numXUniformName;
+        this.numYUniformName = numYUniformName;
         this.numRenderedPixelName = numRenderedPixelName;
         this.numDispatchCall = numDispatchCall;
         this.ssbo = glGenBuffers();
@@ -60,8 +60,9 @@ public class PixelManager {
         glBufferData(GL_SHADER_STORAGE_BUFFER, buffer, GL_STATIC_DRAW);
     }
 
-    public void putNumXToShader() {
+    public void putNumXYToShader() {
         shader.putUniform1i(numXUniformName, numX);
+        shader.putUniform1i(numYUniformName, numY);
     }
 
     /**

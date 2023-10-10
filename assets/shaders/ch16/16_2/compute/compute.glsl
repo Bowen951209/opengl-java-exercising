@@ -98,8 +98,10 @@ const vec3 ROOOM_BOX_COLOR = vec3(1.0, .5, .5);
 
 // Uniforms
 uniform vec3 cameraPosition;
+uniform mat4 cameraToWorldMatrix;
 uniform vec3 lightPosition;
 uniform int numXPixel;
+uniform int numYPixel;
 uniform int numRenderedPixel;
 layout(std140, binding = 2) uniform ObjectsBlock{Object objects[4];};
 
@@ -579,29 +581,30 @@ vec3 raytrace(Ray r){
     return poppedStackElement.finalColor;
 }
 
+Ray calcRay(int width, int height, ivec2 pixel) {
+    // Algorithm thanks to https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays.html
+    float aspectRatio = float(width) / float(height); // assuming width > height
+    float Px = (2 * ((pixel.x + 0.5) / width) - 1) * aspectRatio;
+    float Py = -(1 - 2 * ((pixel.y + 0.5) / height));
+    vec3 rayOrigin = vec3(0f, 0f, 0f);
 
+    vec3 rayOriginWorld = mat3(cameraToWorldMatrix) * rayOrigin;
+    vec3 rayPWorld = mat3(cameraToWorldMatrix) * vec3(Px, Py, -1f);
+
+    Ray worldRay;
+    worldRay.start = vec3(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+    worldRay.dir = rayPWorld - rayOriginWorld;
+    return worldRay;
+}
 
 
 // Main Method
 void main() {
     int width = numXPixel;
+    int height = numYPixel;
     uint thisIndex = (numRenderedPixel + gl_GlobalInvocationID.x) * 2;
     ivec2 pixel = ivec2(orders[thisIndex], orders[thisIndex + 1]);
-    uint pixelIndex = pixel.x + pixel.y * width;
-
-    Ray worldRay;
-    uint rayInfoIndex = pixelIndex * 3;
-
-    worldRay.start.x = rayStart[rayInfoIndex];
-    worldRay.start.y = rayStart[rayInfoIndex + 1];
-    worldRay.start.z = rayStart[rayInfoIndex + 2];
-
-    worldRay.dir.x = rayDir[rayInfoIndex];
-    worldRay.dir.y = rayDir[rayInfoIndex + 1];
-    worldRay.dir.z = rayDir[rayInfoIndex + 2];
-    // ---------------------------------------------
-
-    vec3 color = raytrace(worldRay);
+    vec3 color = raytrace(calcRay(width, height, pixel));
 
     imageStore(outputTexture, pixel, vec4(color, 1.0));
 }

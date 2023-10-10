@@ -25,7 +25,7 @@ import static org.lwjgl.opengl.GL43.*;
 
 public class Program16_2 extends App {
     private static final Color COLOR_DARK_BLUE = new Color(.0f, .0f, .05f);
-    private ShaderProgram screenQuadShader, computeShader, rayComputeShader;
+    private ShaderProgram screenQuadShader, computeShader;
     private Texture2D screenQuadTexture, brickTexture;
     private Model fullScreenQuad;
     private final float[] lightPosition = {-4.0f, 1.0f, 6.0f},
@@ -81,14 +81,12 @@ public class Program16_2 extends App {
                 "assets/shaders/ch16/16_2/screen_quad/vert.glsl",
                 "assets/shaders/ch16/16_2/screen_quad/frag.glsl"
         );
-        rayComputeShader = new ShaderProgram(
-                "assets/shaders/ch16/16_2/compute/ray.glsl"
-        );
         computeShader = new ShaderProgram(
                 "assets/shaders/ch16/16_2/compute/compute.glsl"
         );
 
-        pixelManager = new PixelManager(computeShader, "numXPixel", "numRenderedPixel", 3, 50000);
+        pixelManager = new PixelManager(computeShader, "numXPixel",
+                "numYPixel", 3, 50000, "numRenderedPixel");
     }
 
     @Override
@@ -124,7 +122,6 @@ public class Program16_2 extends App {
         ModelObject.putToShader(2, modelObjects, structUniformBuffer);
 
         // init
-        computeRays();
         resolutionResizeCallback();
     }
 
@@ -182,16 +179,20 @@ public class Program16_2 extends App {
     }
 
     private void refresh() {
-        computeRays();
         pixelManager.zeroNumRendered();
         updateModels();
+        pixelManager.putNumXYToShader();
+        if (clearScreenCheckbox != null && clearScreenCheckbox.getIsActive())
+            screenQuadTexture.fill(numXPixel, numYPixel, COLOR_DARK_BLUE);
     }
 
     private void resolutionResizeCallback() {
-        computeRays();
+        updateNumPixelXY();
         pixelManager.zeroNumRendered();
         pixelManager.putListToShader(pixelManager.generateList(numXPixel, numYPixel));
-        pixelManager.putNumXToShader();
+        pixelManager.putNumXYToShader();
+        if (clearScreenCheckbox != null && clearScreenCheckbox.getIsActive())
+            screenQuadTexture.fill(numXPixel, numYPixel, COLOR_DARK_BLUE);
     }
 
     private void updateModels() {
@@ -204,17 +205,19 @@ public class Program16_2 extends App {
 
     @Override
     protected void drawScene() {
+        // TODO: 2023/10/10 rename to isActive
         computeShader.use();
-
         brickTexture.bind();
         glBindImageTexture(0, screenQuadTexture.getTexID(), 0, false,
                 0, GL_WRITE_ONLY, GL_RGBA8);
 
-        computeShader.putUniform3f("lightPosition", lightPosition);
-        computeShader.putUniform3f("cameraPosition", camera.getPos()
-                .get(ValuesContainer.VALS_OF_3));
-
         if (!pixelManager.isAllRendered()) {
+            computeShader.putUniform3f("lightPosition", lightPosition);
+            computeShader.putUniform3f("cameraPosition", camera.getPos()
+                    .get(ValuesContainer.VALS_OF_3));
+            computeShader.putUniform3f("cameraPosition", camera.getPos().get(ValuesContainer.VALS_OF_3));
+            computeShader.putUniformMatrix4f("cameraToWorldMatrix",
+                    camera.getInvVMat().get(ValuesContainer.VALS_OF_16));
             updateNumPixelXY();
             glDispatchCompute(pixelManager.getNumDispatchCall(), 1, 1);
             pixelManager.addNumRendered(pixelManager.getNumDispatchCall());
@@ -224,21 +227,6 @@ public class Program16_2 extends App {
         screenQuadShader.use();
         screenQuadTexture.bind();
         fullScreenQuad.draw(GL_TRIANGLES);
-    }
-
-    /**
-     * Compute rays based on camera.
-     */
-    private void computeRays() {
-        rayComputeShader.use();
-        rayComputeShader.putUniform3f("cameraPosition", camera.getPos().get(ValuesContainer.VALS_OF_3));
-        rayComputeShader.putUniformMatrix4f("cameraToWorldMatrix",
-                camera.getInvVMat().get(ValuesContainer.VALS_OF_16));
-        updateNumPixelXY();
-        if (clearScreenCheckbox != null && clearScreenCheckbox.getIsActive()) {
-            screenQuadTexture.fill(numXPixel, numYPixel, COLOR_DARK_BLUE);
-        }
-        glDispatchCompute(numXPixel, numYPixel, 1);
     }
 
     @Override
