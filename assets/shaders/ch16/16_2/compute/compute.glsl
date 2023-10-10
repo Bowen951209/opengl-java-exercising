@@ -6,13 +6,6 @@ layout(local_size_x = 1) in;
 layout(binding = 0, rgba8) uniform image2D outputTexture;
 layout(binding = 1) uniform sampler2D boxTexture;
 
-// The input ray info from ray shader
-layout(binding=0) buffer inputRayStart {
-    float[] rayStart;
-};
-layout(binding=1) buffer inputRayDir {
-    float[] rayDir;
-};
 layout(binding=3) buffer pixelOrder {
     int[] orders;
 };
