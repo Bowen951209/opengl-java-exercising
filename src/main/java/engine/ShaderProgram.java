@@ -6,6 +6,7 @@ import engine.exceptions.ShaderCompiledFailedException;
 import engine.readers.GLSLReader;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.util.HashMap;
 
@@ -45,7 +46,7 @@ public class ShaderProgram {
     }
 
     public void putUniform1f(String uniformName, float value) {
-        glUniform1f(getUniformLoc(uniformName), value);
+        glProgramUniform1f(id, getUniformLoc(uniformName), value);
     }
 
     /**
@@ -58,23 +59,27 @@ public class ShaderProgram {
      * </pre>
      */
     public void putUniform1fv(String uniformName, FloatBuffer value) {
-        glUniform1fv(getUniformLoc(uniformName), value);
+        glProgramUniform1fv(id, getUniformLoc(uniformName), value);
     }
 
     public void putUniform1i(String uniformName, int value) {
-        glUniform1i(getUniformLoc(uniformName), value);
+        glProgramUniform1i(id, getUniformLoc(uniformName), value);
+    }
+
+    public void putUniform1iv(String uniformName, IntBuffer value) {
+        glProgramUniform1iv(id, getUniformLoc(uniformName), value);
     }
 
     public void putUniform3f(String uniformName, float[] value) {
-        glUniform3fv(getUniformLoc(uniformName), value);
+        glProgramUniform3fv(id, getUniformLoc(uniformName), value);
     }
 
     public void putUniform3f(String uniformName, FloatBuffer value) {
-        glUniform3fv(getUniformLoc(uniformName), value);
+        glProgramUniform3fv(id, getUniformLoc(uniformName), value);
     }
 
     public void putUniform4f(String uniformName, float[] value) {
-        glUniform4fv(getUniformLoc(uniformName), value);
+        glProgramUniform4fv(id, getUniformLoc(uniformName), value);
     }
 
 

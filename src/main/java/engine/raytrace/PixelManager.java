@@ -1,9 +1,12 @@
 package engine.raytrace;
 
+import engine.ShaderProgram;
 import org.lwjgl.BufferUtils;
 
 import java.nio.IntBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL43.*;
 
@@ -11,88 +14,85 @@ import static org.lwjgl.opengl.GL43.*;
  * This class manages what pixels should be rendered, what should not when ray tracing.
  * */
 public class PixelManager {
-    private static final int STATE_NO_DRAW = 0, STATE_DO_DRAW = 1, STATE_DRAWN = 2;
-    private final List<Integer> turnOnOrder = new ArrayList<>();
-    private final Set<Boolean> stateSet = new HashSet<>();
-    private final int ssboID;
-    private int numTurnedOnPixels;
-    private boolean isAllDrawn = false;
-    private IntBuffer pixelListBuffer;
+    private final int ssbo, numDispatchCall;
+    private final String numXUniformName, numYUniformName, numRenderedPixelName;
+    private final ShaderProgram shader;
 
-    public PixelManager(int usingIndex) {
-        ssboID = glGenBuffers();
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboID);
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, usingIndex, ssboID);
+    private int numX, numY, numRenderedPixel;
+
+    public boolean isAllRendered() {
+        return numRenderedPixel >= numX * numY;
+    }
+
+    public int getNumDispatchCall() {
+        return numDispatchCall;
+    }
+
+    public void zeroNumRendered() {
+        this.numRenderedPixel = -numDispatchCall;
+    }
+
+    public void addNumRendered(int number) {
+        if (numRenderedPixel + number >= numX * numY) {
+            numRenderedPixel = numX * numY;
+            return;
+        } else
+            this.numRenderedPixel += number;
+        shader.putUniform1i(numRenderedPixelName, numRenderedPixel);
+    }
+
+    public PixelManager(ShaderProgram shader, String numXUniformName, String numYUniformName, int ssboBinding, int numDispatchCall, String numRenderedPixelName) {
+        this.shader = shader;
+        this.numXUniformName = numXUniformName;
+        this.numYUniformName = numYUniformName;
+        this.numRenderedPixelName = numRenderedPixelName;
+        this.numDispatchCall = numDispatchCall;
+        this.ssbo = glGenBuffers();
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, ssboBinding, ssbo);
     }
 
     /**
-     * This method should be called when the frame buffer size update.
+     * @param buffer The pixel order list IntBuffer.
      */
-    public void resizeTurnOnOrder(int size) {
-        turnOnOrder.clear();
-        numTurnedOnPixels = 0;
-
-        for (int i = 0; i < size; i++) {
-            turnOnOrder.add(i);
-        }
-
-        Collections.shuffle(turnOnOrder);
+    public void putListToShader(IntBuffer buffer) {
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, this.ssbo);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, buffer, GL_STATIC_DRAW);
     }
 
-    public void turnOn(int number) {
-        if (!isAllDrawn()) {
-            pixelListBuffer.position(pixelListBuffer.capacity());
-
-            for (int i = 0; i < number; i++) {
-                int randIndex = turnOnOrder.get(numTurnedOnPixels);
-                pixelListBuffer.put(randIndex, STATE_DO_DRAW);
-
-                numTurnedOnPixels++;
-                if (numTurnedOnPixels == turnOnOrder.size()) {
-                    break;
-                }
-            }
-            pixelListBuffer.flip();
-        }
-    }
-
-    private boolean isAllDrawn() {
-        if (!isAllDrawn) {
-            if (numTurnedOnPixels == turnOnOrder.size()) {
-                isAllDrawn = true;
-                System.out.println("Full resolution!");
-            }
-            return isAllDrawn;
-        } else {
-            return true;
-        }
+    public void putNumXYToShader() {
+        shader.putUniform1i(numXUniformName, numX);
+        shader.putUniform1i(numYUniformName, numY);
     }
 
     /**
-     * This method should be called whenever you want to refresh.
+     * Generate X/Y pixels random turn on order.
+     * (Should be called when program start up or numX/numY value resized.)
      */
-    public void fill(int size) {
-        numTurnedOnPixels = 0;
-        isAllDrawn = false;
-        pixelListBuffer = BufferUtils.createIntBuffer(size);
-        for (int i = 0; i < pixelListBuffer.capacity(); i++) {
-            pixelListBuffer.put(STATE_NO_DRAW);
-        }
-    }
+    public IntBuffer generateList(int numX, int numY) {
+        this.numX = numX;
+        this.numY = numY;
+        List<Integer> xList = new ArrayList<>();
+        List<Integer> yList = new ArrayList<>();
 
-    public void putPixelArrayToSSBO() {
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboID);
-        glBufferData(GL_SHADER_STORAGE_BUFFER, pixelListBuffer, GL_DYNAMIC_DRAW);
-    }
+        for (int i = 0; i < numX; i++)
+            xList.add(i);
+        for (int i = 0; i < numY; i++)
+            yList.add(i);
 
-    /**
-     * This method should be called every time after executing compute shader.
-     * */
-    public void updateBuffer() {
-        for (int i = 0; i < pixelListBuffer.capacity(); i++) {
-            if (pixelListBuffer.get(i) == STATE_DO_DRAW) {
-                pixelListBuffer.put(i, STATE_DRAWN);
+        Collections.shuffle(xList);
+        Collections.shuffle(yList);
+
+        // Combine 2 lists and store into buffer.
+        IntBuffer buffer = BufferUtils.createIntBuffer(numX * numY * 2);
+        for (int i = 0; i < xList.size(); i++) {
+            for (int j = 0; j < yList.size(); j++) {
+                buffer.put(xList.get((i + j) % xList.size()));
+                buffer.put(yList.get(j));
             }
         }
+
+        buffer.flip();
+        return buffer;
     }
 }
