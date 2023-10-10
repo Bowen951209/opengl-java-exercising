@@ -12,7 +12,7 @@ public class Checkbox implements GuiComponents {
         this.isActive = new ImBoolean(isActive);
     }
 
-    public boolean getIsActive() {
+    public boolean isActive() {
         return isActive.get();
     }
 

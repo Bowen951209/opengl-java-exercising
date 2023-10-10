@@ -182,7 +182,7 @@ public class Program16_2 extends App {
         pixelManager.zeroNumRendered();
         updateModels();
         pixelManager.putNumXYToShader();
-        if (clearScreenCheckbox != null && clearScreenCheckbox.getIsActive())
+        if (clearScreenCheckbox != null && clearScreenCheckbox.isActive())
             screenQuadTexture.fill(numXPixel, numYPixel, COLOR_DARK_BLUE);
     }
 
@@ -191,7 +191,7 @@ public class Program16_2 extends App {
         pixelManager.zeroNumRendered();
         pixelManager.putListToShader(pixelManager.generateList(numXPixel, numYPixel));
         pixelManager.putNumXYToShader();
-        if (clearScreenCheckbox != null && clearScreenCheckbox.getIsActive())
+        if (clearScreenCheckbox != null && clearScreenCheckbox.isActive())
             screenQuadTexture.fill(numXPixel, numYPixel, COLOR_DARK_BLUE);
     }
 
@@ -205,7 +205,6 @@ public class Program16_2 extends App {
 
     @Override
     protected void drawScene() {
-        // TODO: 2023/10/10 rename to isActive
         computeShader.use();
         brickTexture.bind();
         glBindImageTexture(0, screenQuadTexture.getTexID(), 0, false,
