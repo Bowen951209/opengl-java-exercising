@@ -1,22 +1,22 @@
 package chapter10.program10_1.launcher;
 
 
+import engine.GLFWWindow;
+import engine.ShaderProgram;
+import engine.callbacks.DefaultCallbacks;
+import engine.sceneComponents.Camera;
+import engine.sceneComponents.Skybox;
+import engine.sceneComponents.models.Torus;
 import engine.util.Color;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-import engine.*;
-import engine.callbacks.DefaultCallbacks;
-import engine.sceneComponents.models.Torus;
-import engine.sceneComponents.textures.CubeMapTexture;
-import engine.sceneComponents.Camera;
-import engine.sceneComponents.Skybox;
 
 import java.nio.file.Path;
 import java.util.Objects;
 
+import static engine.util.ValuesContainer.VALS_OF_16;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL43.*;
-import static engine.util.ValuesContainer.VALS_OF_16;
 
 public class Program10_1 {
 
@@ -37,7 +37,7 @@ public class Program10_1 {
     private Skybox skybox;
     private int defaultProgram, skyBoxProgram;
 
-    private int pDefaultMvLoc, pDefaultProjLoc, pDefaultNormLoc, pSkyVMatLoc, pSkyPMatLoc;
+    private int pDefaultMvLoc, pDefaultProjLoc, pDefaultNormLoc;
 
 
     protected final Camera camera = new Camera().sensitive(.04f).step(.05f);
@@ -67,12 +67,6 @@ public class Program10_1 {
         defaultProgram = new ShaderProgram(Path.of("assets/shaders/program10_1/vert.glsl")
                 , Path.of("assets/shaders/program10_1/frag.glsl"))
                 .getID();
-        skyBoxProgram = new ShaderProgram(Path.of("src/main/java/chapter9/program9_3/shaders/skybox/CubeVertShader.glsl")
-                , Path.of("src/main/java/chapter9/program9_3/shaders/skybox/SkyboxFragShader.glsl"))
-                .getID();
-
-        CubeMapTexture skyboxTexture = new CubeMapTexture("assets/textures/skycubes/lakesIsland");
-        skyboxTexture.bind();
 
         getAllUniformsLoc();
         setupVertices(skyBoxProgram);
@@ -99,7 +93,7 @@ public class Program10_1 {
         System.out.println("Loading models...");
 
         torus = new Torus(.5f, .2f, 48, true, TORUS_POS);
-        skybox = new Skybox(skyBoxProgram, pSkyVMatLoc, pSkyPMatLoc, camera);
+        skybox = new Skybox(camera, "assets/textures/skycubes/lakesIsland");
 
         System.out.println("Model load done.");
     }
@@ -122,9 +116,6 @@ public class Program10_1 {
         pDefaultMvLoc = glGetUniformLocation(defaultProgram, "mv_matrix");
         pDefaultProjLoc = glGetUniformLocation(defaultProgram, "proj_matrix");
         pDefaultNormLoc = glGetUniformLocation(defaultProgram, "norm_matrix");
-
-        pSkyVMatLoc = glGetUniformLocation(skyBoxProgram, "v_matrix");
-        pSkyPMatLoc = glGetUniformLocation(skyBoxProgram, "p_matrix");
     }
 
     protected void destroy() {

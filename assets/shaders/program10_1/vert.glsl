@@ -8,7 +8,7 @@ out vec3 vVertPos;
 uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
-layout (binding = 1) uniform samplerCube t;
+layout (binding = 0) uniform samplerCube t;
 
 void main(void)
 {

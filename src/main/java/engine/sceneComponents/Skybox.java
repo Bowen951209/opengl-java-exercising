@@ -35,22 +35,6 @@ public class Skybox {
             1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f
     };
 
-    public Skybox(int programID, int skyVMatLoc, int skyPMatLoc, Camera camera) {
-        this.programID = programID;
-        this.skyVmatLoc = skyVMatLoc;
-        this.skyPmatLoc = skyPMatLoc;
-        this.camera = camera;
-        this.shaderProgram = DEFAULT_PROGRAM;
-        VBO = glGenBuffers();
-        storeDataToVBO();
-
-        VAO = glGenVertexArrays();
-        glBindVertexArray(VAO);
-
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-    }
-
     public Skybox(Camera camera, String textureFolder, ShaderProgram shaders) {
         this.shaderProgram = shaders;
         this.programID = shaders.getID();
