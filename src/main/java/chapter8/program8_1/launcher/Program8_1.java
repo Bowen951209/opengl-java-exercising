@@ -1,10 +1,14 @@
 package chapter8.program8_1.launcher;
 
 
-import engine.sceneComponents.models.Torus;
 import chapter8.program8_1.callbacks.CursorCB;
 import chapter8.program8_1.callbacks.FrameBufferResizeCB;
 import chapter8.program8_1.callbacks.KeyCB;
+import engine.GLFWWindow;
+import engine.ShaderProgram;
+import engine.readers.ModelReader;
+import engine.sceneComponents.Camera;
+import engine.sceneComponents.models.Torus;
 import engine.util.Color;
 import engine.util.Material;
 import engine.util.ShadowFrameBuffer;
@@ -13,12 +17,8 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
-import engine.*;
-import engine.readers.ModelReader;
-import engine.sceneComponents.Camera;
 
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.nio.file.Path;
 
 import static org.joml.Math.toRadians;
@@ -36,7 +36,7 @@ public class Program8_1 {
 
     private static final FloatBuffer valsOf16 = BufferUtils.createFloatBuffer(16);// utility buffer for transferring matrices
     private static final FloatBuffer valsOf3 = BufferUtils.createFloatBuffer(3);
-    private static final int[] vbo = new int[8];
+    private static final int[] vbo = new int[8], vao = new int[1];
 
     private static final Vector3f LIGHT_POS = new Vector3f(-3.8f, 2.2f, 1.1f);
     private static final Vector3f TORUS_POS = new Vector3f(1.6f, 0f, -.3f);
@@ -146,10 +146,9 @@ public class Program8_1 {
         Matrix4f shadowMVP1 = new Matrix4f().mul(lightPMat).mul(lightVMat).mul(torusMMat);
 
         glUniformMatrix4fv(p1shadowMVPLoc, false, shadowMVP1.get(valsOf16));
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-        glDrawElements(GL_TRIANGLES, torus.getNumIndices(), GL_UNSIGNED_INT, 0);
+        torus.draw(GL_TRIANGLES);
 
+        glBindVertexArray(vao[0]);
         // 繪製pyramid
         shadowMVP1 = new Matrix4f().mul(lightPMat).mul(lightVMat).mul(pyramidMMat);
 
@@ -174,39 +173,13 @@ public class Program8_1 {
         pyramid = new ModelReader("src/main/java/chapter8/program8_1/models/pyr.obj");
         grid = new ModelReader("src/main/java/chapter8/program8_1/models/cube.obj");
 
-        int[] vao = new int[1];
         glGenVertexArrays(vao);
         glBindVertexArray(vao[0]);
 
         glGenBuffers(vbo);
 
-        FloatBuffer pvalues = BufferUtils.createFloatBuffer(torus.getVertices().length * 3);
-        FloatBuffer nvalues = BufferUtils.createFloatBuffer(torus.getNormals().length * 3);
-        IntBuffer indices = torus.getIndicesInBuffer();
-        for (int i = 0; i < torus.getNumVertices(); i++) {
-            pvalues.put(torus.getVertices()[i].x());         // vertex position
-            pvalues.put(torus.getVertices()[i].y());
-            pvalues.put(torus.getVertices()[i].z());
-
-            nvalues.put(torus.getNormals()[i].x());         // normal vector
-            nvalues.put(torus.getNormals()[i].y());
-            nvalues.put(torus.getNormals()[i].z());
-        }
-        pvalues.flip(); // 此行非常必要!
-        nvalues.flip();
-        indices.flip();
-
-        // Torus
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[0]); // #0: 頂點
-        glBufferData(GL_ARRAY_BUFFER, pvalues, GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[2]); // #2: 法向量
-        glBufferData(GL_ARRAY_BUFFER, nvalues, GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]); // #3: 索引
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
 
         // Pyramid
         glBindBuffer(GL_ARRAY_BUFFER, vbo[4]); // #4: 頂點
@@ -244,16 +217,9 @@ public class Program8_1 {
         glUniformMatrix4fv(p2projLoc, false, CAMERA.getProjMat().get(valsOf16));
         glUniformMatrix4fv(p2nLoc, false, invTrMat.get(valsOf16));
         glUniformMatrix4fv(p2sLoc, false, shadowMVP2.get(valsOf16));
+        torus.draw(GL_TRIANGLES);
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
-        glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]);
-        glDrawElements(GL_TRIANGLES, torus.getNumIndices(), GL_UNSIGNED_INT, 0);
-
-
+        glBindVertexArray(vao[0]);
         // 繪製pyramid
         setupLights(Material.bronzeAmbient(), Material.bronzeDiffuse(), Material.bronzeSpecular(), Material.bronzeShininess());
         mvMat = new Matrix4f(CAMERA.getVMat()).mul(pyramidMMat);
