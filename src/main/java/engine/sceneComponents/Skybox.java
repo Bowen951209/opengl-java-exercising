@@ -10,7 +10,7 @@ public class Skybox {
     private final int programID, skyVmatLoc, skyPmatLoc;
     private final Camera camera;
     private final int VBO, VAO;
-    private CubeMapTexture texture;
+    private final CubeMapTexture texture;
     private static final ShaderProgram DEFAULT_PROGRAM = new ShaderProgram(
             "assets/shaders/skybox/vert.glsl",
             "assets/shaders/skybox/frag.glsl"
