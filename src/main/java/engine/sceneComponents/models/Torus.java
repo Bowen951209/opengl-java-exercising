@@ -152,7 +152,6 @@ public class Torus extends Model {
         }
     }
 
-    // ===============================Numbers===============================
     public int getNumVertices() {
         return numVertices;
     }
@@ -161,7 +160,6 @@ public class Torus extends Model {
         return numIndices;
     }
 
-    // ===============================Values===============================
     public Vector3f[] getVertices() {
         return vertices;
     }
