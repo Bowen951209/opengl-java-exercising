@@ -1,19 +1,15 @@
 /*
 * This shaderProgram is a demo of skybox.*/
 
-package chapter9.program9_2.launcher;
+package chapter9;
 
 
-import chapter9.program9_2.callbacks.P9_2CursorCB;
-import chapter9.program9_2.callbacks.P9_2FrameBufferResizeCB;
-import chapter9.program9_2.callbacks.P9_2KeyCB;
 import engine.GLFWWindow;
 import engine.ShaderProgram;
 import engine.readers.ModelReader;
 import engine.sceneComponents.Camera;
 import engine.sceneComponents.Skybox;
 import engine.sceneComponents.models.Torus;
-import engine.sceneComponents.textures.CubeMapTexture;
 import engine.util.Color;
 import engine.util.Material;
 import engine.util.ShadowFrameBuffer;
@@ -54,7 +50,7 @@ public class Program9_2 {
     private static final float[] LIGHT_SPECULAR = {1.0f, 1.0f, 1.0f, 1.0f};
 
     private static Torus torus;
-    private static int renderingProgram1, renderingProgram2, skyBoxProgram;
+    private static int renderingProgram1, renderingProgram2;
 
 
     private static ModelReader pyramid, grid;
@@ -85,8 +81,8 @@ public class Program9_2 {
     private static Matrix4f lightPMat, lightVMat;
     private static ShadowFrameBuffer shadowFrameBuffer;
 
-    private static final Camera CAMERA = new Camera().sensitive(.04f).step(.05f);
-    private static final P9_2CursorCB CURSOR_CB = new P9_2CursorCB().setCamera(CAMERA);
+    private static final Camera camera = new Camera().sensitive(.04f).step(.05f);
+    private static final P9_2CursorCB CURSOR_CB = new P9_2CursorCB().setCamera(camera);
 
 
     public static void main(String[] args) {
@@ -102,32 +98,27 @@ public class Program9_2 {
 
     private static void init() {
         final int WINDOW_INIT_W = 1500, WINDOW_INIT_H = 1000;
-        CAMERA.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
+        camera.setProjMat(WINDOW_INIT_W, WINDOW_INIT_H);
         GLFWWindow glfwWindow = new GLFWWindow(WINDOW_INIT_W, WINDOW_INIT_H, "第9章 天空盒");
         windowHandle = glfwWindow.getID();
         glfwWindow.setClearColor(new Color(0f, 0f, 0f, 0f));
         shadowFrameBuffer = new ShadowFrameBuffer(windowHandle);
-        glfwSetFramebufferSizeCallback(windowHandle, new P9_2FrameBufferResizeCB(CAMERA, shadowFrameBuffer));
+        glfwSetFramebufferSizeCallback(windowHandle, new P9_2FrameBufferResizeCB(camera, shadowFrameBuffer));
         glfwSetCursorPosCallback(windowHandle, CURSOR_CB);
-        glfwSetKeyCallback(windowHandle, new P9_2KeyCB(CAMERA, CURSOR_CB));
+        glfwSetKeyCallback(windowHandle, new P9_2KeyCB(camera, CURSOR_CB));
         glEnable(GL_CULL_FACE);
         glFrontFace(GL_CCW);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE0);
         glActiveTexture(GL_TEXTURE1);
-        renderingProgram1 = new ShaderProgram(Path.of("src/main/java/chapter9/program9_2/shaders/vert1Shader.glsl")
-                , Path.of("src/main/java/chapter9/program9_2/shaders/frag1Shader.glsl"))
+        renderingProgram1 = new ShaderProgram(Path.of("assets/shaders/program9_2/vert1Shader.glsl")
+                , Path.of("assets/shaders/program9_2/frag1Shader.glsl"))
                 .getID();
-        renderingProgram2 = new ShaderProgram(Path.of("src/main/java/chapter9/program9_2/shaders/vert2Shader.glsl")
-                , Path.of("src/main/java/chapter9/program9_2/shaders/frag2Shader.glsl"))
-                .getID();
-        skyBoxProgram = new ShaderProgram(Path.of("src/main/java/chapter9/program9_2/shaders/skybox/CubeVertShader.glsl")
-                , Path.of("src/main/java/chapter9/program9_2/shaders/skybox/SkyboxFragShader.glsl"))
+        renderingProgram2 = new ShaderProgram(Path.of("assets/shaders/program9_2/vert2Shader.glsl")
+                , Path.of("assets/shaders/program9_2/frag2Shader.glsl"))
                 .getID();
 
-        CubeMapTexture skyboxTexture = new CubeMapTexture("src/main/java/chapter9/program9_2/skybox");
-        skyboxTexture.bind();
 
         setupVertices();
         getAllUniformsLoc();
@@ -154,7 +145,7 @@ public class Program9_2 {
 
         passTwo(torusMMat, pyramidMMat, gridMMat, GLFWWindow.getFrameBufferSize(windowHandle));
 
-        CAMERA.handle();
+        camera.handle();
 
         glfwSwapBuffers(windowHandle);
         glfwPollEvents();
@@ -166,7 +157,7 @@ public class Program9_2 {
         glUseProgram(renderingProgram1);
 
         lightVMat = new Matrix4f().lookAt(LIGHT_POS, ORIGIN, UP);
-        lightPMat = CAMERA.getProjMat(); // lightPMat 用的參數跟相機都是一樣的。
+        lightPMat = camera.getProjMat(); // lightPMat 用的參數跟相機都是一樣的。
         // 繪製torus
         Matrix4f shadowMVP1 = new Matrix4f().mul(lightPMat).mul(lightVMat).mul(torusMMat);
 
@@ -195,8 +186,8 @@ public class Program9_2 {
         System.out.println("Loading models...");
 
         torus = new Torus(.5f, .2f, 48, true);
-        pyramid = new ModelReader("src/main/java/chapter9/program9_2/models/pyr.obj");
-        grid = new ModelReader("src/main/java/chapter9/program9_2/models/bigCube.obj");
+        pyramid = new ModelReader("assets/models/pyr.obj");
+        grid = new ModelReader("assets/models/bigCube.obj");
 
         glGenVertexArrays(vao);
         glBindVertexArray(vao[0]);
@@ -220,13 +211,13 @@ public class Program9_2 {
         glBufferData(GL_ARRAY_BUFFER, grid.getPvalue(), GL_STATIC_DRAW);
 
         // skybox
-        skybox = new Skybox(CAMERA, "src/main/java/chapter9/program9_2/skybox");
+        skybox = new Skybox(camera, "assets/textures/skycubes/fluffyClouds");
         System.out.println("Model load done.");
     }
 
     private static void passTwo(Matrix4f torusMMat, Matrix4f pyramidMMat, Matrix4f gridMMat, int[] frameBufferSize) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        CAMERA.updateVMat();
+        camera.updateVMat();
 
         // Draw skybox
         skybox.draw();
@@ -241,11 +232,11 @@ public class Program9_2 {
 
         // 繪製torus
         setupLights(Material.goldAmbient(), Material.goldDiffuse(), Material.goldSpecular(), Material.goldShininess());
-        Matrix4f mvMat = new Matrix4f(CAMERA.getVMat()).mul(torusMMat);
+        Matrix4f mvMat = new Matrix4f(camera.getVMat()).mul(torusMMat);
         Matrix4f invTrMat = new Matrix4f(mvMat).invert().transpose();
         Matrix4f shadowMVP2 = new Matrix4f(B).mul(lightPMat).mul(lightVMat).mul(torusMMat);
         glUniformMatrix4fv(p2mvLoc, false, mvMat.get(valsOf16));
-        glUniformMatrix4fv(p2projLoc, false, CAMERA.getProjMat().get(valsOf16));
+        glUniformMatrix4fv(p2projLoc, false, camera.getProjMat().get(valsOf16));
         glUniformMatrix4fv(p2nLoc, false, invTrMat.get(valsOf16));
         glUniformMatrix4fv(p2sLoc, false, shadowMVP2.get(valsOf16));
 
@@ -255,11 +246,11 @@ public class Program9_2 {
 
         // 繪製pyramid
         setupLights(Material.bronzeAmbient(), Material.bronzeDiffuse(), Material.bronzeSpecular(), Material.bronzeShininess());
-        mvMat = new Matrix4f(CAMERA.getVMat()).mul(pyramidMMat);
+        mvMat = new Matrix4f(camera.getVMat()).mul(pyramidMMat);
         invTrMat = new Matrix4f(mvMat).invert().transpose();
         shadowMVP2 = new Matrix4f(B).mul(lightPMat).mul(lightVMat).mul(pyramidMMat);
         glUniformMatrix4fv(p2mvLoc, false, mvMat.get(valsOf16));
-        glUniformMatrix4fv(p2projLoc, false, CAMERA.getProjMat().get(valsOf16));
+        glUniformMatrix4fv(p2projLoc, false, camera.getProjMat().get(valsOf16));
         glUniformMatrix4fv(p2nLoc, false, invTrMat.get(valsOf16));
         glUniformMatrix4fv(p2sLoc, false, shadowMVP2.get(valsOf16));
 
@@ -272,11 +263,11 @@ public class Program9_2 {
 
         // 繪製grid
         setupLights(Material.silverAmbient(), Material.silverDiffuse(), Material.silverSpecular(), Material.silverShininess());
-        mvMat = new Matrix4f(CAMERA.getVMat()).mul(gridMMat);
+        mvMat = new Matrix4f(camera.getVMat()).mul(gridMMat);
         invTrMat = new Matrix4f(mvMat).invert().transpose();
         shadowMVP2 = new Matrix4f(B).mul(lightPMat).mul(lightVMat).mul(gridMMat);
         glUniformMatrix4fv(p2mvLoc, false, mvMat.get(valsOf16));
-        glUniformMatrix4fv(p2projLoc, false, CAMERA.getProjMat().get(valsOf16));
+        glUniformMatrix4fv(p2projLoc, false, camera.getProjMat().get(valsOf16));
         glUniformMatrix4fv(p2nLoc, false, invTrMat.get(valsOf16));
         glUniformMatrix4fv(p2sLoc, false, shadowMVP2.get(valsOf16));
 
@@ -317,7 +308,5 @@ public class Program9_2 {
         p2mshiLoc = glGetUniformLocation(renderingProgram2, "material.shininess");
         p2FrameBufferWidthLoc = glGetUniformLocation(renderingProgram2, "frameBufferSize.width");
         p2FrameBufferHeightLoc = glGetUniformLocation(renderingProgram2, "frameBufferSize.height");
-        int pSkyVMat = glGetUniformLocation(skyBoxProgram, "v_matrix");
-        int pSkyPMat = glGetUniformLocation(skyBoxProgram, "p_matrix");
     }
 }
