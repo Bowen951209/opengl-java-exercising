@@ -1,4 +1,4 @@
-package chapter9.program9_3.callbacks;
+package chapter9;
 
 
 import engine.sceneComponents.Camera;

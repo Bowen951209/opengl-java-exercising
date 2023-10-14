@@ -1,29 +1,26 @@
-package chapter9.program9_3.launcher;
+package chapter9;
 
 
-import org.joml.Vector3f;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
+import engine.GLFWWindow;
 import engine.ShaderProgram;
 import engine.sceneComponents.Camera;
-import engine.util.Color;
-import engine.GLFWWindow;
-import chapter9.program9_3.callbacks.P9_3Callbacks;
+import engine.sceneComponents.Skybox;
 import engine.sceneComponents.models.Torus;
-import engine.sceneComponents.textures.CubeMapTexture;
+import engine.util.Color;
+import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.nio.file.Path;
 
+import static engine.util.ValuesContainer.VALS_OF_16;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL43.*;
-import static engine.util.ValuesContainer.VALS_OF_16;
 
 public class Program9_3 {
 
     private static long windowID;
+    private static Skybox skybox;
 
     public static long getWindowID() {
         return windowID;
@@ -67,15 +64,10 @@ public class Program9_3 {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE1);
-        defaultProgram = new ShaderProgram(Path.of("src/main/java/chapter9/program9_3/shaders/default/vertShader.glsl")
-                , Path.of("src/main/java/chapter9/program9_3/shaders/default/fragShader.glsl"))
-                .getID();
-        skyBoxProgram = new ShaderProgram(Path.of("src/main/java/chapter9/program9_3/shaders/skybox/CubeVertShader.glsl")
-                , Path.of("src/main/java/chapter9/program9_3/shaders/skybox/SkyboxFragShader.glsl"))
+        defaultProgram = new ShaderProgram(Path.of("assets/shaders/program9_3/vertShader.glsl")
+                , Path.of("assets/shaders/program9_3/fragShader.glsl"))
                 .getID();
 
-        CubeMapTexture skyboxTexture = new CubeMapTexture("src/main/java/chapter9/program9_3/textures/skybox");
-        skyboxTexture.bind();
 
         setupVertices();
         getAllUniformsLoc();
@@ -109,50 +101,8 @@ public class Program9_3 {
 
         glGenBuffers(vbo);
 
-        FloatBuffer pvalues = BufferUtils.createFloatBuffer(torus.getVertices().length * 3);
-        FloatBuffer nvalues = BufferUtils.createFloatBuffer(torus.getNormals().length * 3);
-        IntBuffer indices = torus.getIndicesInBuffer();
-        for (int i = 0; i < torus.getNumVertices(); i++) {
-            pvalues.put(torus.getVertices()[i].x());         // vertex position
-            pvalues.put(torus.getVertices()[i].y());
-            pvalues.put(torus.getVertices()[i].z());
-
-            nvalues.put(torus.getNormals()[i].x());         // normal vector
-            nvalues.put(torus.getNormals()[i].y());
-            nvalues.put(torus.getNormals()[i].z());
-        }
-        pvalues.flip(); // 此行非常必要!
-        nvalues.flip();
-        indices.flip();
-
-        // Torus
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[0]); // #0: 頂點
-        glBufferData(GL_ARRAY_BUFFER, pvalues, GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[2]); // #2: 法向量
-        glBufferData(GL_ARRAY_BUFFER, nvalues, GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]); // #3: 索引
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
-
         // skybox
-        float[] skyboxVertices = {	-1.0f,  1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f,
-                1.0f, -1.0f, -1.0f, 1.0f,  1.0f, -1.0f, -1.0f,  1.0f, -1.0f,
-                1.0f, -1.0f, -1.0f, 1.0f, -1.0f,  1.0f, 1.0f,  1.0f, -1.0f,
-                1.0f, -1.0f,  1.0f, 1.0f,  1.0f,  1.0f, 1.0f,  1.0f, -1.0f,
-                1.0f, -1.0f,  1.0f, -1.0f, -1.0f,  1.0f, 1.0f,  1.0f,  1.0f,
-                -1.0f, -1.0f,  1.0f, -1.0f,  1.0f,  1.0f, 1.0f,  1.0f,  1.0f,
-                -1.0f, -1.0f,  1.0f, -1.0f, -1.0f, -1.0f, -1.0f,  1.0f,  1.0f,
-                -1.0f, -1.0f, -1.0f, -1.0f,  1.0f, -1.0f, -1.0f,  1.0f,  1.0f,
-                -1.0f, -1.0f,  1.0f,  1.0f, -1.0f,  1.0f,  1.0f, -1.0f, -1.0f,
-                1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f,  1.0f,
-                -1.0f,  1.0f, -1.0f, 1.0f,  1.0f, -1.0f, 1.0f,  1.0f,  1.0f,
-                1.0f,  1.0f,  1.0f, -1.0f,  1.0f,  1.0f, -1.0f,  1.0f, -1.0f
-        };
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[4]);
-        glBufferData(GL_ARRAY_BUFFER, skyboxVertices, GL_STATIC_DRAW);
+        skybox = new Skybox(CAMERA, "assets/textures/skycubes/lakesIsland");
 
         System.out.println("Model load done.");
     }
@@ -164,9 +114,8 @@ public class Program9_3 {
         glUniformMatrix4fv(pSkyVMat, false, CAMERA.getVMat().get(VALS_OF_16));
         glUniformMatrix4fv(pSkyPMat, false, CAMERA.getProjMat().get(VALS_OF_16));
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[4]);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-        glDrawArrays(GL_TRIANGLES, 0, 108);
+        skybox.draw();
+
 
         glEnable(GL_DEPTH_TEST);
     }
@@ -185,13 +134,8 @@ public class Program9_3 {
 //        glUniformMatrix4fv(pDefaultNormLoc, false, invTrMat.get(VALS_OF_16));
         glUniformMatrix4fv(pDefaultNormLoc, false, torus.getInvTrMat().get(VALS_OF_16));
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
-        glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
-
 //        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]);
-        glDrawElements(GL_TRIANGLES, torus.getNumIndices(), GL_UNSIGNED_INT, 0);
+        torus.draw(GL_TRIANGLES);
     }
 
     private static void getAllUniformsLoc() {

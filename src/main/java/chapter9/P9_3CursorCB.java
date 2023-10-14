@@ -1,6 +1,6 @@
-package chapter9.program9_3.callbacks;
+package chapter9;
 
-import chapter9.program9_3.launcher.Program9_3;
+import chapter9.Program9_3;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import engine.sceneComponents.Camera;
