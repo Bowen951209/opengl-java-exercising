@@ -57,13 +57,13 @@ public class Program5_1 {
         // 設定frameBuffer大小改變callback
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
-        int program = new ShaderProgram(Path.of("src/main/java/chapter5/Shaders/for5_1/VertexShader.glsl")
-                , Path.of("src/main/java/chapter5/Shaders/for5_1/FragmentShader.glsl"))
+        int program = new ShaderProgram(Path.of("assets/shaders/program5_1/VertexShader.glsl")
+                , Path.of("assets/shaders/program5_1/FragmentShader.glsl"))
                 .getID();
 
         cameraX = 0f; cameraY = 0f; cameraZ = 8f;
         setupVertices();
-        brickTexture = new TextureReader("src/main/java/chapter5/textures/brick.jpg").getTexID();
+        brickTexture = new TextureReader("assets/textures/imageTextures/brick0.jpg").getTexID();
         
         glUseProgram(program);
         System.out.println("Using ProgramID: " + program);
