@@ -1,6 +1,5 @@
-package chapter10.program10_4.launcher;
+package chapter10;
 
-import chapter10.program10_3.launcher.Program10_3;
 import engine.gui.GUI;
 import engine.sceneComponents.textures.Texture2D;
 import engine.util.Color;

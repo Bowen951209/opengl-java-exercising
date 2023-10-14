@@ -1,4 +1,4 @@
-package chapter10.program10_1.launcher;
+package chapter10;
 
 
 import engine.GLFWWindow;

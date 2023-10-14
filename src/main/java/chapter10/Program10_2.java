@@ -1,6 +1,5 @@
-package chapter10.program10_2.launcher;
+package chapter10;
 
-import chapter10.program10_1.launcher.Program10_1;
 import engine.util.Color;
 import engine.GLFWWindow;
 import engine.util.Material;
