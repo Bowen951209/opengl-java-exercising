@@ -1,4 +1,4 @@
-package chapter7.lighting_and_texture;
+package chapter7;
 
 
 import engine.util.Color;
@@ -20,7 +20,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL43.*;
 
 
-public class Main {
+public class Program7_2 {
     private static long windowHandle;
 
     private static float cameraX, cameraY, cameraZ;
@@ -51,7 +51,7 @@ public class Main {
     private static final FloatBuffer lightPos = BufferUtils.createFloatBuffer(3);
 
     private static int blinnPhongProgram;
-    private static final ModelReader DOLPHIN = new ModelReader("src/main/java/chapter7/lighting_and_texture/models/dolphinHighPoly.obj");
+    private static final ModelReader DOLPHIN = new ModelReader("assets/models/dolphinHighPoly.obj");
     private static TextureReader dolphinTex;
     private static int globalAmbLoc, ambLoc, diffLoc, mShiLoc, specLoc, posLoc;
 
@@ -71,10 +71,10 @@ public class Main {
         createProjMat(windowCreatedW, windowCreatedH);
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
-        blinnPhongProgram = new ShaderProgram(Path.of("src/main/java/chapter7/lighting_and_texture/shaders/VertexShader.glsl")
-                , Path.of("src/main/java/chapter7/lighting_and_texture/shaders/FragmentShader.glsl"))
+        blinnPhongProgram = new ShaderProgram(Path.of("assets/shaders/program7_2/VertexShader.glsl")
+                , Path.of("assets/shaders/program7_2/FragmentShader.glsl"))
                 .getID();
-        dolphinTex = new TextureReader("src/main/java/chapter7/lighting_and_texture/textures/Dolphin_HighPolyUV.png");
+        dolphinTex = new TextureReader("assets/textures/imageTextures/Dolphin_HighPolyUV.png");
 
         cameraX = 0f;
         cameraY = 0f;
