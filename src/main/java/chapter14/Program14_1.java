@@ -16,7 +16,7 @@ import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL43.*;
 
-public class Main extends App {
+public class Program14_1 extends App {
     private TessGrid grid;
     private Torus torus0, torus1;
     private PositionalLight light;
@@ -282,6 +282,6 @@ public class Main extends App {
     }
 
     public static void main(String[] args) {
-        new Main().run(false, true);
+        new Program14_1().run(false, true);
     }
 }
