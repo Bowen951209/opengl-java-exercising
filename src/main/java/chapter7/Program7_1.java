@@ -65,6 +65,7 @@ public class Program7_1 {
     static String usingModel = "stanford-dragon";
     private static IntBuffer indices;
     private static FloatBuffer pvalues, nvalues;
+    private static int[] vao = new int[1];
 
     public static void main(String[] args) {
         init();
@@ -150,10 +151,19 @@ public class Program7_1 {
 
 
             switch (usingModel) {
-                case "torus" -> glDrawElements(GL_TRIANGLES, myTorus.getNumIndices(), GL_UNSIGNED_INT, 0);
-                case "dolphin" -> glDrawArrays(GL_TRIANGLES, 0, dolphin.getNumOfVertices());
-                case "stanford-bunny" -> glDrawArrays(GL_TRIANGLES, 0, stanfordBunny.getNumOfVertices());
-                case "stanford-dragon" -> glDrawArrays(GL_TRIANGLES, 0, stanfordDragon.getNumOfVertices());
+                case "torus" -> myTorus.draw(GL_TRIANGLES);
+                case "dolphin" -> {
+                    glBindVertexArray(vao[0]);
+                    glDrawArrays(GL_TRIANGLES, 0, dolphin.getNumOfVertices());
+                }
+                case "stanford-bunny" -> {
+                    glBindVertexArray(vao[0]);
+                    glDrawArrays(GL_TRIANGLES, 0, stanfordBunny.getNumOfVertices());
+                }
+                case "stanford-dragon" -> {
+                    glBindVertexArray(vao[0]);
+                    glDrawArrays(GL_TRIANGLES, 0, stanfordDragon.getNumOfVertices());
+                }
             }
 
 
@@ -199,7 +209,6 @@ public class Program7_1 {
         stanfordBunny = new ModelReader("assets/models/stanford-bunny.obj");
         stanfordDragon = new ModelReader("assets/models/stanford-dragon.obj");
 
-        int[] vao = new int[1];
         glGenVertexArrays(vao);
         glBindVertexArray(vao[0]);
 
