@@ -1,4 +1,4 @@
-package chapter7.program7_1;
+package chapter7;
 
 import org.lwjgl.glfw.GLFWKeyCallbackI;
 

@@ -1,4 +1,4 @@
-package chapter7.program7_1;
+package chapter7;
 
 
 import engine.sceneComponents.models.Torus;
@@ -84,14 +84,14 @@ public class Program7_1 {
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
 
-        gouraudProgram = new ShaderProgram(Path.of("src/main/java/chapter7/program7_1/shaders/gouraud/vertShader.glsl")
-                , Path.of("src/main/java/chapter7/program7_1/shaders/gouraud/fragShader.glsl"))
+        gouraudProgram = new ShaderProgram(Path.of("assets/shaders/program7_1/gouraud/vertShader.glsl")
+                , Path.of("assets/shaders/program7_1/gouraud/fragShader.glsl"))
                 .getID();
-        phongProgram = new ShaderProgram(Path.of("src/main/java/chapter7/program7_1/shaders/phong/vertShader.glsl")
-                , Path.of("src/main/java/chapter7/program7_1/shaders/phong/fragShader.glsl"))
+        phongProgram = new ShaderProgram(Path.of("assets/shaders/program7_1/phong/vertShader.glsl")
+                , Path.of("assets/shaders/program7_1/phong/fragShader.glsl"))
                 .getID();
-        blinnPhongProgram = new ShaderProgram(Path.of("src/main/java/chapter7/program7_1/shaders/blinnPhong/vertShader.glsl")
-                , Path.of("src/main/java/chapter7/program7_1/shaders/blinnPhong/fragShader.glsl"))
+        blinnPhongProgram = new ShaderProgram(Path.of("assets/shaders/program7_1/blinnPhong/vertShader.glsl")
+                , Path.of("assets/shaders/program7_1/blinnPhong/fragShader.glsl"))
                 .getID();
 
         cameraX = 0f;
@@ -195,9 +195,9 @@ public class Program7_1 {
     private static void setupVertices() {
         System.out.println("Loading models...");
         myTorus = new Torus(.5f, .2f, 48, true);
-        dolphin = new ModelReader("src/main/java/chapter7/program7_1/models/dolphinHighPoly.obj");
-        stanfordBunny = new ModelReader("src/main/java/chapter7/program7_1/models/stanford-bunny.obj");
-        stanfordDragon = new ModelReader("src/main/java/chapter7/program7_1/models/stanford-dragon.obj");
+        dolphin = new ModelReader("assets/models/dolphinHighPoly.obj");
+        stanfordBunny = new ModelReader("assets/models/stanford-bunny.obj");
+        stanfordDragon = new ModelReader("assets/models/stanford-dragon.obj");
 
         int[] vao = new int[1];
         glGenVertexArrays(vao);
