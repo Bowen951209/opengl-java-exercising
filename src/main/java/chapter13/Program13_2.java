@@ -1,6 +1,5 @@
-package chapter13.program13_2;
+package chapter13;
 
-import chapter13.program13_1.Program13_1;
 import org.joml.Vector3f;
 import engine.GLFWWindow;
 import engine.util.Material;
