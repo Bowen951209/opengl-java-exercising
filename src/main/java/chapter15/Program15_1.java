@@ -21,7 +21,7 @@ import org.lwjgl.glfw.GLFW;
 import static org.lwjgl.opengl.GL43.*;
 
 /*This chapter will simulate water*/
-public class Main extends App {
+public class Program15_1 extends App {
     private static final float WAVE_SPEED = 0.002f;
     private Skybox skybox;
     private Grid floor, waterSurface;
@@ -323,6 +323,6 @@ public class Main extends App {
     }
 
     public static void main(String[] args) {
-        new Main().run(true, true);
+        new Program15_1().run(true, true);
     }
 }
