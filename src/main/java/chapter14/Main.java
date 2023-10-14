@@ -72,8 +72,8 @@ public class Main extends App {
 
         // model file
         pyramid = new FileModel("assets/models/pyr.obj", true);
-        cube0 = new FileModel("assets/models/cube.obj", new Vector3f(1f, -0.7f, 1f), false);
-        cube1 = new FileModel("assets/models/cube.obj", new Vector3f(2.5f, -0.7f, 1f), false);
+        cube0 = new FileModel("assets/models/bigCube.obj", new Vector3f(1f, -0.7f, 1f), false);
+        cube1 = new FileModel("assets/models/bigCube.obj", new Vector3f(2.5f, -0.7f, 1f), false);
         dragon = new FileModel("assets/models/simplify-scaled-stanford-dragon.obj", new Vector3f(0f, 1.5f, 0f), false) {
             @Override
             protected void updateMMat() {

@@ -196,7 +196,7 @@ public class Program9_2 {
 
         torus = new Torus(.5f, .2f, 48, true);
         pyramid = new ModelReader("src/main/java/chapter9/program9_2/models/pyr.obj");
-        grid = new ModelReader("src/main/java/chapter9/program9_2/models/cube.obj");
+        grid = new ModelReader("src/main/java/chapter9/program9_2/models/bigCube.obj");
 
         glGenVertexArrays(vao);
         glBindVertexArray(vao[0]);

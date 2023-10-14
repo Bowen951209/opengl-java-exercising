@@ -1,4 +1,4 @@
-package chapter8.program8_1.callbacks;
+package chapter8;
 
 import engine.util.ShadowFrameBuffer;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;

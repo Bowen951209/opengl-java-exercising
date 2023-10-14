@@ -1,4 +1,4 @@
-package chapter8.program8_1.callbacks;
+package chapter8;
 
 import org.lwjgl.glfw.GLFWKeyCallback;
 import engine.sceneComponents.Camera;

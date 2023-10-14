@@ -1,9 +1,6 @@
-package chapter8.program8_1.launcher;
+package chapter8;
 
 
-import chapter8.program8_1.callbacks.CursorCB;
-import chapter8.program8_1.callbacks.FrameBufferResizeCB;
-import chapter8.program8_1.callbacks.KeyCB;
 import engine.GLFWWindow;
 import engine.ShaderProgram;
 import engine.readers.ModelReader;
@@ -97,11 +94,11 @@ public class Program8_1 {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE0);
-        renderingProgram1 = new ShaderProgram(Path.of("src/main/java/chapter8/program8_1/shaders/vert1Shader.glsl")
-                , Path.of("src/main/java/chapter8/program8_1/shaders/frag1Shader.glsl"))
+        renderingProgram1 = new ShaderProgram(Path.of("assets/shaders/program8_1/vert1Shader.glsl")
+                , Path.of("assets/shaders/program8_1/frag1Shader.glsl"))
                 .getID();
-        renderingProgram2 = new ShaderProgram(Path.of("src/main/java/chapter8/program8_1/shaders/vert2Shader.glsl")
-                , Path.of("src/main/java/chapter8/program8_1/shaders/frag2Shader.glsl"))
+        renderingProgram2 = new ShaderProgram(Path.of("assets/shaders/program8_1/vert2Shader.glsl")
+                , Path.of("assets/shaders/program8_1/frag2Shader.glsl"))
                 .getID();
 
         setupVertices();
@@ -170,8 +167,8 @@ public class Program8_1 {
         System.out.println("Loading models...");
 
         torus = new Torus(.5f, .2f, 48, true);
-        pyramid = new ModelReader("src/main/java/chapter8/program8_1/models/pyr.obj");
-        grid = new ModelReader("src/main/java/chapter8/program8_1/models/cube.obj");
+        pyramid = new ModelReader("assets/models/pyr.obj");
+        grid = new ModelReader("assets/models/bigCube.obj");
 
         glGenVertexArrays(vao);
         glBindVertexArray(vao[0]);
