@@ -1,4 +1,4 @@
-package chapter12.program12_3.launcher;
+package chapter12;
 
 import engine.gui.GUI;
 import engine.sceneComponents.textures.Texture2D;

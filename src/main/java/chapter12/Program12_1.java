@@ -1,4 +1,4 @@
-package chapter12.program12_1.launcher;
+package chapter12;
 
 import chapter10.Program10_4;
 import org.joml.Matrix4f;

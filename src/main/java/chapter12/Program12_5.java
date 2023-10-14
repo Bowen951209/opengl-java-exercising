@@ -1,6 +1,5 @@
-package chapter12.program12_5;
+package chapter12;
 
-import chapter12.program12_4.launcher.Program12_4;
 import engine.gui.GUI;
 import engine.sceneComponents.textures.Texture2D;
 import engine.util.Material;
