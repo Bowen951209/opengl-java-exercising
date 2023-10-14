@@ -59,15 +59,15 @@ public class Program6_3 {
         // 設定frameBuffer大小改變callback
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
-        int program = new ShaderProgram(Path.of("src/main/java/chapter6/ShadersFor6_3/VertexShader.glsl")
-                , Path.of("src/main/java/chapter6/ShadersFor6_3/FragmentShader.glsl"))
+        int program = new ShaderProgram(Path.of("assets/shaders/program6_3/VertexShader.glsl")
+                , Path.of("assets/shaders/program6_3/FragmentShader.glsl"))
                 .getID();
 
         cameraX = 0f;
         cameraY = 0f;
         cameraZ = 4f;
         setupVertices();
-        texture = new TextureReader("src/main/java/chapter6/resourcesFor6_3/capsule0.jpg").getTexID();
+        texture = new TextureReader("assets/textures/imageTextures/capsule0.jpg").getTexID();
 
         glUseProgram(program);
         System.out.println("Using ProgramID: " + program);
@@ -125,7 +125,7 @@ public class Program6_3 {
 
 
     private static void setupVertices() {
-        myModel = new ModelReader("src/main/java/chapter6/resourcesFor6_3/capsule.obj");
+        myModel = new ModelReader("assets/models/capsule.obj");
 
 
         int[] vao = new int[1];
