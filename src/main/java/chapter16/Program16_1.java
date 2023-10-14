@@ -1,4 +1,4 @@
-package chapter16_ray_tracing;
+package chapter16;
 import static org.lwjgl.opengl.GL43.*;
 import engine.App;
 import engine.GLFWWindow;
