@@ -118,8 +118,10 @@ public class ProgramSelector extends JFrame {
     }
 
     public static void main(String[] args) {
-        new ProgramSelector(Toolkit.getDefaultToolkit().getScreenSize().width / 5,
-                (int) (Toolkit.getDefaultToolkit().getScreenSize().height / 1.5));
+        new ProgramSelector(
+                (int) (Toolkit.getDefaultToolkit().getScreenSize().width / 5.0f),
+                (int) (Toolkit.getDefaultToolkit().getScreenSize().height / 1.5f)
+        );
     }
 
     private static class LauncherButton extends JButton {
