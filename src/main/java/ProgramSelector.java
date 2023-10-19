@@ -111,6 +111,7 @@ public class ProgramSelector extends JFrame {
         // Make my panel scrollable
         JScrollPane scrollPane = new JScrollPane(panel);
         scrollPane.setPreferredSize(new Dimension(initWidth, initHeight));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(20);
         add(scrollPane);
 
         pack(); // let the frame fit to the size of the components inside
