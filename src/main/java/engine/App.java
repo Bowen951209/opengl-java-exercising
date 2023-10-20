@@ -33,7 +33,7 @@ public abstract class App {
     }
 
     protected Camera camera;
-    private boolean isWantGUI, isWantCullFace;
+    private boolean wantGUI, wantCullFace;
     protected List<FileModel> fileModelList = new ArrayList<>() {
         @Override
         public boolean add(FileModel fileModel) {
@@ -68,7 +68,7 @@ public abstract class App {
 
     private void configGL() {
         // GL settings
-        if (isWantCullFace)
+        if (wantCullFace)
             glEnable(GL_CULL_FACE);
         glFrontFace(GL_CCW);
         glEnable(GL_DEPTH_TEST);
@@ -81,7 +81,7 @@ public abstract class App {
         camera.updateVMat();
 
         drawScene();
-        if (isWantGUI)
+        if (wantGUI)
             gui.update();
 
         camera.handle();
@@ -107,12 +107,12 @@ public abstract class App {
         camera = new Camera(glfwWindow.getInitWidth(), glfwWindow.getInitHeight()); // camera customizedInit.
         initTextures();
         initModels();
-        defaultCallbacks = new DefaultCallbacks(glfwWindow.getID(), camera, isWantGUI); // callback.
+        defaultCallbacks = new DefaultCallbacks(glfwWindow.getID(), camera, wantGUI); // callback.
         defaultCallbacks.bindToGLFW();
         addCallbacks();
         getAllUniformLocs();
         configGL(); // In some programs, like one using tessellation, wouldn't work with face culling.
-        if (isWantGUI)
+        if (wantGUI)
             initGUI();
 
 
@@ -152,13 +152,13 @@ public abstract class App {
     }
 
     public void run(boolean isWantGUI) {
-        this.isWantGUI = isWantGUI;
+        this.wantGUI = isWantGUI;
         run();
     }
 
     public void run(boolean isWantCullFace, boolean isWantGUI) {
-        this.isWantCullFace = isWantCullFace;
-        this.isWantGUI = isWantGUI;
+        this.wantCullFace = isWantCullFace;
+        this.wantGUI = isWantGUI;
         run();
     }
 }
