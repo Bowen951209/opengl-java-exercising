@@ -167,6 +167,7 @@ public class ShaderProgram {
         glLinkProgram(programID);
         checkLinkStatus(programID);
 
+        glDeleteShader(computeShaderID);
         return programID;
     }
 
