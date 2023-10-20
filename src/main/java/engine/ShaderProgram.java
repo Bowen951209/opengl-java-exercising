@@ -15,12 +15,11 @@ import static org.lwjgl.opengl.GL43.*;
 
 public class ShaderProgram {
     private final int id;
+    private final HashMap<String, Integer> uniformLocMap = new HashMap<>();
 
     public int getID() {
         return id;
     }
-
-    private final HashMap<String, Integer> uniformLocMap = new HashMap<>();
 
     public int getUniformLoc(String uniformName) {
         if (this.uniformLocMap.get(uniformName) != null) {
