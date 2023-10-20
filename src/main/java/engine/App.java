@@ -17,6 +17,28 @@ import static org.lwjgl.opengl.GL11.*;
 public abstract class App {
     protected GLFWWindow glfwWindow;
     private DefaultCallbacks defaultCallbacks;
+    protected GUI gui;
+    protected Camera camera;
+    private boolean wantGUI, wantCullFace;
+    private final Timer timer = new Timer();
+    private float fps;
+
+    protected List<FileModel> fileModelList = new ArrayList<>() {
+        @Override
+        public boolean add(FileModel fileModel) {
+            fileModel.start();
+            return super.add(fileModel);
+        }
+    };
+
+    protected List<Texture3D> texture3DList = new ArrayList<>() {
+        @Override
+        public boolean add(Texture3D texture3D) {
+            texture3D.start();
+            return super.add(texture3D);
+        }
+    };
+
 
     public final DefaultCallbacks getDefaultCallbacks() {
         return defaultCallbacks;
@@ -26,70 +48,12 @@ public abstract class App {
         return glfwWindow;
     }
 
-    protected GUI gui;
-
     public final GUI getGui() {
         return gui;
     }
 
-    protected Camera camera;
-    private boolean wantGUI, wantCullFace;
-    protected List<FileModel> fileModelList = new ArrayList<>() {
-        @Override
-        public boolean add(FileModel fileModel) {
-            fileModel.start();
-            return super.add(fileModel);
-        }
-    };
-    protected List<Texture3D> texture3DList = new ArrayList<>() {
-        @Override
-        public boolean add(Texture3D texture3D) {
-            texture3D.start();
-            return super.add(texture3D);
-        }
-    };
-
-    private final Timer timer = new Timer();
-    private float fps;
-
     public final float getFps() {
         return fps;
-    }
-
-    protected void customizedInit() {
-    }
-
-    protected void getAllUniformLocs() {
-    }
-
-    protected abstract void drawScene();
-
-    protected abstract void destroy();
-
-    private void configGL() {
-        // GL settings
-        if (wantCullFace)
-            glEnable(GL_CULL_FACE);
-        glFrontFace(GL_CCW);
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-    }
-
-    protected void loop() {
-        timer.start();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        camera.updateVMat();
-
-        drawScene();
-        if (wantGUI)
-            gui.update();
-
-        camera.handle();
-
-        glfwSwapBuffers(glfwWindow.getID());
-        glfwPollEvents();
-        timer.end();
-        fps = timer.getFps();
     }
 
     protected void run() {
@@ -130,6 +94,53 @@ public abstract class App {
         destroy();
     }
 
+    protected void loop() {
+        timer.start();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        camera.updateVMat();
+
+        drawScene();
+        if (wantGUI)
+            gui.update();
+
+        camera.handle();
+
+        glfwSwapBuffers(glfwWindow.getID());
+        glfwPollEvents();
+        timer.end();
+        fps = timer.getFps();
+    }
+
+    private void configGL() {
+        // GL settings
+        if (wantCullFace)
+            glEnable(GL_CULL_FACE);
+        glFrontFace(GL_CCW);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+    }
+
+    public void run(boolean isWantGUI) {
+        this.wantGUI = isWantGUI;
+        run();
+    }
+
+    public void run(boolean isWantCullFace, boolean isWantGUI) {
+        this.wantCullFace = isWantCullFace;
+        this.wantGUI = isWantGUI;
+        run();
+    }
+
+    protected abstract void drawScene();
+
+    protected abstract void destroy();
+
+    protected void customizedInit() {
+    }
+
+    protected void getAllUniformLocs() {
+    }
+
     protected void addCallbacks() {
     }
 
@@ -149,16 +160,5 @@ public abstract class App {
     }
 
     protected void initGUI() {
-    }
-
-    public void run(boolean isWantGUI) {
-        this.wantGUI = isWantGUI;
-        run();
-    }
-
-    public void run(boolean isWantCullFace, boolean isWantGUI) {
-        this.wantCullFace = isWantCullFace;
-        this.wantGUI = isWantGUI;
-        run();
     }
 }
