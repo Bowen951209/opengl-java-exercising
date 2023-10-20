@@ -40,8 +40,8 @@ public class GLFWWindow {
     public long getID() {
         return windowHandle;
     }
-    private static final int glMajorVer = 4;
-    private static final int glMinorVer = 3;
+    private static final int MAJOR_VERSION = 4;
+    private static final int MINOR_VERSION = 3;
 
 
     private static Color clearColor = new Color(0f, 0f,0f, 0f);
@@ -64,8 +64,8 @@ public class GLFWWindow {
             System.out.println("GLFW Failed To Init!");
         }
         // 設定GLFW
-        GLFW.glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, glMajorVer);
-        GLFW.glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, glMinorVer);
+        GLFW.glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, MAJOR_VERSION);
+        GLFW.glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, MINOR_VERSION);
         GLFW.glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
         windowHandle = glfwCreateWindow(glfwWidth,glfwHeight, title, MemoryUtil.NULL, MemoryUtil.NULL);
