@@ -81,6 +81,10 @@ public class ShaderProgram {
         return id;
     }
 
+    public void delete() {
+        glDeleteProgram(this.id);
+    }
+
     // Compute shader
     public ShaderProgram(String computeShaderPath) {
         String shaderSource = new GLSLReader(Path.of(computeShaderPath)).getString();
