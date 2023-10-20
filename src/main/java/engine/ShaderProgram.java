@@ -207,7 +207,7 @@ public class ShaderProgram {
         return programID;
     }
 
-    public static void checkLinkStatus(int programID) {
+    private static void checkLinkStatus(int programID) {
         if (glGetProgrami(programID, GL_LINK_STATUS) == 0) {
             throw new ProgramLinkedFailedException("App" + programID + " linked failed\n" + glGetProgramInfoLog(programID));
         } else {
