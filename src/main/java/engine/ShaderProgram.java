@@ -20,11 +20,6 @@ public class ShaderProgram {
         return id;
     }
 
-    public int use() {
-        glUseProgram(id);
-        return id;
-    }
-
     private final HashMap<String, Integer> uniformLocMap = new HashMap<>();
 
     public int getUniformLoc(String uniformName) {
@@ -82,6 +77,10 @@ public class ShaderProgram {
         glProgramUniform4fv(id, getUniformLoc(uniformName), value);
     }
 
+    public int use() {
+        glUseProgram(id);
+        return id;
+    }
 
     // Compute shader
     public ShaderProgram(String computeShaderPath) {
