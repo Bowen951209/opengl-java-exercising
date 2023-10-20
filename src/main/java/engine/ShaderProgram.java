@@ -178,6 +178,8 @@ public class ShaderProgram {
         glLinkProgram(programID);
         checkLinkStatus(programID);
 
+        glDeleteShader(vertexShaderID);
+        glDeleteShader(fragmentShaderID);
         return programID;
     }
 
@@ -189,6 +191,9 @@ public class ShaderProgram {
         glLinkProgram(programID);
         checkLinkStatus(programID);
 
+        glDeleteShader(vertexShaderID);
+        glDeleteShader(fragmentShaderID);
+        glDeleteShader(geometryShaderID);
         return programID;
     }
 
@@ -202,6 +207,10 @@ public class ShaderProgram {
         glLinkProgram(programID);
         checkLinkStatus(programID);
 
+        glDeleteShader(vertexShaderID);
+        glDeleteShader(fragmentShaderID);
+        glDeleteShader(tessellationControlShaderID);
+        glDeleteShader(tessellationEvaluationShaderID);
         return programID;
     }
 
