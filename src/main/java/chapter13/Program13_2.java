@@ -8,12 +8,7 @@ import engine.util.ValuesContainer;
 import engine.exceptions.InvalidMaterialException;
 import engine.sceneComponents.models.Torus;
 
-import static org.lwjgl.opengl.GL11.GL_CCW;
-import static org.lwjgl.opengl.GL11.GL_CW;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.glFrontFace;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL20.glUniform1i;
 
 public class Program13_2 extends Program13_1 {
     public Program13_2() {

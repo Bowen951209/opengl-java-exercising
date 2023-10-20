@@ -8,7 +8,6 @@ import engine.util.ValuesContainer;
 import engine.exceptions.InvalidMaterialException;
 import engine.sceneComponents.models.Torus;
 
-import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 
 public class Program13_4 extends Program13_2 {

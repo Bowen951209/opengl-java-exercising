@@ -63,7 +63,7 @@ public class GUI {
 
         imGuiImplGl3.renderDrawData(ImGui.getDrawData());
     }
-    @Deprecated
+
     protected void drawFrame() {ImGui.newFrame();}
 
     public GUI addComponents(GuiComponents components) {

@@ -96,23 +96,23 @@ public class Program16_2 extends App {
         fullScreenQuad = new FullScreenQuad();
 
 
-        box = new Box(Material.bronzeAmbient(), Material.bronzeDiffuse(), Material.bronzeSpecular(),
-                Material.bronzeShininess(), -.5f, -.5f, -1, .5f,
+        box = new Box(Material.BRONZE_AMBIENT, Material.BRONZE_DIFFUSE, Material.BRONZE_SPECULAR,
+                Material.BRONZE_SHININESS, -.5f, -.5f, -1, .5f,
                 .5f, 1)
                 .setRotation(boxRotation)
                 .setPosition(boxPosition);
 
         modelObjects = new ModelObject[]{
-                new RoomBox(Material.goldAmbient(), Material.goldDiffuse(),
-                        Material.goldSpecular(), Material.goldShininess(), true,
+                new RoomBox(Material.GOLD_AMBIENT, Material.GOLD_DIFFUSE,
+                        Material.GOLD_SPECULAR, Material.GOLD_SHININESS, true,
                         20).setColor(1, .5f, .5f),
 
-                new Plane(Material.jadeAmbient(), Material.jadeDiffuse(), Material.jadeSpecular(),
-                        Material.jadeShininess(), -2.5f, 12, 12)
+                new Plane(Material.JADE_AMBIENT, Material.JADE_DIFFUSE, Material.JADE_SPECULAR,
+                        Material.JADE_SHININESS, -2.5f, 12, 12)
                         .setRotation(0, (float) (Math.PI / 4f), 0), // 45deg on Y
 
-                new Sphere(Material.silverAmbient(), Material.silverDiffuse(),
-                        Material.silverSpecular(), Material.silverShininess(), 2.5f
+                new Sphere(Material.SILVER_AMBIENT, Material.SILVER_DIFFUSE,
+                        Material.SILVER_SPECULAR, Material.SILVER_SHININESS, 2.5f
                 ).setPosition(.5f, 0, -3).setRefraction(.8f, 1.5f),
 
                 box

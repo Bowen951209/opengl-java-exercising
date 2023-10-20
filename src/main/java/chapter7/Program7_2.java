@@ -46,7 +46,7 @@ public class Program7_2 {
     private static final float[] lightDiffuse = {1.0f, 1.0f, 1.0f, 1.0f};
     private static final float[] lightSpecular = {1.0f, 1.0f, 1.0f, 1.0f};
 
-    private static final float matShi = Material.goldShininess();
+    private static final float matShi = Material.GOLD_SHININESS;
 
     private static final FloatBuffer lightPos = BufferUtils.createFloatBuffer(3);
 

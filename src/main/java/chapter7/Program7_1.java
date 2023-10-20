@@ -48,10 +48,10 @@ public class Program7_1 {
     private static final float[] lightSpecular = {1.0f, 1.0f, 1.0f, 1.0f};
 
     // 黃金材質特性
-    private static final float[] matAmb = Material.goldAmbient();
-    private static final float[] matDif = Material.goldDiffuse();
-    private static final float[] matSpe = Material.goldSpecular();
-    private static final float matShi = Material.goldShininess();
+    private static final float[] matAmb = Material.GOLD_AMBIENT;
+    private static final float[] matDif = Material.GOLD_DIFFUSE;
+    private static final float[] matSpe = Material.GOLD_SPECULAR;
+    private static final float matShi = Material.GOLD_SHININESS;
 
     private static final float[] lightPos = new float[3];
     private static Torus myTorus;
@@ -65,7 +65,7 @@ public class Program7_1 {
     static String usingModel = "stanford-dragon";
     private static IntBuffer indices;
     private static FloatBuffer pvalues, nvalues;
-    private static int[] vao = new int[1];
+    private static final int[] vao = new int[1];
 
     public static void main(String[] args) {
         init();

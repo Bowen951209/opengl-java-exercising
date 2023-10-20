@@ -231,7 +231,7 @@ public class Program9_2 {
         glUniform1i(p2FrameBufferHeightLoc, frameBufferSize[1]);
 
         // 繪製torus
-        setupLights(Material.goldAmbient(), Material.goldDiffuse(), Material.goldSpecular(), Material.goldShininess());
+        setupLights(Material.GOLD_AMBIENT, Material.GOLD_DIFFUSE, Material.GOLD_SPECULAR, Material.GOLD_SHININESS);
         Matrix4f mvMat = new Matrix4f(camera.getVMat()).mul(torusMMat);
         Matrix4f invTrMat = new Matrix4f(mvMat).invert().transpose();
         Matrix4f shadowMVP2 = new Matrix4f(B).mul(lightPMat).mul(lightVMat).mul(torusMMat);
@@ -245,7 +245,7 @@ public class Program9_2 {
         glBindVertexArray(vao[0]);
 
         // 繪製pyramid
-        setupLights(Material.bronzeAmbient(), Material.bronzeDiffuse(), Material.bronzeSpecular(), Material.bronzeShininess());
+        setupLights(Material.BRONZE_AMBIENT, Material.BRONZE_DIFFUSE, Material.BRONZE_SPECULAR, Material.BRONZE_SHININESS);
         mvMat = new Matrix4f(camera.getVMat()).mul(pyramidMMat);
         invTrMat = new Matrix4f(mvMat).invert().transpose();
         shadowMVP2 = new Matrix4f(B).mul(lightPMat).mul(lightVMat).mul(pyramidMMat);
@@ -262,7 +262,7 @@ public class Program9_2 {
         glDrawArrays(GL_TRIANGLES, 0, pyramid.getNumOfVertices());
 
         // 繪製grid
-        setupLights(Material.silverAmbient(), Material.silverDiffuse(), Material.silverSpecular(), Material.silverShininess());
+        setupLights(Material.SILVER_AMBIENT, Material.SILVER_DIFFUSE, Material.SILVER_SPECULAR, Material.SILVER_SHININESS);
         mvMat = new Matrix4f(camera.getVMat()).mul(gridMMat);
         invTrMat = new Matrix4f(mvMat).invert().transpose();
         shadowMVP2 = new Matrix4f(B).mul(lightPMat).mul(lightVMat).mul(gridMMat);

@@ -64,10 +64,6 @@ public class Program12_4 extends App {
         };
     }
 
-    @Override
-    protected void getAllUniformLocs() {
-    }
-
     protected final Matrix4f mMat = new Matrix4f()
             .translate(0f, -.5f, 0f)
             .scale(10f)

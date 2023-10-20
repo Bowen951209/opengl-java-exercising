@@ -23,7 +23,7 @@ public abstract class App {
     private final Timer timer = new Timer();
     private float fps;
 
-    protected List<FileModel> fileModelList = new ArrayList<>() {
+    protected final List<FileModel> fileModelList = new ArrayList<>() {
         @Override
         public boolean add(FileModel fileModel) {
             fileModel.start();
@@ -31,7 +31,7 @@ public abstract class App {
         }
     };
 
-    protected List<Texture3D> texture3DList = new ArrayList<>() {
+    protected final List<Texture3D> texture3DList = new ArrayList<>() {
         @Override
         public boolean add(Texture3D texture3D) {
             texture3D.start();

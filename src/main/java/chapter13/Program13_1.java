@@ -39,10 +39,6 @@ public class Program13_1 extends App {
     }
 
     @Override
-    protected void getAllUniformLocs() {
-    }
-
-    @Override
     protected void drawScene() {
         torus.updateState(camera);
         glUniform4fv(shaderProgram.getUniformLoc("globalAmbient"), light.getGlobalAmbient());
