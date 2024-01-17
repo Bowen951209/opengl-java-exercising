@@ -9,11 +9,14 @@ import static org.lwjgl.opengl.GL43.*;
 
 public abstract class Texture3D extends Thread {
     private final Timer timer = new Timer();
-    private int textureID;
     private final int usingUnit;
+
+    protected ByteBuffer data;
+    private int textureID;
     protected int textureWidth = 256;
     protected int textureHeight = 256;
     protected int textureDepth = 256;
+    protected int zoom = 1;
 
     public void setResolution(int width, int height, int depth) {
         this.textureWidth = width;
@@ -25,13 +28,9 @@ public abstract class Texture3D extends Thread {
         return textureDepth;
     }
 
-    protected int zoom = 1;
-
     public void setZoom(int zoom) {
         this.zoom = zoom;
     }
-
-    protected ByteBuffer data;
 
     public Texture3D(int usingUnit) {
         this.usingUnit = usingUnit;
@@ -56,8 +55,6 @@ public abstract class Texture3D extends Thread {
         loadToTexture();
     }
 
-    protected abstract void fillDataArray();
-
     private void loadToTexture() {
         textureID = glGenTextures();
         bind();
@@ -70,4 +67,7 @@ public abstract class Texture3D extends Thread {
         glActiveTexture(GL_TEXTURE0 + usingUnit);
         glBindTexture(GL_TEXTURE_3D, textureID);
     }
+
+    protected abstract void fillDataArray();
+
 }
