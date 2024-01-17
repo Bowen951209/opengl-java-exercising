@@ -12,17 +12,9 @@ public class Camera {
     private static final Vector3f Y = new Vector3f(0f, 1f, 0f);
     private static final float CEIL_LIMIT = 1.57f;
 
-
     private final Vector3f position = new Vector3f(0f, 0f, 5f);
-    public Vector3f getPos() {
-        return position;
-    }
-    public void setPos(float x, float y, float z) {
-        this.position.set(x, y, z);
-    }
-
     private final Vector3f direction = new Vector3f(0f, 0f, -1f);
-    private float pitch = 0f;
+    private float pitch;
     private final Vector3f lookAtPoint = new Vector3f();
     private final Vector3f leftVec = new Vector3f();
     private final Vector3f directionMulStep = new Vector3f();
@@ -30,20 +22,28 @@ public class Camera {
     private final Matrix4f vMat = new Matrix4f();
     private final Matrix4f invVMat = new Matrix4f();
     private final Set<Runnable> cameraUpdateCallbacks = new HashSet<>();
-    public void addCameraUpdateCallBack(Runnable cb) {
-        cameraUpdateCallbacks.add(cb);
+    private final Matrix4f projMat = new Matrix4f();
+
+    private float step = .05f;
+    private float sensitive = .04f;
+    private boolean forward;
+    private boolean backward;
+    private boolean left;
+    private boolean right;
+    private boolean fly;
+    private boolean land;
+
+    public Vector3f getPos() {
+        return position;
+    }
+
+    public void setPos(float x, float y, float z) {
+        this.position.set(x, y, z);
     }
 
     public Matrix4f getInvVMat() {
         invVMat.set(vMat).invert();
         return invVMat;
-    }
-
-    public Camera() {
-    }
-
-    public Camera(int frameWidth, int frameHeight) {
-        setProjMat(frameWidth, frameHeight);
     }
 
     public Matrix4f getVMat() {
@@ -56,31 +56,29 @@ public class Camera {
 
     public void setProjMat(int w, int h) {
         float aspect = (float) w / (float) h;
-        this.projMat = new Matrix4f().perspective(1.0472f, aspect, .1f, 1000f); // 1.0472 = 60度
+        this.projMat.identity().perspective(1.0472f, aspect, .1f, 1000f); // 1.0472 = 60度
     }
-
-    private Matrix4f projMat = new Matrix4f();
-
-    private boolean forward;
-    private boolean backward;
-    private boolean left;
-    private boolean right;
-    private boolean fly;
-    private boolean land;
 
     public Camera step(float step) {
         this.step = step;
         return this;
     }
 
-    private float step = .05f;
-
     public Camera sensitive(float sensitive) {
         this.sensitive = sensitive;
         return this;
     }
 
-    private float sensitive = .04f;
+    public void addCameraUpdateCallBack(Runnable cb) {
+        cameraUpdateCallbacks.add(cb);
+    }
+
+    public Camera() {
+    }
+
+    public Camera(int frameWidth, int frameHeight) {
+        setProjMat(frameWidth, frameHeight);
+    }
 
     public void updateVMat() {
         lookAtPoint.set(position).add(direction);
