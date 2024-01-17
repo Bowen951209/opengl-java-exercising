@@ -10,7 +10,12 @@ import engine.exceptions.NoMeshesException;
 import java.nio.file.Path;
 
 public class ModelReader {
+    private final String fileName;
 
+    private float[] pvalue;
+    private float[] tvalue;
+    private float[] nvalue;
+    private int numOfVertices;
 
     public float[] getPvalue() {
         return pvalue;
@@ -24,20 +29,13 @@ public class ModelReader {
         return nvalue;
     }
 
-    private float[] pvalue;
-    private float[] tvalue;
-    private float[] nvalue;
-
     public int getNumOfVertices() {
         return numOfVertices;
     }
 
-    private int numOfVertices;
-    private final String FILE_NAME;
-
     public ModelReader(String filepath) {
         Path filePath = Path.of(filepath);
-        FILE_NAME = filePath.getFileName().toString();
+        fileName = filePath.getFileName().toString();
 
         AIScene scene = Assimp.aiImportFile(filepath, Assimp.aiProcess_Triangulate);
 
@@ -81,7 +79,7 @@ public class ModelReader {
                 tvalue[i * 2 + 1] = tc.y();
             }
         } else {
-            System.err.println(FILE_NAME + " has no texture coordinates.");
+            System.err.println(fileName + " has no texture coordinates.");
         }
 
 
