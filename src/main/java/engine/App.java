@@ -15,30 +15,45 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
 public abstract class App {
-    protected GLFWWindow glfwWindow;
+    private final Timer timer = new Timer();
+
+    private List<Texture3D> texture3DList;
+    private List<FileModel> fileModelList;
+    private boolean wantGUI, wantCullFace;
+    private float fps;
     private DefaultCallbacks defaultCallbacks;
+
+    protected GLFWWindow glfwWindow;
     protected GUI gui;
     protected Camera camera;
-    private boolean wantGUI, wantCullFace;
-    private final Timer timer = new Timer();
-    private float fps;
 
-    protected final List<FileModel> fileModelList = new ArrayList<>() {
-        @Override
-        public boolean add(FileModel fileModel) {
-            fileModel.start();
-            return super.add(fileModel);
+    public void addFileModel(FileModel model) {
+        if (fileModelList == null) {
+            fileModelList = new ArrayList<>() {
+                @Override
+                public boolean add(FileModel fileModel) {
+                    fileModel.start();
+                    return super.add(fileModel);
+                }
+            };
         }
-    };
 
-    protected final List<Texture3D> texture3DList = new ArrayList<>() {
-        @Override
-        public boolean add(Texture3D texture3D) {
-            texture3D.start();
-            return super.add(texture3D);
+        fileModelList.add(model);
+    }
+
+    public void addTexture3D(Texture3D tex) {
+        if (texture3DList == null) {
+            texture3DList = new ArrayList<>() {
+                @Override
+                public boolean add(Texture3D texture3D) {
+                    texture3D.start();
+                    return super.add(texture3D);
+                }
+            };
         }
-    };
 
+        texture3DList.add(tex);
+    }
 
     public final DefaultCallbacks getDefaultCallbacks() {
         return defaultCallbacks;
@@ -79,9 +94,11 @@ public abstract class App {
         if (wantGUI)
             initGUI();
 
+        if (texture3DList != null)
+            texture3DList.forEach(Texture3D::end);
 
-        texture3DList.forEach(Texture3D::end);
-        fileModelList.forEach(FileModel::end);
+        if (fileModelList != null)
+            fileModelList.forEach(FileModel::end);
 
         timer.end("Program initialized in: ");
         // loop.
@@ -92,6 +109,17 @@ public abstract class App {
 
         // clean up.
         destroy();
+    }
+
+    public void run(boolean isWantGUI) {
+        this.wantGUI = isWantGUI;
+        run();
+    }
+
+    public void run(boolean isWantCullFace, boolean isWantGUI) {
+        this.wantCullFace = isWantCullFace;
+        this.wantGUI = isWantGUI;
+        run();
     }
 
     protected void loop() {
@@ -120,16 +148,6 @@ public abstract class App {
         glDepthFunc(GL_LEQUAL);
     }
 
-    public void run(boolean isWantGUI) {
-        this.wantGUI = isWantGUI;
-        run();
-    }
-
-    public void run(boolean isWantCullFace, boolean isWantGUI) {
-        this.wantCullFace = isWantCullFace;
-        this.wantGUI = isWantGUI;
-        run();
-    }
 
     protected abstract void drawScene();
 

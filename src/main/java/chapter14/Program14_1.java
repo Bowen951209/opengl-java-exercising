@@ -59,10 +59,10 @@ public class Program14_1 extends App {
         wood3D.setZoom(64);
         cloud3D = new CloudTexture(0);
 
-        texture3DList.add(stripe3D);
-        texture3DList.add(marble3D);
-        texture3DList.add(wood3D);
-        texture3DList.add(cloud3D);
+        addTexture3D(stripe3D);
+        addTexture3D(marble3D);
+        addTexture3D(wood3D);
+        addTexture3D(cloud3D);
     }
 
     @Override
@@ -82,10 +82,10 @@ public class Program14_1 extends App {
         };
         skydome = new Skydome(cloud3D, camera);
 
-        fileModelList.add(pyramid);
-        fileModelList.add(cube0);
-        fileModelList.add(cube1);
-        fileModelList.add(dragon);
+        addFileModel(pyramid);
+        addFileModel(cube0);
+        addFileModel(cube1);
+        addFileModel(dragon);
 
         grid = new TessGrid(
                 "assets/textures/imageTextures/greenMountain.jpg",
