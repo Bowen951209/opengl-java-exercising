@@ -89,7 +89,6 @@ public abstract class App {
         defaultCallbacks = new DefaultCallbacks(glfwWindow.getID(), camera, wantGUI); // callback.
         defaultCallbacks.bindToGLFW();
         addCallbacks();
-        getAllUniformLocs();
         configGL(); // In some programs, like one using tessellation, wouldn't work with face culling.
         if (wantGUI)
             initGUI();
@@ -154,9 +153,6 @@ public abstract class App {
     protected abstract void destroy();
 
     protected void customizedInit() {
-    }
-
-    protected void getAllUniformLocs() {
     }
 
     protected void addCallbacks() {

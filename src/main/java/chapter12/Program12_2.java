@@ -13,6 +13,7 @@ import static org.lwjgl.opengl.GL43.*;
 
 public class Program12_2 extends App {
     private int program;
+    private int mvpLoc;
 
     public static void main(String[] args) {
         new Program12_2().run(false);
@@ -31,6 +32,9 @@ public class Program12_2 extends App {
                 "assets/shaders/program12_2/TCS.glsl",
                 "assets/shaders/program12_2/TES.glsl"
                 ).use(); // use method returns ID.
+
+        // Uniform locations
+        mvpLoc = glGetUniformLocation(program, "mvp_matrix");
 
         // VAO
         int vaoID = glGenVertexArrays();
@@ -84,12 +88,6 @@ public class Program12_2 extends App {
         glPatchParameteri(GL_PATCH_VERTICES, 16);
         glDrawArrays(GL_PATCHES, 0, 16);
 
-    }
-
-    private int mvpLoc;
-    @Override
-    protected void getAllUniformLocs() {
-        mvpLoc = glGetUniformLocation(program, "mvp_matrix");
     }
 
     @Override
