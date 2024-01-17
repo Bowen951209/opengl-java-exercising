@@ -82,8 +82,9 @@ public class Program15_1 extends App {
     }
 
     @Override
-    protected void initFrameBuffers() {
+    protected void customizedInit() {
         waterFrameBuffers = new WaterFrameBuffers(glfwWindow.getInitWidth(), glfwWindow.getInitHeight());
+
     }
 
     @Override

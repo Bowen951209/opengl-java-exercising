@@ -74,12 +74,11 @@ public abstract class App {
     protected void run() {
         final Timer timer = new Timer();
         timer.start();
-        // customizable customizedInit
-        customizedInit();
 
         initGLFWWindow();
         initShaderPrograms();
-        initFrameBuffers();
+        // customizable customizedInit
+        customizedInit();
 
         // always the same setup.
         glfwSwapInterval(1);
@@ -162,9 +161,6 @@ public abstract class App {
     }
 
     protected void initShaderPrograms() {
-    }
-
-    protected void initFrameBuffers() {
     }
 
     protected void initTextures() {
