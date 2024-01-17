@@ -7,7 +7,11 @@ import java.nio.ByteBuffer;
 
 public class TextureReader {
     private final int texID;
-    public TextureReader() {
+    public int getTexID() {
+        return texID;
+    }
+
+    protected TextureReader() {
         texID = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, texID);
 
@@ -16,7 +20,8 @@ public class TextureReader {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
-    public TextureReader(String filepath) {
+
+    protected TextureReader(String filepath) {
         texID = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, texID);
 
@@ -45,11 +50,5 @@ public class TextureReader {
         } else {
             System.out.println("Error: (Texture2D) Could not load image '" + filepath + "'");
         }
-
-
-    }
-
-    public int getTexID() {
-        return texID;
     }
 }

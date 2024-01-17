@@ -58,15 +58,6 @@ public class Texture2D extends TextureReader {
         shout("enabled anisotropic.");
     }
 
-    private void shout(String message) {
-        System.out.println("Texture2D on unit " + usingUnit + "(id: " + getTexID() + ") " + message);
-    }
-
-    public void bind() {
-        glActiveTexture(GL_TEXTURE0 + usingUnit);
-        glBindTexture(GL_TEXTURE_2D, getTexID());
-    }
-
     public void fill(int width, int height, Color color) {
         if (color == null) {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (ByteBuffer) null);
@@ -82,6 +73,15 @@ public class Texture2D extends TextureReader {
 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
         }
+    }
+
+    private void shout(String message) {
+        System.out.println("Texture2D on unit " + usingUnit + "(id: " + getTexID() + ") " + message);
+    }
+
+    public void bind() {
+        glActiveTexture(GL_TEXTURE0 + usingUnit);
+        glBindTexture(GL_TEXTURE_2D, getTexID());
     }
 
     public static void putToUniform(int unit, int id) {

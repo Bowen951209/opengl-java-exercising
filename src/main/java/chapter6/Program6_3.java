@@ -1,14 +1,15 @@
 package chapter6;
 
 
+import engine.GLFWWindow;
+import engine.ShaderProgram;
+import engine.readers.ModelReader;
+import engine.sceneComponents.textures.Texture2D;
 import engine.util.Color;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
-import engine.*;
-import engine.readers.ModelReader;
-import engine.readers.TextureReader;
 
 import java.nio.file.Path;
 
@@ -67,7 +68,7 @@ public class Program6_3 {
         cameraY = 0f;
         cameraZ = 4f;
         setupVertices();
-        texture = new TextureReader("assets/textures/imageTextures/capsule0.jpg").getTexID();
+        texture = new Texture2D(0, "assets/textures/imageTextures/capsule0.jpg").getTexID();
 
         glUseProgram(program);
         System.out.println("Using ProgramID: " + program);
