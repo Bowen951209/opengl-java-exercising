@@ -10,12 +10,12 @@ import static org.lwjgl.opengl.GL43.*;
 
 public class TessGrid extends Model {
     private static ShaderProgram tessRenderProgram;
-    public static void useTessProgram() {
-        tessRenderProgram.use();
-    }
     private final Texture2D imageTexture, heightMap;
     private int drawMode = GL_FILL;
 
+    public static void useTessProgram() {
+        tessRenderProgram.use();
+    }
 
     public TessGrid(String imageTexturePath, String heightMapPath) {
         this(imageTexturePath, heightMapPath, new Vector3f());
