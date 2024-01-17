@@ -82,8 +82,9 @@ public class Program15_1 extends App {
     }
 
     @Override
-    protected void initFrameBuffers() {
+    protected void customizedInit() {
         waterFrameBuffers = new WaterFrameBuffers(glfwWindow.getInitWidth(), glfwWindow.getInitHeight());
+
     }
 
     @Override
@@ -97,7 +98,7 @@ public class Program15_1 extends App {
                 mMat.identity().translate(position).scale(0.5f).rotateY((float) GLFW.glfwGetTime() / 3f);
             }
         };
-        fileModelList.add(wordWall);
+        addFileModel(wordWall);
 
         skybox = new Skybox(
                 camera,
@@ -119,7 +120,7 @@ public class Program15_1 extends App {
         waterCausticTex = new WaterNoiseTexture(4);
         waterCausticTex.setResolution(256, 256, 256);
         waterCausticTex.setZoom(16);
-        texture3DList.add(waterCausticTex);
+        addTexture3D(waterCausticTex);
     }
 
     @Override

@@ -27,6 +27,34 @@ public class Torus extends Model {
     private final FloatBuffer NORMALS_IN_BUF;
     private IntBuffer indicesInBuffer;
 
+    public int getNumVertices() {
+        return numVertices;
+    }
+
+    public int getNumIndices() {
+        return numIndices;
+    }
+
+    public Vector3f[] getVertices() {
+        return vertices;
+    }
+
+    public Vector2f[] getTexCoords() {
+        return texCoords;
+    }
+
+    public Vector3f[] getNormals() {
+        return normals;
+    }
+
+    public int[] getIndicesInArray() {
+        return indices;
+    }
+
+    public IntBuffer getIndicesInBuffer() {
+        return indicesInBuffer;
+    }
+
     public Torus(float innerRadius, float outerRadius, int precision, boolean usingBuffer) {
         this(innerRadius, outerRadius, precision, usingBuffer, new Vector3f());
     }
@@ -150,34 +178,6 @@ public class Torus extends Model {
                 }
             }
         }
-    }
-
-    public int getNumVertices() {
-        return numVertices;
-    }
-
-    public int getNumIndices() {
-        return numIndices;
-    }
-
-    public Vector3f[] getVertices() {
-        return vertices;
-    }
-
-    public Vector2f[] getTexCoords() {
-        return texCoords;
-    }
-
-    public Vector3f[] getNormals() {
-        return normals;
-    }
-
-    public int[] getIndicesInArray() {
-        return indices;
-    }
-
-    public IntBuffer getIndicesInBuffer() {
-        return indicesInBuffer;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package chapter7;
 
 
+import engine.sceneComponents.textures.Texture2D;
 import engine.util.Color;
 import engine.util.Material;
 import org.joml.Matrix4f;
@@ -74,7 +75,7 @@ public class Program7_2 {
         blinnPhongProgram = new ShaderProgram(Path.of("assets/shaders/program7_2/VertexShader.glsl")
                 , Path.of("assets/shaders/program7_2/FragmentShader.glsl"))
                 .getID();
-        dolphinTex = new TextureReader("assets/textures/imageTextures/Dolphin_HighPolyUV.png");
+        dolphinTex = new Texture2D(0, "assets/textures/imageTextures/Dolphin_HighPolyUV.png");
 
         cameraX = 0f;
         cameraY = 0f;

@@ -11,6 +11,17 @@ import static org.lwjgl.opengl.GL43.*;
 
 public abstract class Model extends Thread {
     protected final Matrix4f mMat = new Matrix4f();
+    protected final Matrix4f mvMat = new Matrix4f();
+    protected final Vector3f position;
+
+    private final int vao, verticesVBO, normalsVBO;
+    private final Matrix4f invTrMat = new Matrix4f();
+
+    protected FloatBuffer verticesInBuf;
+    protected FloatBuffer normalsInBuf;
+    protected FloatBuffer tcInBuf;
+    private int ebo, tcVBO, tangentsVBO;
+
 
     public Matrix4f getMMat() {
         return mMat;
@@ -20,25 +31,13 @@ public abstract class Model extends Thread {
         return mvMat;
     }
 
-    protected final Matrix4f mvMat = new Matrix4f();
-
     public Matrix4f getInvTrMat() {
         return invTrMat;
     }
 
-    private final Matrix4f invTrMat = new Matrix4f();
-
-    protected final Vector3f position;
-
     public Vector3f getPos() {
         return position;
     }
-
-    private final int vao, verticesVBO, normalsVBO;
-    private int ebo, tcVBO, tangentsVBO;
-    protected FloatBuffer verticesInBuf;
-    protected FloatBuffer normalsInBuf;
-    protected FloatBuffer tcInBuf;
 
     protected Model(Vector3f position, boolean isUsingEBO, boolean isUsingTextureCoordinate, boolean isUsingTangents) {
         this.position = position;
@@ -159,13 +158,12 @@ public abstract class Model extends Thread {
         invTrMat.set(mvMat).invert().transpose();
     }
 
-    protected abstract void updateMMat();
-
     public void updateState(Camera camera) {
         updateMMat();
         updateMvMat(camera);
         updateInvTrMat();
     }
 
+    protected abstract void updateMMat();
     public abstract void draw(int mode);
 }

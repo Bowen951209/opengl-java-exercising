@@ -1,17 +1,17 @@
 package chapter6;
 
 
+import engine.GLFWWindow;
+import engine.ShaderProgram;
+import engine.sceneComponents.models.Torus;
+import engine.sceneComponents.textures.Texture2D;
+import engine.util.Color;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
-import engine.util.Color;
-import engine.GLFWWindow;
-import engine.ShaderProgram;
-import engine.sceneComponents.models.Torus;
-import engine.readers.TextureReader;
 
 import java.nio.file.Path;
 
@@ -68,7 +68,7 @@ public class Program6_2 {
 
         cameraX = 0f; cameraY = 0f; cameraZ = 4f;
         setupVertices();
-        brickTexture = new TextureReader("assets/textures/imageTextures/brick0.jpg").getTexID();
+        brickTexture = new Texture2D(0,  "assets/textures/imageTextures/brick0.jpg").getTexID();
 
         glUseProgram(program);
         System.out.println("Using ProgramID: " + program);

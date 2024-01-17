@@ -11,20 +11,24 @@ import engine.*;
 import static org.lwjgl.opengl.GL43.*;
 
 public class Program12_3 extends App {
-    private ShaderProgram shaderProgram;
     private Texture2D texture;
+    private int mvpLoc;
 
     @Override
     protected void customizedInit() {
         glfwWindow = new GLFWWindow(1500, 1000, "Prog12.3");
 
-        shaderProgram = new ShaderProgram(
+        ShaderProgram shaderProgram = new ShaderProgram(
                 "assets/shaders/program12_3/vertex.glsl",
                 "assets/shaders/program12_3/fragment.glsl",
                 "assets/shaders/program12_3/TCS.glsl",
                 "assets/shaders/program12_3/TES.glsl"
-                );
+        );
         shaderProgram.use();
+
+        // Uniform locations.
+        mvpLoc = glGetUniformLocation(shaderProgram.getID(), "mvp");
+
 
         // VAO *every shaderProgram must have a VAO*.
         int vaoID = glGenVertexArrays();
@@ -44,13 +48,6 @@ public class Program12_3 extends App {
                 ImGui.render(); // end frame
             }
         };
-    }
-
-    private int mvpLoc;
-    @Override
-    protected void getAllUniformLocs() {
-        // Only 1 location to get here.
-        mvpLoc = glGetUniformLocation(shaderProgram.getID(), "mvp");
     }
 
     private final Matrix4f mMat = new Matrix4f().scale(3f).rotateX((float) Math.toRadians(180f));
