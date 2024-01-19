@@ -6,7 +6,8 @@ import static org.lwjgl.opengl.GL43.*;
 import java.nio.ByteBuffer;
 
 public class TextureReader {
-    private final int texID;
+    protected final int texID;
+
     public int getTexID() {
         return texID;
     }

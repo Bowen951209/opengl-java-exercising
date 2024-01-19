@@ -1,6 +1,7 @@
 package engine.util;
 
 import engine.gui.GUI;
+import engine.sceneComponents.textures.Texture2D;
 
 import java.util.Objects;
 
@@ -13,6 +14,7 @@ public class Destroyer {
         terminateGLFW();
         freeGLFWCallback();
         destroyGUI(gui);
+        deleteAllTextures();
     }
 
     // Without GUI
@@ -20,24 +22,31 @@ public class Destroyer {
         destroyGLFWWindow(windowID);
         terminateGLFW();
         freeGLFWCallback();
+        deleteAllTextures();
     }
 
     private static void destroyGLFWWindow(long windowID) {
         glfwDestroyWindow(windowID);
-        System.out.println("GLFW window destroyed");
+        System.out.println("GLFW window destroyed.");
     }
 
     private static void terminateGLFW() {
         glfwTerminate();
-        System.out.println("GLFW terminated");
+        System.out.println("GLFW terminated.");
     }
 
     private static void freeGLFWCallback() {
         Objects.requireNonNull(glfwSetErrorCallback(null)).free();
-        System.out.println("GLFW error callback freed");
+        System.out.println("GLFW error callback freed.");
     }
 
     private static void destroyGUI(GUI gui) {
         gui.destroy();
+        System.out.println("ImGUI destroyed.");
+    }
+
+    private static void deleteAllTextures() {
+        Texture2D.deleteAllTextures();
+        System.out.println("Textures deleted.");
     }
 }

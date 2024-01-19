@@ -74,8 +74,6 @@ public class GUI {
     protected void initElementStates() {}
     public void destroy() {
         imGuiImplGl3.dispose();
-        System.out.println("ImGuiGL3 disposed");
         ImGui.destroyContext();
-        System.out.println("ImGui destroyed");
     }
 }

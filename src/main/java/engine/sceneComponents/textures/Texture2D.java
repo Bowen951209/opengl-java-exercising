@@ -8,12 +8,16 @@ import engine.readers.TextureReader;
 import java.awt.*;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT;
 import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT;
 import static org.lwjgl.opengl.GL43.*;
 
 public class Texture2D extends TextureReader {
+    private static final Set<Integer> CREATED_TEXTURES = new HashSet<>();
+
     private final int usingUnit;
 
     public Texture2D(int usingUnit) {
@@ -21,6 +25,8 @@ public class Texture2D extends TextureReader {
         this.usingUnit = usingUnit;
         config(GL_NEAREST);
         glActiveTexture(GL_TEXTURE0 + usingUnit);
+
+        CREATED_TEXTURES.add(texID);
     }
 
     public Texture2D(int usingUnit, String filepath) {
@@ -28,6 +34,8 @@ public class Texture2D extends TextureReader {
         this.usingUnit = usingUnit;
         config(GL_LINEAR_MIPMAP_LINEAR);
         glActiveTexture(GL_TEXTURE0 + usingUnit);
+
+        CREATED_TEXTURES.add(texID);
     }
 
     public void config(int mipMapSampleMode) {
@@ -63,7 +71,7 @@ public class Texture2D extends TextureReader {
 
     public void bind() {
         glActiveTexture(GL_TEXTURE0 + usingUnit);
-        glBindTexture(GL_TEXTURE_2D, getTexID());
+        glBindTexture(GL_TEXTURE_2D, texID);
     }
 
     public static void putToUniform(int unit, int id) {
@@ -71,8 +79,13 @@ public class Texture2D extends TextureReader {
         glBindTexture(GL_TEXTURE_2D, id);
     }
 
+    public static void deleteAllTextures() {
+        int[] arr = CREATED_TEXTURES.stream().mapToInt(i->i).toArray();
+        glDeleteTextures(arr);
+    }
+
     private void printInfo(String message) {
-        System.out.println("Texture2D on unit " + usingUnit + "(id: " + getTexID() + ") " + message);
+        System.out.println("Texture2D on unit " + usingUnit + "(id: " + texID + ") " + message);
     }
 
     private void genMipMap(int sampleMode) {
