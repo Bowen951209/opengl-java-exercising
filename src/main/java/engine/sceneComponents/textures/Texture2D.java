@@ -48,14 +48,14 @@ public class Texture2D extends TextureReader {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, sampleMode);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, sampleMode);
         glGenerateMipmap(GL_TEXTURE_2D);
-        shout("generated mipmap.");
+        printInfo("generated mipmap.");
     }
 
     private void enableAnisotropic() {
         FloatBuffer anisoset = BufferUtils.createFloatBuffer(1);
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, anisoset);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisoset.get(0));
-        shout("enabled anisotropic.");
+        printInfo("enabled anisotropic.");
     }
 
     public void fill(int width, int height, Color color) {
@@ -75,7 +75,7 @@ public class Texture2D extends TextureReader {
         }
     }
 
-    private void shout(String message) {
+    private void printInfo(String message) {
         System.out.println("Texture2D on unit " + usingUnit + "(id: " + getTexID() + ") " + message);
     }
 
