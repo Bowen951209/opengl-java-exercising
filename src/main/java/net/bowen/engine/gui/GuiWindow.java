@@ -35,6 +35,9 @@ public class GuiWindow implements GuiComponents {
         return this;
     }
 
+    /**
+     * @param isCloseable whether the window is closeable. If set to true, you have to manually call {@link #show()} to show it.
+     * */
     public GuiWindow(String title, boolean isCloseable) {
         this.title = title;
         this.isCloseable = isCloseable;
