@@ -94,6 +94,23 @@ public class ShaderProgram {
         this.id = setupProgram(shaderID);
     }
 
+    public ShaderProgram(String computeShaderPath, String... sources) {
+        int[] shaderIDs = new int[sources.length + 1];
+
+        String mainShaderSource = new GLSLReader(Path.of(computeShaderPath)).getString();
+        int mainShaderID = glCreateShader(GL_COMPUTE_SHADER);
+        compileAndCatchShaderErr(mainShaderID, mainShaderSource, GL_COMPUTE_SHADER);
+        shaderIDs[0] = mainShaderID;
+
+        for (int i = 0; i < sources.length; i++) {
+            String src = sources[i + 1]; // put to index i + 1 because the 0 is put.
+            int shaderID = glCreateShader(GL_COMPUTE_SHADER);
+            compileAndCatchShaderErr(shaderID, src, GL_COMPUTE_SHADER);
+        }
+
+        this.id = setupProgram(shaderIDs);
+    }
+
     // Only vertex & fragment
     public ShaderProgram(Path vertexShaderPath, Path fragmentShaderPath) {
         // 讀取Shader(glsl檔案)
@@ -165,57 +182,19 @@ public class ShaderProgram {
         this(Path.of(vertexShaderPath), Path.of(fragmentShaderPath), Path.of(tessellationControlShaderPath), Path.of(tessellationEvaluationShaderPath));
     }
 
-    private static int setupProgram(int computeShaderID) {
+    private static int setupProgram(int... shaderIDs) {
         int programID = glCreateProgram();
-        glAttachShader(programID, computeShaderID);
+
+        for (int shaderID : shaderIDs) {
+            glAttachShader(programID, shaderID);
+        }
         glLinkProgram(programID);
         checkLinkStatus(programID);
 
-        glDeleteShader(computeShaderID);
-        return programID;
-    }
+        for (int shaderID : shaderIDs) {
+            glDeleteShader(shaderID);
+        }
 
-    private static int setupProgram(int vertexShaderID, int fragmentShaderID) {
-        // This method returns the programID
-        int programID = glCreateProgram();
-        glAttachShader(programID, vertexShaderID);
-        glAttachShader(programID, fragmentShaderID);
-        glLinkProgram(programID);
-        checkLinkStatus(programID);
-
-        glDeleteShader(vertexShaderID);
-        glDeleteShader(fragmentShaderID);
-        return programID;
-    }
-
-    private static int setupProgram(int vertexShaderID, int fragmentShaderID, int geometryShaderID) {
-        int programID = glCreateProgram();
-        glAttachShader(programID, vertexShaderID);
-        glAttachShader(programID, fragmentShaderID);
-        glAttachShader(programID, geometryShaderID);
-        glLinkProgram(programID);
-        checkLinkStatus(programID);
-
-        glDeleteShader(vertexShaderID);
-        glDeleteShader(fragmentShaderID);
-        glDeleteShader(geometryShaderID);
-        return programID;
-    }
-
-    private static int setupProgram(int vertexShaderID, int fragmentShaderID, int tessellationControlShaderID, int tessellationEvaluationShaderID) {
-        // This method returns the programID
-        int programID = glCreateProgram();
-        glAttachShader(programID, vertexShaderID);
-        glAttachShader(programID, fragmentShaderID);
-        glAttachShader(programID, tessellationControlShaderID);
-        glAttachShader(programID, tessellationEvaluationShaderID);
-        glLinkProgram(programID);
-        checkLinkStatus(programID);
-
-        glDeleteShader(vertexShaderID);
-        glDeleteShader(fragmentShaderID);
-        glDeleteShader(tessellationControlShaderID);
-        glDeleteShader(tessellationEvaluationShaderID);
         return programID;
     }
 
