@@ -1,19 +1,18 @@
 package net.bowen.chapter10;
 
-import net.bowen.engine.GLFWWindow;
-import net.bowen.engine.ShaderProgram;
-import net.bowen.engine.gui.GUI;
-import net.bowen.engine.sceneComponents.textures.Texture2D;
-import net.bowen.engine.util.Color;
-import net.bowen.engine.util.ValuesContainer;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.type.ImInt;
-import org.joml.Vector3f;
+import net.bowen.engine.GLFWWindow;
+import net.bowen.engine.ShaderProgram;
 import net.bowen.engine.callbacks.DefaultCallbacks;
+import net.bowen.engine.gui.GUI;
 import net.bowen.engine.sceneComponents.models.RawBigTrianglesNumberGrid;
+import net.bowen.engine.sceneComponents.textures.Texture2D;
+import net.bowen.engine.util.Color;
+import net.bowen.engine.util.ValuesContainer;
+import org.joml.Vector3f;
 
-import java.nio.file.Path;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.*;

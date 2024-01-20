@@ -11,7 +11,6 @@ import net.bowen.engine.util.Color;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
-import java.nio.file.Path;
 import java.util.Objects;
 
 import static net.bowen.engine.util.ValuesContainer.VALS_OF_16;

@@ -1,14 +1,12 @@
 package net.bowen.chapter4;
 
 
+import net.bowen.engine.GLFWWindow;
+import net.bowen.engine.ShaderProgram;
+import net.bowen.engine.util.Color;
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
-import net.bowen.engine.util.Color;
-import net.bowen.engine.GLFWWindow;
-import net.bowen.engine.ShaderProgram;
-
-import java.nio.file.Path;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL43.*;

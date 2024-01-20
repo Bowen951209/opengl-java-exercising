@@ -1,23 +1,21 @@
 package net.bowen.chapter10;
 
+import imgui.ImGui;
+import imgui.type.ImBoolean;
 import net.bowen.engine.GLFWWindow;
 import net.bowen.engine.ShaderProgram;
+import net.bowen.engine.callbacks.DefaultCallbacks;
+import net.bowen.engine.exceptions.InvalidMaterialException;
 import net.bowen.engine.gui.GUI;
+import net.bowen.engine.sceneComponents.PositionalLight;
+import net.bowen.engine.sceneComponents.models.Sphere;
 import net.bowen.engine.sceneComponents.textures.Texture2D;
 import net.bowen.engine.util.Color;
 import net.bowen.engine.util.Material;
-import imgui.ImGui;
-import imgui.type.ImBoolean;
 import org.lwjgl.glfw.GLFW;
-import net.bowen.engine.callbacks.DefaultCallbacks;
-import net.bowen.engine.exceptions.InvalidMaterialException;
-import net.bowen.engine.sceneComponents.models.Sphere;
-import net.bowen.engine.sceneComponents.PositionalLight;
 
-import java.nio.file.Path;
-
-import static org.lwjgl.opengl.GL20.*;
 import static net.bowen.engine.util.ValuesContainer.VALS_OF_16;
+import static org.lwjgl.opengl.GL20.*;
 
 public class Program10_3 extends Program10_2 {
     protected int program;
