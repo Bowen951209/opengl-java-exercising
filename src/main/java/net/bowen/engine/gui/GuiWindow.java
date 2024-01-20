@@ -39,7 +39,7 @@ public class GuiWindow implements GuiComponents {
 
     /**
      * @param isCloseable whether the window is closeable. If set to true, you have to manually call {@link #show()} to show it.
-     * */
+     */
     public GuiWindow(String title, boolean isCloseable) {
         this.title = title;
         this.isCloseable = isCloseable;
@@ -49,8 +49,7 @@ public class GuiWindow implements GuiComponents {
     public void render() {
         if (isCloseable) {
             if (isShow.get()) {
-                if (initWidth != 0 || initHeight != 0)
-                    ImGui.setNextWindowSize(initWidth, initHeight, ImGuiCond.Appearing);
+                ImGui.setNextWindowSize(initWidth, initHeight, ImGuiCond.FirstUseEver);
                 ImGui.begin(title, isShow);
                 for (GuiComponents i : childComponents) {
                     i.render();
@@ -58,8 +57,7 @@ public class GuiWindow implements GuiComponents {
                 ImGui.end();
             }
         } else {
-            if (initWidth != 0 || initHeight != 0)
-                ImGui.setNextWindowSize(initWidth, initHeight);
+            ImGui.setNextWindowSize(initWidth, initHeight, ImGuiCond.FirstUseEver);
             ImGui.begin(title);
             for (GuiComponents i : childComponents) {
                 i.render();
