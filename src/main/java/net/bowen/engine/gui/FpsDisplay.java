@@ -15,8 +15,8 @@ public class FpsDisplay implements GuiComponents {
     public FpsDisplay(App app) {
         this.app = app;
         // assume digits of 3 (4 = 3 + 1 for dot)
-        guiWindow.setWidth(app.getGui().getFontScale() * (4 + DEFAULT_PRECISION_AFTER_POINT) * 10f);
-        guiWindow.setHeight(app.getGui().getFontScale() * 30f);
+        guiWindow.setInitWidth(app.getGui().getFontScale() * (4 + DEFAULT_PRECISION_AFTER_POINT) * 10f);
+        guiWindow.setInitHeight(app.getGui().getFontScale() * 30f);
 
         addKeyBinding(GLFW.GLFW_KEY_F2);
     }

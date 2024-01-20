@@ -1,5 +1,6 @@
 package net.bowen.engine.gui;
 
+import imgui.flag.ImGuiCond;
 import imgui.internal.ImGui;
 import imgui.type.ImBoolean;
 
@@ -10,14 +11,15 @@ public class GuiWindow implements GuiComponents {
     private final String title;
     private final boolean isCloseable;
     private final ImBoolean isShow = new ImBoolean(false);
-    private float width, height;
 
-    public void setWidth(float width) {
-        this.width = width;
+    private float initWidth, initHeight;
+
+    public void setInitWidth(float initWidth) {
+        this.initWidth = initWidth;
     }
 
-    public void setHeight(float height) {
-        this.height = height;
+    public void setInitHeight(float initHeight) {
+        this.initHeight = initHeight;
     }
 
     public ImBoolean isShow() {
@@ -47,8 +49,8 @@ public class GuiWindow implements GuiComponents {
     public void render() {
         if (isCloseable) {
             if (isShow.get()) {
-                if (width != 0 || height != 0)
-                    ImGui.setNextWindowSize(width, height);
+                if (initWidth != 0 || initHeight != 0)
+                    ImGui.setNextWindowSize(initWidth, initHeight, ImGuiCond.Appearing);
                 ImGui.begin(title, isShow);
                 for (GuiComponents i : childComponents) {
                     i.render();
@@ -56,8 +58,8 @@ public class GuiWindow implements GuiComponents {
                 ImGui.end();
             }
         } else {
-            if (width != 0 || height != 0)
-                ImGui.setNextWindowSize(width, height);
+            if (initWidth != 0 || initHeight != 0)
+                ImGui.setNextWindowSize(initWidth, initHeight);
             ImGui.begin(title);
             for (GuiComponents i : childComponents) {
                 i.render();
