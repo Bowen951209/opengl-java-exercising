@@ -148,6 +148,18 @@ public class ShaderProgram {
         id = setupProgram(vertexShaderID, fragmentShaderID, tesID, tcsID);
     }
 
+    public static void compileAndCatchShaderErr(int shaderID, String source, int shaderType) {
+        glShaderSource(shaderID, source);
+        glCompileShader(shaderID);
+
+        String shader = getString(shaderType);
+        if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == 0) {
+            throw new ShaderCompiledFailedException(shader + " (ID=" + shaderID + ") compiled failed\n" + glGetShaderInfoLog(shaderID));
+        } else {
+            System.out.println(shader + "(ID=" + shaderID + ") compiled succeeded.");
+        }
+    }
+
     private static int setupProgram(int... shaderIDs) {
         int programID = glCreateProgram();
 
@@ -169,18 +181,6 @@ public class ShaderProgram {
             throw new ProgramLinkedFailedException("App" + programID + " linked failed\n" + glGetProgramInfoLog(programID));
         } else {
             System.out.println("ProgramID:" + programID + " linked succeeded.");
-        }
-    }
-
-    private static void compileAndCatchShaderErr(int shaderID, String source, int shaderType) {
-        glShaderSource(shaderID, source);
-        glCompileShader(shaderID);
-
-        String shader = getString(shaderType);
-        if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == 0) {
-            throw new ShaderCompiledFailedException(shader + " (ID=" + shaderID + ") compiled failed\n" + glGetShaderInfoLog(shaderID));
-        } else {
-            System.out.println(shader + "(ID=" + shaderID + ") compiled succeeded.");
         }
     }
 
