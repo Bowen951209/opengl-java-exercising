@@ -64,8 +64,8 @@ public class Program10_1 {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE1);
-        defaultProgram = new ShaderProgram(Path.of("assets/shaders/program10_1/vert.glsl")
-                , Path.of("assets/shaders/program10_1/frag.glsl"))
+        defaultProgram = new ShaderProgram("assets/shaders/program10_1/vert.glsl"
+                , "assets/shaders/program10_1/frag.glsl")
                 .getID();
 
         getAllUniformsLoc();

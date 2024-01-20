@@ -47,8 +47,8 @@ public class Program10_2 extends Program10_1 {
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE0);
 
-        defaultProgram = new ShaderProgram(Path.of("assets/shaders/program10_2/vert.glsl")
-                , Path.of("assets/shaders/program10_2/frag.glsl"))
+        defaultProgram = new ShaderProgram("assets/shaders/program10_2/vert.glsl"
+                , "assets/shaders/program10_2/frag.glsl")
                 .getID();
 
         getAllUniformsLoc();

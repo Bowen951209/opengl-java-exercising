@@ -47,8 +47,8 @@ public class Program10_4 extends Program10_3 {
         glDepthFunc(GL_LEQUAL);
 
         // Programs
-        program = new ShaderProgram((Path.of("assets/shaders/program10_4/vertex.glsl"))
-                , Path.of("assets/shaders/program10_4/fragment.glsl"))
+        program = new ShaderProgram("assets/shaders/program10_4/vertex.glsl"
+                , "assets/shaders/program10_4/fragment.glsl")
                 .getID();
         getAllUniformsLoc();
         glUseProgram(program);

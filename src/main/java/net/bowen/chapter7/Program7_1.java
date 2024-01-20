@@ -3,6 +3,7 @@ package net.bowen.chapter7;
 
 import net.bowen.engine.GLFWWindow;
 import net.bowen.engine.ShaderProgram;
+import net.bowen.engine.readers.ModelReader;
 import net.bowen.engine.sceneComponents.models.Torus;
 import net.bowen.engine.util.Color;
 import net.bowen.engine.util.Material;
@@ -11,11 +12,9 @@ import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
-import net.bowen.engine.readers.ModelReader;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.nio.file.Path;
 
 import static org.joml.Math.toRadians;
 import static org.lwjgl.glfw.GLFW.*;
@@ -86,14 +85,14 @@ public class Program7_1 {
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
 
-        gouraudProgram = new ShaderProgram(Path.of("assets/shaders/program7_1/gouraud/vertShader.glsl")
-                , Path.of("assets/shaders/program7_1/gouraud/fragShader.glsl"))
+        gouraudProgram = new ShaderProgram("assets/shaders/program7_1/gouraud/vertShader.glsl"
+                , "assets/shaders/program7_1/gouraud/fragShader.glsl")
                 .getID();
-        phongProgram = new ShaderProgram(Path.of("assets/shaders/program7_1/phong/vertShader.glsl")
-                , Path.of("assets/shaders/program7_1/phong/fragShader.glsl"))
+        phongProgram = new ShaderProgram("assets/shaders/program7_1/phong/vertShader.glsl"
+                , "assets/shaders/program7_1/phong/fragShader.glsl")
                 .getID();
-        blinnPhongProgram = new ShaderProgram(Path.of("assets/shaders/program7_1/blinnPhong/vertShader.glsl")
-                , Path.of("assets/shaders/program7_1/blinnPhong/fragShader.glsl"))
+        blinnPhongProgram = new ShaderProgram("assets/shaders/program7_1/blinnPhong/vertShader.glsl"
+                , "assets/shaders/program7_1/blinnPhong/fragShader.glsl")
                 .getID();
 
         cameraX = 0f;

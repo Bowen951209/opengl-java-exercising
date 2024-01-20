@@ -20,7 +20,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 
 import java.nio.FloatBuffer;
-import java.nio.file.Path;
 
 import static org.joml.Math.toRadians;
 import static org.lwjgl.glfw.GLFW.*;
@@ -112,11 +111,11 @@ public class Program9_2 {
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE0);
         glActiveTexture(GL_TEXTURE1);
-        renderingProgram1 = new ShaderProgram(Path.of("assets/shaders/program9_2/vert1Shader.glsl")
-                , Path.of("assets/shaders/program9_2/frag1Shader.glsl"))
+        renderingProgram1 = new ShaderProgram("assets/shaders/program9_2/vert1Shader.glsl"
+                , "assets/shaders/program9_2/frag1Shader.glsl")
                 .getID();
-        renderingProgram2 = new ShaderProgram(Path.of("assets/shaders/program9_2/vert2Shader.glsl")
-                , Path.of("assets/shaders/program9_2/frag2Shader.glsl"))
+        renderingProgram2 = new ShaderProgram("assets/shaders/program9_2/vert2Shader.glsl"
+                , "assets/shaders/program9_2/frag2Shader.glsl")
                 .getID();
 
 
