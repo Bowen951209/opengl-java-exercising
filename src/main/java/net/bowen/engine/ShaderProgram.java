@@ -13,8 +13,9 @@ import static org.lwjgl.opengl.GL43.*;
 
 
 public class ShaderProgram {
-    private final int id;
     private final HashMap<String, Integer> uniformLocMap = new HashMap<>();
+
+    protected int id;
 
     public int getID() {
         return id;
@@ -78,6 +79,9 @@ public class ShaderProgram {
     public int use() {
         glUseProgram(id);
         return id;
+    }
+
+    ShaderProgram() {
     }
 
     // Compute shader
@@ -160,7 +164,7 @@ public class ShaderProgram {
         }
     }
 
-    private static int setupProgram(int... shaderIDs) {
+    public static int setupProgram(int... shaderIDs) {
         int programID = glCreateProgram();
 
         for (int shaderID : shaderIDs) {
