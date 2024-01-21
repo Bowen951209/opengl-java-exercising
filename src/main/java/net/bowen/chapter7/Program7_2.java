@@ -3,6 +3,8 @@ package net.bowen.chapter7;
 
 import net.bowen.engine.GLFWWindow;
 import net.bowen.engine.ShaderProgram;
+import net.bowen.engine.readers.ModelReader;
+import net.bowen.engine.readers.TextureReader;
 import net.bowen.engine.sceneComponents.textures.Texture2D;
 import net.bowen.engine.util.Color;
 import net.bowen.engine.util.Material;
@@ -11,11 +13,8 @@ import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
-import net.bowen.engine.readers.ModelReader;
-import net.bowen.engine.readers.TextureReader;
 
 import java.nio.FloatBuffer;
-import java.nio.file.Path;
 
 import static org.joml.Math.toRadians;
 import static org.lwjgl.glfw.GLFW.*;
@@ -73,8 +72,8 @@ public class Program7_2 {
         createProjMat(windowCreatedW, windowCreatedH);
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
-        blinnPhongProgram = new ShaderProgram(Path.of("assets/shaders/program7_2/VertexShader.glsl")
-                , Path.of("assets/shaders/program7_2/FragmentShader.glsl"))
+        blinnPhongProgram = new ShaderProgram("assets/shaders/program7_2/VertexShader.glsl"
+                , "assets/shaders/program7_2/FragmentShader.glsl")
                 .getID();
         dolphinTex = new Texture2D(0, "assets/textures/imageTextures/Dolphin_HighPolyUV.png");
 

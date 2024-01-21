@@ -1,14 +1,12 @@
 package net.bowen.chapter4;
 
 
+import net.bowen.engine.GLFWWindow;
+import net.bowen.engine.ShaderProgram;
+import net.bowen.engine.util.Color;
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
-import net.bowen.engine.util.Color;
-import net.bowen.engine.GLFWWindow;
-import net.bowen.engine.ShaderProgram;
-
-import java.nio.file.Path;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL43.*;
@@ -53,8 +51,8 @@ public class Program4_2 {
         // 設定frameBuffer大小改變callback
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
-        program = new ShaderProgram(Path.of("assets/shaders/program4_2/VertexShader.glsl")
-                , Path.of("assets/shaders/program4_2/FragmentShader.glsl"))
+        program = new ShaderProgram("assets/shaders/program4_2/VertexShader.glsl"
+                , "assets/shaders/program4_2/FragmentShader.glsl")
                 .getID();
 
         cameraX = 0f;

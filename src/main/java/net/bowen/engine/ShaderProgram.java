@@ -3,19 +3,19 @@ package net.bowen.engine;
 
 import net.bowen.engine.exceptions.ProgramLinkedFailedException;
 import net.bowen.engine.exceptions.ShaderCompiledFailedException;
-import net.bowen.engine.readers.GLSLReader;
+import net.bowen.engine.readers.TextReader;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.nio.file.Path;
 import java.util.HashMap;
 
 import static org.lwjgl.opengl.GL43.*;
 
 
 public class ShaderProgram {
-    private final int id;
     private final HashMap<String, Integer> uniformLocMap = new HashMap<>();
+
+    protected int id;
 
     public int getID() {
         return id;
@@ -81,41 +81,23 @@ public class ShaderProgram {
         return id;
     }
 
-    public void delete() {
-        glDeleteProgram(this.id);
+    ShaderProgram() {
     }
 
     // Compute shader
     public ShaderProgram(String computeShaderPath) {
-        String shaderSource = new GLSLReader(Path.of(computeShaderPath)).getString();
+        String shaderSource = TextReader.readFile(computeShaderPath);
         int shaderID = glCreateShader(GL_COMPUTE_SHADER);
         compileAndCatchShaderErr(shaderID, shaderSource, GL_COMPUTE_SHADER);
 
         this.id = setupProgram(shaderID);
     }
 
-    public ShaderProgram(String computeShaderPath, String... sources) {
-        int[] shaderIDs = new int[sources.length + 1];
-
-        String mainShaderSource = new GLSLReader(Path.of(computeShaderPath)).getString();
-        int mainShaderID = glCreateShader(GL_COMPUTE_SHADER);
-        compileAndCatchShaderErr(mainShaderID, mainShaderSource, GL_COMPUTE_SHADER);
-        shaderIDs[0] = mainShaderID;
-
-        for (int i = 0; i < sources.length; i++) {
-            String src = sources[i + 1]; // put to index i + 1 because the 0 is put.
-            int shaderID = glCreateShader(GL_COMPUTE_SHADER);
-            compileAndCatchShaderErr(shaderID, src, GL_COMPUTE_SHADER);
-        }
-
-        this.id = setupProgram(shaderIDs);
-    }
-
     // Only vertex & fragment
-    public ShaderProgram(Path vertexShaderPath, Path fragmentShaderPath) {
+    public ShaderProgram(String vertexShaderPath, String fragmentShaderPath) {
         // 讀取Shader(glsl檔案)
-        String vertexShaderCode = new GLSLReader(vertexShaderPath).getString();
-        String fragmentShaderCode = new GLSLReader(fragmentShaderPath).getString();
+        String vertexShaderCode = TextReader.readFile(vertexShaderPath);
+        String fragmentShaderCode = TextReader.readFile(fragmentShaderPath);
 
         // 設定vertex shader來源、編譯
         int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
@@ -128,15 +110,11 @@ public class ShaderProgram {
         id = setupProgram(vertexShaderID, fragmentShaderID);
     }
 
-    public ShaderProgram(String vertexShaderPath, String fragmentShaderPath) {
-        this(Path.of(vertexShaderPath), Path.of(fragmentShaderPath));
-    }
-
     // vertex, fragment, geometry shader
-    public ShaderProgram(Path vertexShaderPath, Path fragmentShaderPath, Path geometryShaderPath) {
-        String vertShaderCode = new GLSLReader((vertexShaderPath)).getString();
-        String fragShaderCode = new GLSLReader((fragmentShaderPath)).getString();
-        String geoShaderCode = new GLSLReader((geometryShaderPath)).getString();
+    public ShaderProgram(String vertexShaderPath, String fragmentShaderPath, String geometryShaderPath) {
+        String vertShaderCode = TextReader.readFile(vertexShaderPath);
+        String fragShaderCode = TextReader.readFile(fragmentShaderPath);
+        String geoShaderCode = TextReader.readFile(geometryShaderPath);
 
         int vertShaderID = glCreateShader(GL_VERTEX_SHADER);
         compileAndCatchShaderErr(vertShaderID, vertShaderCode, GL_VERTEX_SHADER);
@@ -150,17 +128,13 @@ public class ShaderProgram {
         this.id = setupProgram(vertShaderID, fragShaderID, geoShaderID);
     }
 
-    public ShaderProgram(String vertexShaderPath, String fragmentShaderPath, String geometryShaderPath) {
-        this(Path.of(vertexShaderPath), Path.of(fragmentShaderPath), Path.of(geometryShaderPath));
-    }
-
     // vertex, fragment, tessellation control shader & tessellation evaluation shader
-    public ShaderProgram(Path vertexShaderPath, Path fragmentShaderPath, Path tessellationControlShaderPath, Path tessellationEvaluationShaderPath) {
+    public ShaderProgram(String vertexShaderPath, String fragmentShaderPath, String tessellationControlShaderPath, String tessellationEvaluationShaderPath) {
         // 讀取Shader(glsl檔案)
-        String vertexShaderCode = new GLSLReader(vertexShaderPath).getString();
-        String fragmentShaderCode = new GLSLReader(fragmentShaderPath).getString();
-        String tcsShaderCode = new GLSLReader(tessellationControlShaderPath).getString();
-        String tesShaderCode = new GLSLReader(tessellationEvaluationShaderPath).getString();
+        String vertexShaderCode = TextReader.readFile(vertexShaderPath);
+        String fragmentShaderCode = TextReader.readFile(fragmentShaderPath);
+        String tcsShaderCode = TextReader.readFile(tessellationControlShaderPath);
+        String tesShaderCode = TextReader.readFile(tessellationEvaluationShaderPath);
 
         // 設定vertex shader來源、編譯
         int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
@@ -178,11 +152,19 @@ public class ShaderProgram {
         id = setupProgram(vertexShaderID, fragmentShaderID, tesID, tcsID);
     }
 
-    public ShaderProgram(String vertexShaderPath, String fragmentShaderPath, String tessellationControlShaderPath, String tessellationEvaluationShaderPath) {
-        this(Path.of(vertexShaderPath), Path.of(fragmentShaderPath), Path.of(tessellationControlShaderPath), Path.of(tessellationEvaluationShaderPath));
+    public static void compileAndCatchShaderErr(int shaderID, String source, int shaderType) {
+        glShaderSource(shaderID, source);
+        glCompileShader(shaderID);
+
+        String shader = getString(shaderType);
+        if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == 0) {
+            throw new ShaderCompiledFailedException(shader + " (ID=" + shaderID + ") compiled failed\n" + glGetShaderInfoLog(shaderID));
+        } else {
+            System.out.println(shader + "(ID=" + shaderID + ") compiled succeeded.");
+        }
     }
 
-    private static int setupProgram(int... shaderIDs) {
+    public static int setupProgram(int... shaderIDs) {
         int programID = glCreateProgram();
 
         for (int shaderID : shaderIDs) {
@@ -203,18 +185,6 @@ public class ShaderProgram {
             throw new ProgramLinkedFailedException("App" + programID + " linked failed\n" + glGetProgramInfoLog(programID));
         } else {
             System.out.println("ProgramID:" + programID + " linked succeeded.");
-        }
-    }
-
-    private static void compileAndCatchShaderErr(int shaderID, String source, int shaderType) {
-        glShaderSource(shaderID, source);
-        glCompileShader(shaderID);
-
-        String shader = getString(shaderType);
-        if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == 0) {
-            throw new ShaderCompiledFailedException(shader + " (ID=" + shaderID + ") compiled failed\n" + glGetShaderInfoLog(shaderID));
-        } else {
-            System.out.println(shader + "(ID=" + shaderID + ") compiled succeeded.");
         }
     }
 

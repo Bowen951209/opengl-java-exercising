@@ -10,8 +10,6 @@ import net.bowen.engine.util.Color;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
-import java.nio.file.Path;
-
 import static net.bowen.engine.util.ValuesContainer.VALS_OF_16;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
@@ -64,8 +62,8 @@ public class Program9_3 {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE1);
-        defaultProgram = new ShaderProgram(Path.of("assets/shaders/program9_3/vertShader.glsl")
-                , Path.of("assets/shaders/program9_3/fragShader.glsl"))
+        defaultProgram = new ShaderProgram("assets/shaders/program9_3/vertShader.glsl"
+                , "assets/shaders/program9_3/fragShader.glsl")
                 .getID();
 
 

@@ -10,8 +10,6 @@ import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
 
-import java.nio.file.Path;
-
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL43.*;
 
@@ -57,8 +55,8 @@ public class Program5_1 {
         // 設定frameBuffer大小改變callback
         glfwSetFramebufferSizeCallback(windowHandle, resizeGlViewportAndResetAspect);
 
-        int program = new ShaderProgram(Path.of("assets/shaders/program5_1/VertexShader.glsl")
-                , Path.of("assets/shaders/program5_1/FragmentShader.glsl"))
+        int program = new ShaderProgram("assets/shaders/program5_1/VertexShader.glsl"
+                , "assets/shaders/program5_1/FragmentShader.glsl")
                 .getID();
 
         cameraX = 0f; cameraY = 0f; cameraZ = 8f;

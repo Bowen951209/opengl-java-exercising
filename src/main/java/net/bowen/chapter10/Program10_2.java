@@ -1,21 +1,19 @@
 package net.bowen.chapter10;
 
-import net.bowen.engine.util.Color;
 import net.bowen.engine.GLFWWindow;
-import net.bowen.engine.util.Material;
 import net.bowen.engine.ShaderProgram;
 import net.bowen.engine.callbacks.DefaultCallbacks;
 import net.bowen.engine.exceptions.InvalidMaterialException;
-import net.bowen.engine.sceneComponents.models.Sphere;
 import net.bowen.engine.sceneComponents.PositionalLight;
+import net.bowen.engine.sceneComponents.models.Sphere;
 import net.bowen.engine.sceneComponents.textures.Texture2D;
+import net.bowen.engine.util.Color;
+import net.bowen.engine.util.Material;
 
-import java.nio.file.Path;
-
+import static net.bowen.engine.util.ValuesContainer.VALS_OF_16;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL43.*;
-import static net.bowen.engine.util.ValuesContainer.VALS_OF_16;
 
 /*Normal Mapping*/
 public class Program10_2 extends Program10_1 {
@@ -47,8 +45,8 @@ public class Program10_2 extends Program10_1 {
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE0);
 
-        defaultProgram = new ShaderProgram(Path.of("assets/shaders/program10_2/vert.glsl")
-                , Path.of("assets/shaders/program10_2/frag.glsl"))
+        defaultProgram = new ShaderProgram("assets/shaders/program10_2/vert.glsl"
+                , "assets/shaders/program10_2/frag.glsl")
                 .getID();
 
         getAllUniformsLoc();

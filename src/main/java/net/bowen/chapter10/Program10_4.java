@@ -1,19 +1,18 @@
 package net.bowen.chapter10;
 
-import net.bowen.engine.GLFWWindow;
-import net.bowen.engine.ShaderProgram;
-import net.bowen.engine.gui.GUI;
-import net.bowen.engine.sceneComponents.textures.Texture2D;
-import net.bowen.engine.util.Color;
-import net.bowen.engine.util.ValuesContainer;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.type.ImInt;
-import org.joml.Vector3f;
+import net.bowen.engine.GLFWWindow;
+import net.bowen.engine.ShaderProgram;
 import net.bowen.engine.callbacks.DefaultCallbacks;
+import net.bowen.engine.gui.GUI;
 import net.bowen.engine.sceneComponents.models.RawBigTrianglesNumberGrid;
+import net.bowen.engine.sceneComponents.textures.Texture2D;
+import net.bowen.engine.util.Color;
+import net.bowen.engine.util.ValuesContainer;
+import org.joml.Vector3f;
 
-import java.nio.file.Path;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -47,8 +46,8 @@ public class Program10_4 extends Program10_3 {
         glDepthFunc(GL_LEQUAL);
 
         // Programs
-        program = new ShaderProgram((Path.of("assets/shaders/program10_4/vertex.glsl"))
-                , Path.of("assets/shaders/program10_4/fragment.glsl"))
+        program = new ShaderProgram("assets/shaders/program10_4/vertex.glsl"
+                , "assets/shaders/program10_4/fragment.glsl")
                 .getID();
         getAllUniformsLoc();
         glUseProgram(program);
