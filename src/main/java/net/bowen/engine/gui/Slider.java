@@ -7,11 +7,12 @@ import org.joml.Math;
 import java.util.HashSet;
 
 public abstract class Slider implements GuiComponents {
-    private final float[] values;
-
+    private final int numOfVals;
     private final float minValue, maxValue;
-    private final String label;
     private final float labelLength;
+    private final float[] values;
+    private final String label;
+
     private boolean isMouseWheelControlAble = false;
     private float wheelSpeed = 1f;
 
@@ -38,11 +39,12 @@ public abstract class Slider implements GuiComponents {
         return this;
     }
 
-    public Slider(String label, float[] values, float minValue, float maxValue) {
+    public Slider(String label, float[] values, float minValue, float maxValue, int numOfVals) {
         this.label = label;
         this.values = values;
         this.minValue = minValue;
         this.maxValue = maxValue;
+        this.numOfVals = numOfVals;
         this.labelLength = ImGui.getIO().getFontGlobalScale() * label.length() * 7f; // 7 is the number I tested out
     }
 
@@ -76,7 +78,7 @@ public abstract class Slider implements GuiComponents {
     private void handleWheelControl() {
         if (ImGui.getIO().getMouseWheel() != 0f) {
             if (ImGui.isMouseHoveringRect(rectMin.x, rectMin.y, rectMax.x, rectMax.y)) {
-                int section = detectHoveredSection(rectMin, rectMax);
+                int section = detectHoveredSection(rectMin, rectMax, numOfVals);
 
                 // clamping
                 if ((ImGui.getIO().getMouseWheel() > 0f && values[section] < maxValue) ||
@@ -90,5 +92,22 @@ public abstract class Slider implements GuiComponents {
         }
     }
 
-    protected abstract int detectHoveredSection(ImVec2 rectMin, ImVec2 rectMax);
+    private static int detectHoveredSection(ImVec2 rectMin, ImVec2 rectMax, int numOfVals) {
+        if (numOfVals < 1) throw new IllegalArgumentException("numOfVals should >= 1");
+        float sectionWidth = (rectMax.x - rectMin.x) / numOfVals;
+
+        for (int i = 0; i < numOfVals; i++) {
+            float offset = sectionWidth * i;
+            float sectionMinX = rectMin.x + offset;
+            float sectionMaxX = sectionMinX + sectionWidth;
+
+            if (ImGui.isMouseHoveringRect(sectionMinX, rectMin.y, sectionMaxX, rectMax.y)) {
+                System.out.println("Covering: " + i);
+                return i;
+            }
+
+        }
+
+        return -1;
+    }
 }
