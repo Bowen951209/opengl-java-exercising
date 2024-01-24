@@ -7,11 +7,13 @@ import org.joml.Math;
 import java.util.HashSet;
 
 public abstract class Slider implements GuiComponents {
-    private final int numOfVals;
-    private final float minValue, maxValue;
+    protected final int numOfVals;
+    protected final float minValue, maxValue;
+    protected final float[] valuesFloat;
+    protected final int[] valuesInt;
+    protected final String label;
+
     private final float labelLength;
-    private final float[] values;
-    private final String label;
 
     private boolean isMouseWheelControlAble = false;
     private float wheelSpeed = 1f;
@@ -39,9 +41,20 @@ public abstract class Slider implements GuiComponents {
         return this;
     }
 
+    public Slider(String label, int[] values, float minValue, float maxValue, int numOfVals) {
+        this.label = label;
+        this.valuesInt = values;
+        this.valuesFloat = null;
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        this.numOfVals = numOfVals;
+        this.labelLength = ImGui.getIO().getFontGlobalScale() * label.length() * 7f; // 7 is the number I tested out
+    }
+
     public Slider(String label, float[] values, float minValue, float maxValue, int numOfVals) {
         this.label = label;
-        this.values = values;
+        this.valuesFloat = values;
+        this.valuesInt = null;
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.numOfVals = numOfVals;
@@ -50,20 +63,11 @@ public abstract class Slider implements GuiComponents {
 
     @Override
     public void render() {
-        boolean isSlide = false;
+        boolean isSliding = invokeImGUI();
 
-        if (getClass().equals(SliderFloat1.class)) {
-            isSlide = ImGui.sliderFloat(label, values, minValue, maxValue);
-        } else if (getClass().equals(SliderFloat3.class)) {
-            isSlide = ImGui.sliderFloat3(label, values, minValue, maxValue);
-        } else if (getClass().equals(SliderFloat4.class)) {
-            isSlide = ImGui.sliderFloat4(label, values, minValue, maxValue);
-        }
-
-        if (isSlide) {
+        if (isSliding) {
             scrollCallbacks.forEach(Runnable::run);
         }
-
 
         // For mouse wheel control
         ImGui.getItemRectMax(rectMax);
@@ -81,10 +85,10 @@ public abstract class Slider implements GuiComponents {
                 int section = detectHoveredSection(rectMin, rectMax, numOfVals);
 
                 // clamping
-                if ((ImGui.getIO().getMouseWheel() > 0f && values[section] < maxValue) ||
-                        (ImGui.getIO().getMouseWheel() < 0f && values[section] > minValue)) {
-                    values[section] += ImGui.getIO().getMouseWheel() * wheelSpeed;
-                    values[section] = Math.clamp(minValue, maxValue, values[section]);
+                if ((ImGui.getIO().getMouseWheel() > 0f && valuesFloat[section] < maxValue) ||
+                        (ImGui.getIO().getMouseWheel() < 0f && valuesFloat[section] > minValue)) {
+                    valuesFloat[section] += ImGui.getIO().getMouseWheel() * wheelSpeed;
+                    valuesFloat[section] = Math.clamp(minValue, maxValue, valuesFloat[section]);
                     scrollCallbacks.forEach(Runnable::run);
                 }
             }
@@ -110,4 +114,6 @@ public abstract class Slider implements GuiComponents {
 
         return -1;
     }
+
+    protected abstract boolean invokeImGUI();
 }
