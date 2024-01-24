@@ -89,7 +89,7 @@ tasks.register('copyRuntimeLibs', Copy) {
     into "build/dependencies/"
 }
 apply plugin: 'application'
-mainClassName = "ProgramSelector"
+mainClassName = "net.bowen.ProgramSelector"
 applicationDefaultJvmArgs = [
         "-Djava.util.logging.config.file=src/main/resources/logging.properties"
 ]
