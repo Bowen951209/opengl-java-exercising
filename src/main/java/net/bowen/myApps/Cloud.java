@@ -5,8 +5,13 @@ import net.bowen.engine.GLFWWindow;
 import net.bowen.engine.ShaderProgram;
 import net.bowen.engine.ShaderProgramBuilder;
 import net.bowen.engine.gui.*;
+import net.bowen.engine.sceneComponents.PositionalLight;
+import net.bowen.engine.sceneComponents.models.FileModel;
 import net.bowen.engine.sceneComponents.textures.Texture2D;
 import net.bowen.engine.util.Destroyer;
+import net.bowen.engine.util.Material;
+import net.bowen.engine.util.ValuesContainer;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
 import java.awt.*;
@@ -21,7 +26,10 @@ public class Cloud extends App {
     private final float[] persistence = {0};
     private final float[] lacunarity = {0};
 
+    private FileModel model;
+    private PositionalLight light;
     private ShaderProgram worleyNoiseShader;
+    private ShaderProgram sceneShader;
     private Texture2D displayTexture;
     private IntBuffer workGroupSize;
     int numWorkGroupX, numWorkGroupY;
@@ -66,7 +74,11 @@ public class Cloud extends App {
         worleyNoiseShader = new ShaderProgramBuilder().addShader(GL_COMPUTE_SHADER,
                 "assets/shaders/utils/worley3D.glsl",
                 "assets/shaders/cloudSimulate/worleyCompute.glsl").getProgram();
-        worleyNoiseShader.use();
+
+        sceneShader = new ShaderProgram(
+                "assets/shaders/cloudSimulate/vert.glsl",
+                "assets/shaders/cloudSimulate/frag.glsl"
+        );
 
         workGroupSize = BufferUtils.createIntBuffer(3);
         glGetProgramiv(worleyNoiseShader.getID(), GL_COMPUTE_WORK_GROUP_SIZE, workGroupSize);
@@ -83,12 +95,27 @@ public class Cloud extends App {
         numWorkGroupY = 500 / workGroupSize.get(1);
         displayTexture.fill(numWorkGroupX, numWorkGroupY, Color.BLACK); // init the texture size.
 
+        Texture2D terrainTexture = new Texture2D(0, "assets/textures/imageTextures/terrain.jpg");
+    }
 
-        System.out.println("Dispatch compute called.");
+    @Override
+    protected void initModels() {
+        model = new FileModel("assets/models/terrain.obj", new Vector3f(0f, -30f, 0f), true) {
+            @Override
+            protected void updateMMat() {
+                super.updateMMat();
+                mMat.scale(100);
+            }
+        };
+        addFileModel(model);
+
+        light = new PositionalLight();
     }
 
     @Override
     protected void drawScene() {
+        // Noise texture
+        worleyNoiseShader.use();
         worleyNoiseShader.putUniform1f("scale", scale[0]);
         worleyNoiseShader.putUniform1f("layer", layer[0]);
         worleyNoiseShader.putUniform1i("octaves", octaves[0]);
@@ -98,6 +125,28 @@ public class Cloud extends App {
         glDispatchCompute(numWorkGroupX, numWorkGroupY, 1);
         // Make sure writing to image has finished before read.
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+
+        // Scene
+        camera.updateVMat();
+        camera.handle();
+        model.updateState(camera);
+
+        sceneShader.use();
+        light.putToUniforms(
+                sceneShader.getUniformLoc("globalAmbient"),
+                sceneShader.getUniformLoc("light.ambient"),
+                sceneShader.getUniformLoc("light.diffuse"),
+                sceneShader.getUniformLoc("light.specular"),
+                sceneShader.getUniformLoc("light.position")
+        );
+        Material.getMaterial("GOLD").putToUniforms(
+                sceneShader.getUniformLoc("material.shininess")
+        );
+        sceneShader.putUniformMatrix4f("normMat", model.getInvTrMat().get(ValuesContainer.VALS_OF_16));
+        sceneShader.putUniformMatrix4f("mvMat", model.getMvMat().get(ValuesContainer.VALS_OF_16));
+        sceneShader.putUniformMatrix4f("projMat", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
+        model.draw(GL_TRIANGLES);
     }
 
     @Override
