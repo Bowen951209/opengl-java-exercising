@@ -15,8 +15,11 @@ import java.nio.IntBuffer;
 import static org.lwjgl.opengl.GL43.*;
 
 public class Cloud extends App {
-    private final float[] scale = {0.01f};
+    private final int[] octaves = {1};
+    private final float[] scale = {0.05f};
     private final float[] layer = {0};
+    private final float[] persistence = {0};
+    private final float[] lacunarity = {0};
 
     private ShaderProgram worleyNoiseShader;
     private Texture2D displayTexture;
@@ -44,6 +47,15 @@ public class Cloud extends App {
 
         SliderFloat1 layerSlider = new SliderFloat1("Layer", layer, 0, 200);
         debugWindow.addChild(layerSlider);
+
+        SliderInt1 octavesSlider = new SliderInt1("Octaves", octaves, 1, 10);
+        debugWindow.addChild(octavesSlider);
+
+        SliderFloat1 persistenceSlider = new SliderFloat1("Persistence", persistence, 0.01f, 5f);
+        debugWindow.addChild(persistenceSlider);
+
+        SliderFloat1 lacunaritySlider = new SliderFloat1("Lacunarity", lacunarity, 0.01f, 5f);
+        debugWindow.addChild(lacunaritySlider);
 
         gui.addComponents(new FpsDisplay(this));
         gui.addComponents(debugWindow);
@@ -79,6 +91,9 @@ public class Cloud extends App {
     protected void drawScene() {
         worleyNoiseShader.putUniform1f("scale", scale[0]);
         worleyNoiseShader.putUniform1f("layer", layer[0]);
+        worleyNoiseShader.putUniform1i("octaves", octaves[0]);
+        worleyNoiseShader.putUniform1f("persistence", persistence[0]);
+        worleyNoiseShader.putUniform1f("lacunarity", lacunarity[0]);
 
         glDispatchCompute(numWorkGroupX, numWorkGroupY, 1);
         // Make sure writing to image has finished before read.
