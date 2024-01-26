@@ -27,6 +27,7 @@ public class Cloud extends App {
     private final float[] lacunarity = {1.47f};
     private final float[] boxMin = {-1f, 0.45f, -2f};
     private final float[] boxMax = {1.7f, 3.3f, 0.8f};
+    private final float[] lightPos = new float[3];
 
     private FileModel terrainModel;
     private PositionalLight light;
@@ -86,10 +87,19 @@ public class Cloud extends App {
         // Test texture window.
         gui.addComponents(new ImageDisplay(raytraceTexture.getTexID(), 1000));
 
+        // Light config window.
+        GuiWindow lightConfigWindow = new GuiWindow("Config the light here", true);
+        lightConfigWindow.show();
+
+        SliderFloat3 lightPosSlider = new SliderFloat3("Light Position", lightPos, -5f, 5f);
+        lightPosSlider.addScrollCallBack(() -> light.setPosition(lightPos[0], lightPos[1], lightPos[2]));
+        lightConfigWindow.addChild(lightPosSlider);
+
         // Add the components to the GUI.
         gui.addComponents(new FpsDisplay(this));
         gui.addComponents(texConfig);
         gui.addComponents(boxConfigWindow);
+        gui.addComponents(lightConfigWindow);
     }
 
     @Override
