@@ -57,19 +57,31 @@ public class Cloud extends App {
         texConfig.addChild(imageDisplay);
 
         SliderFloat1 scaleSlider = new SliderFloat1("Scale", scale, 0.01f, 0.5f);
+        scaleSlider.addScrollCallBack(() -> worleyNoiseShader.putUniform1f("scale", scale[0]));
         texConfig.addChild(scaleSlider);
 
         SliderFloat1 layerSlider = new SliderFloat1("Layer", layer, 0, 200);
+        layerSlider.addScrollCallBack(() -> worleyNoiseShader.putUniform1f("layer", layer[0]));
         texConfig.addChild(layerSlider);
 
         SliderInt1 octavesSlider = new SliderInt1("Octaves", octaves, 1, 10);
+        octavesSlider.addScrollCallBack(() -> worleyNoiseShader.putUniform1i("octaves", octaves[0]));
         texConfig.addChild(octavesSlider);
 
         SliderFloat1 persistenceSlider = new SliderFloat1("Persistence", persistence, 0.01f, 5f);
+        persistenceSlider.addScrollCallBack(() -> worleyNoiseShader.putUniform1f("persistence", persistence[0]));
         texConfig.addChild(persistenceSlider);
 
         SliderFloat1 lacunaritySlider = new SliderFloat1("Lacunarity", lacunarity, 0.01f, 5f);
+        lacunaritySlider.addScrollCallBack(() -> worleyNoiseShader.putUniform1f("lacunarity", lacunarity[0]));
         texConfig.addChild(lacunaritySlider);
+
+        // Init these uniforms here, so the program can generate the image in the first time.
+        worleyNoiseShader.putUniform1f("scale", scale[0]);
+        worleyNoiseShader.putUniform1f("layer", layer[0]);
+        worleyNoiseShader.putUniform1i("octaves", octaves[0]);
+        worleyNoiseShader.putUniform1f("persistence", persistence[0]);
+        worleyNoiseShader.putUniform1f("lacunarity", lacunarity[0]);
 
 
         // Cloud box Config Window.
@@ -84,8 +96,10 @@ public class Cloud extends App {
         SliderFloat3 boxMaxSlider = new SliderFloat3("boxMax", boxMax, -5, 5);
         boxConfigWindow.addChild(boxMaxSlider);
 
+
         // Test texture window.
         gui.addComponents(new ImageDisplay(raytraceTexture.getTexID(), 1000));
+
 
         // Light config window.
         GuiWindow lightConfigWindow = new GuiWindow("Config the light here", true);
@@ -165,13 +179,6 @@ public class Cloud extends App {
     protected void drawScene() {
         // *** Noise texture
         worleyNoiseShader.use();
-
-        // Put Uniforms
-        worleyNoiseShader.putUniform1f("scale", scale[0]);
-        worleyNoiseShader.putUniform1f("layer", layer[0]);
-        worleyNoiseShader.putUniform1i("octaves", octaves[0]);
-        worleyNoiseShader.putUniform1f("persistence", persistence[0]);
-        worleyNoiseShader.putUniform1f("lacunarity", lacunarity[0]);
 
         // Call the compute shader to generate noise to texture.
         glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, 1);
