@@ -41,8 +41,7 @@ public class PositionalLight {
                         drawProgram.getUniformLoc("globalAmbient"),
                         drawProgram.getUniformLoc("light.ambient"),
                         drawProgram.getUniformLoc("light.diffuse"),
-                        drawProgram.getUniformLoc("light.specular"),
-                        drawProgram.getUniformLoc("light.position")
+                        drawProgram.getUniformLoc("light.specular")
                 );
                 drawProgram.putUniformMatrix4f("mvMat", sphere.getMvMat().get(ValuesContainer.VALS_OF_16));
                 drawProgram.putUniformMatrix4f("projMat", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
@@ -154,5 +153,13 @@ public class PositionalLight {
 
         // This is vec3
         glUniform3fv(lightPosLoc, this.lightPosition);
+    }
+
+    public void putToUniforms(int globalAmbLoc, int lightAmbLoc, int lightDiffLoc, int lightSpecLoc) {
+        // These are vec4
+        glUniform4fv(globalAmbLoc, this.globalAmbient);
+        glUniform4fv(lightAmbLoc, this.lightAmbient);
+        glUniform4fv(lightDiffLoc, this.lightDiffuse);
+        glUniform4fv(lightSpecLoc, this.lightSpecular);
     }
 }
