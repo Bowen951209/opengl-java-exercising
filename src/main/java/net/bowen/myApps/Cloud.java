@@ -148,6 +148,7 @@ public class Cloud extends App {
         addFileModel(terrainModel);
 
         light = new PositionalLight();
+        light.setDrawable(camera);
     }
 
     @Override
@@ -187,6 +188,7 @@ public class Cloud extends App {
         camera.updateVMat();
         camera.handle();
         terrainModel.updateState(camera);
+        light.getSphere().updateState(camera);
 
         sceneShader.use();
         // Put Uniforms
@@ -205,6 +207,8 @@ public class Cloud extends App {
         sceneShader.putUniformMatrix4f("projMat", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
         // The draw call.
         terrainModel.draw(GL_TRIANGLES);
+
+        light.getSphere().draw(GL_TRIANGLES);
     }
 
     @Override
