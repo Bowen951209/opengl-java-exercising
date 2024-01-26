@@ -20,19 +20,23 @@ import java.nio.IntBuffer;
 import static org.lwjgl.opengl.GL43.*;
 
 public class Cloud extends App {
-    private final int[] octaves = {1};
-    private final float[] scale = {0.05f};
+    private final int[] octaves = {3};
+    private final float[] scale = {0.01f};
     private final float[] layer = {0};
-    private final float[] persistence = {0};
-    private final float[] lacunarity = {0};
+    private final float[] persistence = {0.75f};
+    private final float[] lacunarity = {1.47f};
+    private final float[] boxMin = {-1f, 0.45f, -2f};
+    private final float[] boxMax = {1.7f, 3.3f, 0.8f};
 
-    private FileModel model;
+    private FileModel terrainModel;
     private PositionalLight light;
     private ShaderProgram worleyNoiseShader;
     private ShaderProgram sceneShader;
-    private Texture2D displayTexture;
-    private IntBuffer workGroupSize;
-    int numWorkGroupX, numWorkGroupY;
+    private ShaderProgram boxRaytraceShader;
+    private Texture2D worleyDisplayTexture;
+    private Texture2D raytraceTexture;
+    int worleyNumWorkGroupX, worleyNumWorkGroupY;
+    int raytraceNumWorkGroupX, raytraceNumWorkGroupY;
 
     @Override
     protected void initGLFWWindow() {
@@ -43,30 +47,49 @@ public class Cloud extends App {
     protected void initGUI() {
         gui = new GUI(glfwWindow, 2.5f);
 
-        GuiWindow debugWindow = new GuiWindow("Debugger", true);
-        debugWindow.show();
-        debugWindow.addChild(new Text("Worley noise"));
+        // Worley noise texture config window.
+        GuiWindow texConfig = new GuiWindow("Texture Config", true);
+        texConfig.show();
+        texConfig.addChild(new Text("Worley noise"));
 
-        ImageDisplay imageDisplay = new ImageDisplay(displayTexture.getTexID(), 500);
-        debugWindow.addChild(imageDisplay);
+        ImageDisplay imageDisplay = new ImageDisplay(worleyDisplayTexture.getTexID(), 500);
+        texConfig.addChild(imageDisplay);
 
         SliderFloat1 scaleSlider = new SliderFloat1("Scale", scale, 0.01f, 0.5f);
-        debugWindow.addChild(scaleSlider);
+        texConfig.addChild(scaleSlider);
 
         SliderFloat1 layerSlider = new SliderFloat1("Layer", layer, 0, 200);
-        debugWindow.addChild(layerSlider);
+        texConfig.addChild(layerSlider);
 
         SliderInt1 octavesSlider = new SliderInt1("Octaves", octaves, 1, 10);
-        debugWindow.addChild(octavesSlider);
+        texConfig.addChild(octavesSlider);
 
         SliderFloat1 persistenceSlider = new SliderFloat1("Persistence", persistence, 0.01f, 5f);
-        debugWindow.addChild(persistenceSlider);
+        texConfig.addChild(persistenceSlider);
 
         SliderFloat1 lacunaritySlider = new SliderFloat1("Lacunarity", lacunarity, 0.01f, 5f);
-        debugWindow.addChild(lacunaritySlider);
+        texConfig.addChild(lacunaritySlider);
 
+
+        // Cloud box Config Window.
+        GuiWindow boxConfigWindow = new GuiWindow("Box Config", true);
+        boxConfigWindow.show();
+
+        boxConfigWindow.addChild(new Text("You can config the cloud box's min/max here."));
+
+        SliderFloat3 boxMinSlider = new SliderFloat3("boxMin", boxMin, -5, 5);
+        boxConfigWindow.addChild(boxMinSlider);
+
+        SliderFloat3 boxMaxSlider = new SliderFloat3("boxMax", boxMax, -5, 5);
+        boxConfigWindow.addChild(boxMaxSlider);
+
+        // Test texture window.
+        gui.addComponents(new ImageDisplay(raytraceTexture.getTexID(), 1000));
+
+        // Add the components to the GUI.
         gui.addComponents(new FpsDisplay(this));
-        gui.addComponents(debugWindow);
+        gui.addComponents(texConfig);
+        gui.addComponents(boxConfigWindow);
     }
 
     @Override
@@ -80,59 +103,93 @@ public class Cloud extends App {
                 "assets/shaders/cloudSimulate/frag.glsl"
         );
 
-        workGroupSize = BufferUtils.createIntBuffer(3);
-        glGetProgramiv(worleyNoiseShader.getID(), GL_COMPUTE_WORK_GROUP_SIZE, workGroupSize);
+        boxRaytraceShader = new ShaderProgram("assets/shaders/cloudSimulate/boxRayTracerCompute.glsl");
     }
 
     @Override
     protected void initTextures() {
-        displayTexture = new Texture2D(0);
-        displayTexture.bind();
-        glBindImageTexture(0, displayTexture.getTexID(), 0, false, 0, GL_WRITE_ONLY, GL_RGBA8);
+        // Get the compute shaders local work group sizes.
+        IntBuffer worleyShaderWGSize = getWorleyShaderWGSize();
+        IntBuffer raytraceShaderWGSize = getRaytraceShaderWGSize();
 
-        // Generate the worley noise texture with compute shader.
-        numWorkGroupX = 500 / workGroupSize.get(0);
-        numWorkGroupY = 500 / workGroupSize.get(1);
-        displayTexture.fill(numWorkGroupX, numWorkGroupY, Color.BLACK); // init the texture size.
+        // The texture for displaying worley noise in a GUI window,
+        worleyDisplayTexture = new Texture2D(0);
+        worleyDisplayTexture.bind();
+        glBindImageTexture(0, worleyDisplayTexture.getTexID(), 0, false, 0, GL_WRITE_ONLY, GL_RGBA8);
 
+        worleyNumWorkGroupX = 500 / worleyShaderWGSize.get(0);
+        worleyNumWorkGroupY = 500 / worleyShaderWGSize.get(1);
+        worleyDisplayTexture.fill(500, 500, Color.BLACK); // init the texture size.
+
+
+        // The texture for displaying raytrace box in a GUI window.
+        raytraceTexture = new Texture2D(1);
+        raytraceTexture.bind();
+        glBindImageTexture(1, raytraceTexture.getTexID(), 0, false, 0, GL_WRITE_ONLY, GL_RGBA8);
+
+        raytraceNumWorkGroupX = 1000 / raytraceShaderWGSize.get(0);
+        raytraceNumWorkGroupY = 1000 / raytraceShaderWGSize.get(1);
+        raytraceTexture.fill(1000, 1000, Color.BLACK); // init the texture size.
+
+        // The texture for the terrain model.
         Texture2D terrainTexture = new Texture2D(0, "assets/textures/imageTextures/terrain.jpg");
+        terrainTexture.bind();
     }
 
     @Override
     protected void initModels() {
-        model = new FileModel("assets/models/terrain.obj", new Vector3f(0f, -30f, 0f), true) {
+        terrainModel = new FileModel("assets/models/terrain.obj", new Vector3f(0f, -30f, 0f), true) {
             @Override
             protected void updateMMat() {
                 super.updateMMat();
                 mMat.scale(100);
             }
         };
-        addFileModel(model);
+        addFileModel(terrainModel);
 
         light = new PositionalLight();
     }
 
     @Override
     protected void drawScene() {
-        // Noise texture
+        // *** Noise texture
         worleyNoiseShader.use();
+
+        // Put Uniforms
         worleyNoiseShader.putUniform1f("scale", scale[0]);
         worleyNoiseShader.putUniform1f("layer", layer[0]);
         worleyNoiseShader.putUniform1i("octaves", octaves[0]);
         worleyNoiseShader.putUniform1f("persistence", persistence[0]);
         worleyNoiseShader.putUniform1f("lacunarity", lacunarity[0]);
 
-        glDispatchCompute(numWorkGroupX, numWorkGroupY, 1);
+        // Call the compute shader to generate noise to texture.
+        glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, 1);
         // Make sure writing to image has finished before read.
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 
-        // Scene
+        // *** Box raytracing
+        boxRaytraceShader.use();
+
+        // Put Uniforms
+        boxRaytraceShader.putUniform3f("boxMin", boxMin);
+        boxRaytraceShader.putUniform3f("boxMax", boxMax);
+        boxRaytraceShader.putUniformMatrix4f("invVMat", camera.getInvVMat().get(ValuesContainer.VALS_OF_16));
+
+        // Call the compute shader to generate noise to texture.
+        glDispatchCompute(1000 / 8, 1000 / 4, 1);
+        // Make sure writing to image has finished before read.
+        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+
+        // *** Scene
+        // Update objects states.
         camera.updateVMat();
         camera.handle();
-        model.updateState(camera);
+        terrainModel.updateState(camera);
 
         sceneShader.use();
+        // Put Uniforms
         light.putToUniforms(
                 sceneShader.getUniformLoc("globalAmbient"),
                 sceneShader.getUniformLoc("light.ambient"),
@@ -143,15 +200,28 @@ public class Cloud extends App {
         Material.getMaterial("GOLD").putToUniforms(
                 sceneShader.getUniformLoc("material.shininess")
         );
-        sceneShader.putUniformMatrix4f("normMat", model.getInvTrMat().get(ValuesContainer.VALS_OF_16));
-        sceneShader.putUniformMatrix4f("mvMat", model.getMvMat().get(ValuesContainer.VALS_OF_16));
+        sceneShader.putUniformMatrix4f("normMat", terrainModel.getInvTrMat().get(ValuesContainer.VALS_OF_16));
+        sceneShader.putUniformMatrix4f("mvMat", terrainModel.getMvMat().get(ValuesContainer.VALS_OF_16));
         sceneShader.putUniformMatrix4f("projMat", camera.getProjMat().get(ValuesContainer.VALS_OF_16));
-        model.draw(GL_TRIANGLES);
+        // The draw call.
+        terrainModel.draw(GL_TRIANGLES);
     }
 
     @Override
     protected void destroy() {
         Destroyer.destroyAll(glfwWindow.getID(), gui);
+    }
+
+    private IntBuffer getWorleyShaderWGSize() {
+        IntBuffer buffer = BufferUtils.createIntBuffer(3);
+        glGetProgramiv(worleyNoiseShader.getID(), GL_COMPUTE_WORK_GROUP_SIZE, buffer);
+        return buffer;
+    }
+
+    private IntBuffer getRaytraceShaderWGSize() {
+        IntBuffer buffer = BufferUtils.createIntBuffer(3);
+        glGetProgramiv(boxRaytraceShader.getID(), GL_COMPUTE_WORK_GROUP_SIZE, buffer);
+        return buffer;
     }
 
     public static void main(String[] args) {

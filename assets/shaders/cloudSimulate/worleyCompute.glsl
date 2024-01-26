@@ -1,5 +1,5 @@
 #version 430
-
+// local size is optimize for Nvidia warp. 32 = 4 * 4 * 2. See https://nyu-cds.github.io/python-gpu/02-cuda/
 layout (local_size_x = 4, local_size_y = 4, local_size_z = 2) in;
 
 layout (rgba8, binding = 0) uniform image2D imgOutput;
