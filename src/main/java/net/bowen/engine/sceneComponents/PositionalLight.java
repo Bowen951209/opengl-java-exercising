@@ -1,11 +1,14 @@
 package net.bowen.engine.sceneComponents;
 
-import org.joml.Vector3f;
-import static org.lwjgl.opengl.GL43.*;
-import org.lwjgl.BufferUtils;
+import net.bowen.engine.sceneComponents.models.Sphere;
 import net.bowen.engine.util.ValuesContainer;
+import org.joml.Vector3f;
+import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
+
+import static org.lwjgl.opengl.GL43.glUniform3fv;
+import static org.lwjgl.opengl.GL43.glUniform4fv;
 
 public class PositionalLight {
     private final FloatBuffer globalAmbient = BufferUtils.createFloatBuffer(4);
@@ -66,6 +69,15 @@ public class PositionalLight {
         return lightSpecular;
     }
 
+    public PositionalLight(float[] globalAmbient, float[] lightAmbient, float[] lightDiffuse, float[] lightSpecular, Vector3f lightPosition) {
+        this.globalAmbient.put(globalAmbient);
+        this.lightAmbient.put(lightAmbient);
+        this.lightDiffuse.put(lightDiffuse);
+        this.lightSpecular.put(lightSpecular);
+        flipAll();
+        lightPositionInVector = new Vector3f(lightPosition);
+    }
+
     public PositionalLight() {
         this(
                 new float[] {0.1f, 0.1f, 0.1f, 1.0f}, // global ambient
@@ -86,14 +98,6 @@ public class PositionalLight {
         lightDiffuse.flip();
         lightSpecular.flip();
         lightPosition.flip();
-    }
-    public PositionalLight(float[] globalAmbient, float[] lightAmbient, float[] lightDiffuse, float[] lightSpecular, Vector3f lightPosition) {
-        this.globalAmbient.put(globalAmbient);
-        this.lightAmbient.put(lightAmbient);
-        this.lightDiffuse.put(lightDiffuse);
-        this.lightSpecular.put(lightSpecular);
-        flipAll();
-        lightPositionInVector = new Vector3f(lightPosition);
     }
 
     public void putToUniforms(int globalAmbLoc, int lightAmbLoc, int lightDiffLoc, int lightSpecLoc, int lightPosLoc) {
