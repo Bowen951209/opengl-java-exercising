@@ -14,7 +14,13 @@ struct Ray {
     vec3 dir;// normalized direction
 };
 
-// @returns (dstToBox, dstInsideBox). If ray misses box, dstInsideBox will be zero
+/**
+  *  @param boundsMin -- the min bounds of the box.
+  *  @param boundsMax -- the max bounds of the box.
+  *  @parma rayOrigin -- the origin of the ray.
+  *  @parma invRayDir -- the inverse of the ray dir. (as 1 / rayDir)
+  *  @returns (dstToBox, dstInsideBox). If ray misses box, dstInsideBox will be zero
+*/
 vec2 rayBoxDst(vec3 boundsMin, vec3 boundsMax, vec3 rayOrigin, vec3 invRayDir) {
     // Adpated from https://github.com/SebLague/Clouds/tree/fcc997c40d36c7bedf95a294cd2136b8c5127009
     vec3 t0 = (boundsMin - rayOrigin) * invRayDir;
