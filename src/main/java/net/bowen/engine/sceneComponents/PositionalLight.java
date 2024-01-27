@@ -141,7 +141,6 @@ public class PositionalLight {
         lightAmbient.flip();
         lightDiffuse.flip();
         lightSpecular.flip();
-        lightPosition.flip();
     }
 
     public void putToUniforms(int globalAmbLoc, int lightAmbLoc, int lightDiffLoc, int lightSpecLoc, int lightPosLoc) {
@@ -152,7 +151,7 @@ public class PositionalLight {
         glUniform4fv(lightSpecLoc, this.lightSpecular);
 
         // This is vec3
-        glUniform3fv(lightPosLoc, this.lightPosition);
+        glUniform3fv(lightPosLoc, lightPosition);
     }
 
     public void putToUniforms(int globalAmbLoc, int lightAmbLoc, int lightDiffLoc, int lightSpecLoc) {
