@@ -97,23 +97,31 @@ public class Cloud extends App {
         boxConfigWindow.addChild(boxMaxSlider);
 
 
-        // Test texture window.
-        gui.addComponents(new ImageDisplay(raytraceTexture.getTexID(), 1000));
-
-
         // Light config window.
+//        TODO: add a color picker for picking light ADS props, and see if the shader renders it correctly.
         GuiWindow lightConfigWindow = new GuiWindow("Config the light here", true);
+        lightConfigWindow.setInitWidth(800);
         lightConfigWindow.show();
 
         SliderFloat3 lightPosSlider = new SliderFloat3("Light Position", lightPos, -10f, 10f);
         lightPosSlider.addScrollCallBack(() -> light.setPosition(lightPos[0], lightPos[1], lightPos[2]));
         lightConfigWindow.addChild(lightPosSlider);
 
+
+        // Raytrace display window.
+        GuiWindow raytraceDisplayWindow = new GuiWindow("Raytrace Display", true);
+        raytraceDisplayWindow.setInitWidth(1000);
+        raytraceDisplayWindow.setInitHeight(1000);
+        raytraceDisplayWindow.show();
+        raytraceDisplayWindow.addChild(new ImageDisplay(raytraceTexture.getTexID(), 1000));
+
+
         // Add the components to the GUI.
         gui.addComponents(new FpsDisplay(this));
         gui.addComponents(texConfig);
         gui.addComponents(boxConfigWindow);
         gui.addComponents(lightConfigWindow);
+        gui.addComponents(raytraceDisplayWindow);
     }
 
     @Override
