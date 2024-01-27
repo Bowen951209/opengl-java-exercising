@@ -44,8 +44,11 @@ vec2 rayBoxDst(vec3 boundsMin, vec3 boundsMax, vec3 rayOrigin, vec3 invRayDir) {
     return vec2(dstToBox, dstInsideBox);
 }
 
-void main() {
-    // Ref from https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays.html
+/**
+    Get the ray from the camera to the pixel this call is at.
+*/
+Ray getCamToPixRay() {
+    // Adapt from https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays.html
     vec2 coord = gl_GlobalInvocationID.xy;
     uint width = gl_NumWorkGroups.x * gl_WorkGroupSize.x;
     uint height = gl_NumWorkGroups.y * gl_WorkGroupSize.y;
@@ -64,7 +67,13 @@ void main() {
     worldRay.o = rayOriginWorld;
     worldRay.dir = normalize(rayPWorld - rayOriginWorld);
 
-    vec2 hitInfo = rayBoxDst(boxMin, boxMax, worldRay.o, 1 / worldRay.dir);
+    return worldRay;
+}
+
+void main() {
+    Ray camToPixRay= getCamToPixRay();
+
+    vec2 hitInfo = rayBoxDst(boxMin, boxMax, camToPixRay.o, 1 / camToPixRay.dir);
     float dstToBox = hitInfo.x;
     float dstInsideBox = hitInfo.y;
     bool rayHitBox = dstInsideBox > 0;
