@@ -105,7 +105,7 @@ public class Cloud extends App {
         GuiWindow lightConfigWindow = new GuiWindow("Config the light here", true);
         lightConfigWindow.show();
 
-        SliderFloat3 lightPosSlider = new SliderFloat3("Light Position", lightPos, -5f, 5f);
+        SliderFloat3 lightPosSlider = new SliderFloat3("Light Position", lightPos, -10f, 10f);
         lightPosSlider.addScrollCallBack(() -> light.setPosition(lightPos[0], lightPos[1], lightPos[2]));
         lightConfigWindow.addChild(lightPosSlider);
 
