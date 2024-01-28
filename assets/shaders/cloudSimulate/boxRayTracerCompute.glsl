@@ -7,6 +7,7 @@ const float FOV = 1.0472f; // 60 deg
 layout (binding = 1, rgba8) uniform image2D outputTexture;
 uniform vec3 boxMin;
 uniform vec3 boxMax;
+uniform vec3 lightPos;
 uniform mat4 invVMat;
 
 struct Ray {
@@ -42,6 +43,8 @@ vec2 rayBoxDst(vec3 boundsMin, vec3 boundsMax, vec3 rayOrigin, vec3 invRayDir) {
     float dstToBox = max(0, dstA);
     float dstInsideBox = max(0, dstB - dstToBox);
     return vec2(dstToBox, dstInsideBox);
+
+    // TODO: see if method can separete to 2 method respectively return dst to/inside box.
 }
 
 /**
@@ -70,8 +73,50 @@ Ray getCamToPixRay() {
     return worldRay;
 }
 
+
+
+//TODO: ray march to light / inbox methods are just wrote in test. We need to sample using the "beer's law" and density sample.
+
+float raymarchToLigt(vec3 orig, float stepLen) {
+    vec3 dir = normalize(lightPos - orig);
+    float dst = rayBoxDst(boxMin, boxMax, orig, 1 / dir).y; // dst inside box
+    float traveledDst = 0.0;
+
+    float sampleValue = 0;
+
+    while (traveledDst < dst) {
+        vec3 point = orig + traveledDst * dir;
+        sampleValue += exp(-traveledDst);
+
+        traveledDst += stepLen;
+    }
+
+    return sampleValue;
+}
+
+/**
+Ray march as the given origin / dir / dsitance / step length.
+For every march point, it'll do a secondary march to the light position.
+Blend the values of each secondary march to the primary point
+and the blend of the valuse of all primary points is the result.
+*/
+vec3 raymarchInBox(vec3 orig, vec3 dir, float dst, float stepLen) {
+    float traveledDst = 0.0;
+
+    float total = 0.0;
+    while (traveledDst < dst) {
+        vec3 point = orig + traveledDst * dir;
+        float sampVal = raymarchToLigt(point, stepLen);
+        total += exp(-sampVal * 0.5);
+
+        traveledDst += stepLen;
+    }
+
+    return vec3(total);
+}
+
 void main() {
-    Ray camToPixRay= getCamToPixRay();
+    Ray camToPixRay = getCamToPixRay();
 
     vec2 hitInfo = rayBoxDst(boxMin, boxMax, camToPixRay.o, 1 / camToPixRay.dir);
     float dstToBox = hitInfo.x;
@@ -79,10 +124,12 @@ void main() {
     bool rayHitBox = dstInsideBox > 0;
 
     vec3 color;
-    if (rayHitBox)
-        color = vec3(1.0, 1.0, 1.0);
+    if (rayHitBox) {
+        // TODO: step length of 0.1 need more config and test.
+        color = raymarchInBox(camToPixRay.o + dstToBox * camToPixRay.dir, camToPixRay.dir, dstInsideBox, 0.1);
+    }
     else
-        color = vec3(0.0, 0.0, 0.0);
+    color = vec3(0.0, 0.0, 0.0);
 
     imageStore(outputTexture, ivec2(gl_GlobalInvocationID.xy), vec4(color, 1.0));
 }

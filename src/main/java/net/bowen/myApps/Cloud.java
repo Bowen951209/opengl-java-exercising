@@ -57,23 +57,53 @@ public class Cloud extends App {
         texConfig.addChild(imageDisplay);
 
         SliderFloat1 scaleSlider = new SliderFloat1("Scale", scale, 0.01f, 0.5f);
-        scaleSlider.addScrollCallBack(() -> worleyNoiseShader.putUniform1f("scale", scale[0]));
+        scaleSlider.addScrollCallBack(() -> {
+            worleyNoiseShader.putUniform1f("scale", scale[0]);
+            worleyNoiseShader.use();
+            glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, 1);
+            // Make sure writing to image has finished before read.
+            glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        });
         texConfig.addChild(scaleSlider);
 
         SliderFloat1 layerSlider = new SliderFloat1("Layer", layer, 0, 200);
-        layerSlider.addScrollCallBack(() -> worleyNoiseShader.putUniform1f("layer", layer[0]));
+        layerSlider.addScrollCallBack(() -> {
+            worleyNoiseShader.putUniform1f("layer", layer[0]);
+            worleyNoiseShader.use();
+            glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, 1);
+            // Make sure writing to image has finished before read.
+            glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        });
         texConfig.addChild(layerSlider);
 
         SliderInt1 octavesSlider = new SliderInt1("Octaves", octaves, 1, 10);
-        octavesSlider.addScrollCallBack(() -> worleyNoiseShader.putUniform1i("octaves", octaves[0]));
+        octavesSlider.addScrollCallBack(() -> {
+            worleyNoiseShader.putUniform1i("octaves", octaves[0]);
+            worleyNoiseShader.use();
+            glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, 1);
+            // Make sure writing to image has finished before read.
+            glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        });
         texConfig.addChild(octavesSlider);
 
         SliderFloat1 persistenceSlider = new SliderFloat1("Persistence", persistence, 0.01f, 5f);
-        persistenceSlider.addScrollCallBack(() -> worleyNoiseShader.putUniform1f("persistence", persistence[0]));
+        persistenceSlider.addScrollCallBack(() -> {
+            worleyNoiseShader.putUniform1f("persistence", persistence[0]);
+            worleyNoiseShader.use();
+            glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, 1);
+            // Make sure writing to image has finished before read.
+            glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        });
         texConfig.addChild(persistenceSlider);
 
         SliderFloat1 lacunaritySlider = new SliderFloat1("Lacunarity", lacunarity, 0.01f, 5f);
-        lacunaritySlider.addScrollCallBack(() -> worleyNoiseShader.putUniform1f("lacunarity", lacunarity[0]));
+        lacunaritySlider.addScrollCallBack(() -> {
+            worleyNoiseShader.putUniform1f("lacunarity", lacunarity[0]);
+            worleyNoiseShader.use();
+            glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, 1);
+            // Make sure writing to image has finished before read.
+            glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        });
         texConfig.addChild(lacunaritySlider);
 
         // Init these uniforms here, so the program can generate the image in the first time.
@@ -82,6 +112,11 @@ public class Cloud extends App {
         worleyNoiseShader.putUniform1i("octaves", octaves[0]);
         worleyNoiseShader.putUniform1f("persistence", persistence[0]);
         worleyNoiseShader.putUniform1f("lacunarity", lacunarity[0]);
+        worleyNoiseShader.use();
+        // Call the compute shader to generate noise to textures.
+        glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, 1);
+        // Make sure writing to image has finished before read.
+        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 
         // Cloud box Config Window.
@@ -185,24 +220,15 @@ public class Cloud extends App {
 
     @Override
     protected void drawScene() {
-        // *** Noise texture
-        worleyNoiseShader.use();
-
-        // Call the compute shader to generate noise to texture.
-        glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, 1);
-        // Make sure writing to image has finished before read.
-        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-
-
         // *** Box raytracing
         boxRaytraceShader.use();
 
         // Put Uniforms
         boxRaytraceShader.putUniform3f("boxMin", boxMin);
         boxRaytraceShader.putUniform3f("boxMax", boxMax);
+        boxRaytraceShader.putUniform3f("lightPos", lightPos);
         boxRaytraceShader.putUniformMatrix4f("invVMat", camera.getInvVMat().get(ValuesContainer.VALS_OF_16));
 
-        // Call the compute shader to generate noise to texture.
         glDispatchCompute(1000 / 8, 1000 / 4, 1);
         // Make sure writing to image has finished before read.
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
