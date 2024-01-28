@@ -21,8 +21,8 @@ import static org.lwjgl.opengl.GL43.*;
 
 public class Cloud extends App {
     private final int[] octaves = {3};
+    private final int[] layer = {0};
     private final float[] scale = {0.01f};
-    private final float[] layer = {0};
     private final float[] persistence = {0.75f};
     private final float[] lacunarity = {1.47f};
     private final float[] boxMin = {-1f, 0.45f, -2f};
@@ -63,9 +63,9 @@ public class Cloud extends App {
         });
         texConfig.addChild(scaleSlider);
 
-        SliderFloat1 layerSlider = new SliderFloat1("Layer", layer, 0, 200);
+        SliderInt1 layerSlider = new SliderInt1("Layer", layer, 0, 200);
         layerSlider.addScrollCallBack(() -> {
-            worleyNoiseShader.putUniform1f("layer", layer[0]);
+            worleyNoiseShader.putUniform1i("layer", layer[0]);
             genWorleyTexture();
         });
         texConfig.addChild(layerSlider);
@@ -93,7 +93,7 @@ public class Cloud extends App {
 
         // Init these uniforms here, so the program can generate the image in the first time.
         worleyNoiseShader.putUniform1f("scale", scale[0]);
-        worleyNoiseShader.putUniform1f("layer", layer[0]);
+        worleyNoiseShader.putUniform1i("layer", layer[0]);
         worleyNoiseShader.putUniform1i("octaves", octaves[0]);
         worleyNoiseShader.putUniform1f("persistence", persistence[0]);
         worleyNoiseShader.putUniform1f("lacunarity", lacunarity[0]);

@@ -5,7 +5,7 @@ layout (local_size_x = 4, local_size_y = 4, local_size_z = 2) in;
 layout (rgba8, binding = 0) uniform image2D imgOutput;
 
 uniform float scale;
-uniform float layer;
+uniform int layer;
 uniform int octaves;
 uniform float persistence;
 uniform float lacunarity;
