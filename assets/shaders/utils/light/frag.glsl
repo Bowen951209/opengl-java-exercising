@@ -1,6 +1,5 @@
 #version 430
 
-in vec3 varyingVertPos;
 out vec4 fragColor;
 
 struct PositionalLight {
