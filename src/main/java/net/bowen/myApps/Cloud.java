@@ -59,50 +59,35 @@ public class Cloud extends App {
         SliderFloat1 scaleSlider = new SliderFloat1("Scale", scale, 0.01f, 0.5f);
         scaleSlider.addScrollCallBack(() -> {
             worleyNoiseShader.putUniform1f("scale", scale[0]);
-            worleyNoiseShader.use();
-            glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, 1);
-            // Make sure writing to image has finished before read.
-            glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+            genWorleyTexture();
         });
         texConfig.addChild(scaleSlider);
 
         SliderFloat1 layerSlider = new SliderFloat1("Layer", layer, 0, 200);
         layerSlider.addScrollCallBack(() -> {
             worleyNoiseShader.putUniform1f("layer", layer[0]);
-            worleyNoiseShader.use();
-            glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, 1);
-            // Make sure writing to image has finished before read.
-            glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+            genWorleyTexture();
         });
         texConfig.addChild(layerSlider);
 
         SliderInt1 octavesSlider = new SliderInt1("Octaves", octaves, 1, 10);
         octavesSlider.addScrollCallBack(() -> {
             worleyNoiseShader.putUniform1i("octaves", octaves[0]);
-            worleyNoiseShader.use();
-            glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, 1);
-            // Make sure writing to image has finished before read.
-            glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+            genWorleyTexture();
         });
         texConfig.addChild(octavesSlider);
 
         SliderFloat1 persistenceSlider = new SliderFloat1("Persistence", persistence, 0.01f, 5f);
         persistenceSlider.addScrollCallBack(() -> {
             worleyNoiseShader.putUniform1f("persistence", persistence[0]);
-            worleyNoiseShader.use();
-            glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, 1);
-            // Make sure writing to image has finished before read.
-            glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+            genWorleyTexture();
         });
         texConfig.addChild(persistenceSlider);
 
         SliderFloat1 lacunaritySlider = new SliderFloat1("Lacunarity", lacunarity, 0.01f, 5f);
         lacunaritySlider.addScrollCallBack(() -> {
             worleyNoiseShader.putUniform1f("lacunarity", lacunarity[0]);
-            worleyNoiseShader.use();
-            glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, 1);
-            // Make sure writing to image has finished before read.
-            glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+            genWorleyTexture();
         });
         texConfig.addChild(lacunaritySlider);
 
@@ -112,11 +97,7 @@ public class Cloud extends App {
         worleyNoiseShader.putUniform1i("octaves", octaves[0]);
         worleyNoiseShader.putUniform1f("persistence", persistence[0]);
         worleyNoiseShader.putUniform1f("lacunarity", lacunarity[0]);
-        worleyNoiseShader.use();
-        // Call the compute shader to generate noise to textures.
-        glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, 1);
-        // Make sure writing to image has finished before read.
-        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+        genWorleyTexture();
 
 
         // Cloud box Config Window.
@@ -277,6 +258,13 @@ public class Cloud extends App {
         IntBuffer buffer = BufferUtils.createIntBuffer(3);
         glGetProgramiv(boxRaytraceShader.getID(), GL_COMPUTE_WORK_GROUP_SIZE, buffer);
         return buffer;
+    }
+
+    private void genWorleyTexture() {
+        worleyNoiseShader.use();
+        glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, 1);
+        // Make sure writing to image has finished before read.
+        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     }
 
     public static void main(String[] args) {
