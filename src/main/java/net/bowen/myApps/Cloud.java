@@ -36,7 +36,7 @@ public class Cloud extends App {
     private ShaderProgram boxRaytraceShader;
     private Texture2D worleyDisplayTexture;
     private Texture2D raytraceTexture;
-    int worleyNumWorkGroupX, worleyNumWorkGroupY;
+    int worleyNumWorkGroupX, worleyNumWorkGroupY, worleyNumWorkGroupZ;
     int raytraceNumWorkGroupX, raytraceNumWorkGroupY;
 
     @Override
@@ -167,6 +167,7 @@ public class Cloud extends App {
 
         worleyNumWorkGroupX = 500 / worleyShaderWGSize.get(0);
         worleyNumWorkGroupY = 500 / worleyShaderWGSize.get(1);
+        worleyNumWorkGroupZ = 500 / worleyShaderWGSize.get(2);
         worleyDisplayTexture.fill(500, 500, Color.BLACK); // init the texture size.
 
 
@@ -182,6 +183,18 @@ public class Cloud extends App {
         // The texture for the terrain model.
         Texture2D terrainTexture = new Texture2D(0, "assets/textures/imageTextures/terrain.jpg");
         terrainTexture.bind();
+
+        // The worley 3D texture.
+        glActiveTexture(GL_TEXTURE2);
+        int worley3D = glGenTextures();
+        glBindTexture(GL_TEXTURE_3D, worley3D);
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        glTexStorage3D(GL_TEXTURE_3D, 1, GL_RGBA8, 500, 500, 500);
+        glBindImageTexture(2, worley3D, 0, false, 0, GL_WRITE_ONLY, GL_RGBA8);
     }
 
     @Override
@@ -262,7 +275,7 @@ public class Cloud extends App {
 
     private void genWorleyTexture() {
         worleyNoiseShader.use();
-        glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, 1);
+        glDispatchCompute(worleyNumWorkGroupX, worleyNumWorkGroupY, worleyNumWorkGroupZ);
         // Make sure writing to image has finished before read.
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     }
