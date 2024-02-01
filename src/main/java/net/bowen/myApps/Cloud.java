@@ -25,9 +25,9 @@ public class Cloud extends App {
     private final float[] scale = {0.01f};
     private final float[] persistence = {0.75f};
     private final float[] lacunarity = {1.47f};
-    private final float[] boxMin = {-1f, 0.45f, -2f};
-    private final float[] boxMax = {1.7f, 3.3f, 0.8f};
-    private final float[] lightPos = new float[3];
+    private final float[] boxMin = {-0.5f, -0.5f, -0.5f};
+    private final float[] boxMax = {0.5f, 0.5f, 0.5f};
+    private final float[] lightPos = {0f, 5f, 0f};
 
     private FileModel terrainModel;
     private PositionalLight light;
@@ -56,7 +56,7 @@ public class Cloud extends App {
         ImageDisplay imageDisplay = new ImageDisplay(worleyDisplayTexture.getTexID(), 500);
         texConfig.addChild(imageDisplay);
 
-        SliderFloat1 scaleSlider = new SliderFloat1("Scale", scale, 0.01f, 0.5f);
+        SliderFloat1 scaleSlider = new SliderFloat1("Scale", scale, 0.003f, 0.5f);
         scaleSlider.addScrollCallBack(() -> {
             worleyNoiseShader.putUniform1f("scale", scale[0]);
             genWorleyTexture();
@@ -210,6 +210,8 @@ public class Cloud extends App {
 
         light = new PositionalLight();
         light.setDrawable(camera);
+
+        camera.step(0.01f);
     }
 
     @Override

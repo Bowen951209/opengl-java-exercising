@@ -5,6 +5,7 @@ layout (local_size_x = 8, local_size_y = 4, local_size_z = 1) in;
 const float FOV = 1.0472f; // 60 deg
 
 layout (binding = 1, rgba8) uniform image2D outputTexture;
+layout (binding = 2) uniform sampler3D worleyNoise;
 uniform vec3 boxMin;
 uniform vec3 boxMax;
 uniform vec3 lightPos;
@@ -43,8 +44,6 @@ vec2 rayBoxDst(vec3 boundsMin, vec3 boundsMax, vec3 rayOrigin, vec3 invRayDir) {
     float dstToBox = max(0, dstA);
     float dstInsideBox = max(0, dstB - dstToBox);
     return vec2(dstToBox, dstInsideBox);
-
-    // TODO: see if method can separete to 2 method respectively return dst to/inside box.
 }
 
 /**
@@ -73,7 +72,12 @@ Ray getCamToPixRay() {
     return worldRay;
 }
 
-
+float sampleDensity(vec3 p) {
+    // set range to [0, 1]
+    vec3 size = boxMax - boxMin;
+    p = (p - boxMin) / size;
+    return texture(worleyNoise, p).r;
+}
 
 //TODO: ray march to light / inbox methods are just wrote in test. We need to sample using the "beer's law" and density sample.
 
@@ -83,10 +87,12 @@ float raymarchToLigt(vec3 orig, float stepLen) {
     float traveledDst = 0.0;
 
     float sampleValue = 0;
+    float totalDensity = 0;
 
     while (traveledDst < dst) {
         vec3 point = orig + traveledDst * dir;
-        sampleValue += exp(-traveledDst);
+        float density = sampleDensity(point);
+        sampleValue += exp(-traveledDst * density);
 
         traveledDst += stepLen;
     }
@@ -106,8 +112,9 @@ vec3 raymarchInBox(vec3 orig, vec3 dir, float dst, float stepLen) {
     float total = 0.0;
     while (traveledDst < dst) {
         vec3 point = orig + traveledDst * dir;
+        float density = sampleDensity(point);
         float sampVal = raymarchToLigt(point, stepLen);
-        total += exp(-sampVal * 0.5);
+        total += exp(-sampVal * density);
 
         traveledDst += stepLen;
     }
